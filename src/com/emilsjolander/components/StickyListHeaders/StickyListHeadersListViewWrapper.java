@@ -53,8 +53,8 @@ public class StickyListHeadersListViewWrapper extends FrameLayout implements OnS
 	}
 	
 	public void setWrappedList(ListView list){
-		this.list = list;
 		list.setOnScrollListener(this);
+		this.list = list;
 	}
 	
 	/**
