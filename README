@@ -1,5 +1,15 @@
-StickyListHeaders is an android library that makes it easy to integrate section headers in your ListView. Theses sectioned headers stick to the top ( call setAreHeadersSticky(boolean sticky) to change)
+StickyListHeaders is an android library that makes it easy to integrate section headers in your ListView. Theses section headers stick to the top like in the new people app of android 4.0 Ice cream sandwich (this can be turned off). 
 
+Use classes in com.emilsjolander.components.StickyListHeaders package in src folder, It is compatible with versions of android down to 2.1.
+I have included an apk which is just a compiled version of the code inside the test folder.
+
+HOW TO USE:
+Instead of a normal ListView you will want to use StickyListHeadersListViewWrapper, this is a subclass of FrameLayout that wraps a ListView so in xml you can put both FrameLayout attributes and ListView attributes. Your ListAdapter has to be a subclass of StickyListHeadersAdapter, here you will have to implement getHeaderView(int position, View convertView), getHeaderId(int position) and getView(int position, View convertView).
+
+The headerId indicates when you want to switch header. In an alphabetical list where the first letter is shown in the header you might return the first characters integer values as the headerId for example.
+
+
+LICENSE:
 
 Copyright 2012 Emil Sjölander
 
