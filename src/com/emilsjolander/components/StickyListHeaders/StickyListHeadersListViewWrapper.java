@@ -2,6 +2,8 @@ package com.emilsjolander.components.StickyListHeaders;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AbsListView;
@@ -10,6 +12,9 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 
 public class StickyListHeadersListViewWrapper extends FrameLayout implements OnScrollListener {
+	
+	private static final String HEADER_HEIGHT = "headerHeight";
+	private static final String SUPER_INSTANCE_STATE = "superInstanceState";
 	
 	private boolean areHeadersSticky;
 	private int headerBottomPosition;
@@ -23,6 +28,20 @@ public class StickyListHeadersListViewWrapper extends FrameLayout implements OnS
 		list = new ListView(context);
 		setAreHeadersSticky(true);
 		setup();
+	}
+	
+	@Override
+	protected void onRestoreInstanceState(Parcelable state) {
+		headerHeight = ((Bundle)state).getInt(HEADER_HEIGHT);
+		super.onRestoreInstanceState(((Bundle)state).getParcelable(SUPER_INSTANCE_STATE));
+	}
+	
+	@Override
+	protected Parcelable onSaveInstanceState() {
+		Bundle instanceState = new Bundle();
+		instanceState.putInt(HEADER_HEIGHT, headerHeight);
+		instanceState.putParcelable(SUPER_INSTANCE_STATE, super.onSaveInstanceState());
+		return instanceState;
 	}
 
 	public StickyListHeadersListViewWrapper(Context context, AttributeSet attrs) {
@@ -45,6 +64,7 @@ public class StickyListHeadersListViewWrapper extends FrameLayout implements OnS
 
 	private void setup() {
 		list.setOnScrollListener(this);
+		list.setId(R.id.list_view);
 		addView(list);
 	}
 	
@@ -88,7 +108,7 @@ public class StickyListHeadersListViewWrapper extends FrameLayout implements OnS
 				viewToWatch = stickyListHeadersAdapter.getCurrentlyVissibleHeaderViews().get(firstVisibleItem+1);
 			}
 			if(viewToWatch!=null){
-				if(headerHeight<0) headerHeight=viewToWatch.findViewById(StickyListHeadersAdapter.HEADER_ID).getHeight();
+				if(headerHeight<0) headerHeight=viewToWatch.findViewById(R.id.header_view).getHeight();
 				headerBottomPosition = Math.min(viewToWatch.getTop(), headerHeight);
 				headerBottomPosition = headerBottomPosition<0 ? headerHeight : headerBottomPosition;
 			}else{
@@ -103,7 +123,13 @@ public class StickyListHeadersListViewWrapper extends FrameLayout implements OnS
 			LayoutParams params = (LayoutParams) header.getLayoutParams();
 			params.height=headerHeight;
 			params.topMargin = headerBottomPosition - headerHeight;
+			params.gravity = 0;
 			header.setLayoutParams(params);
+			header.setVisibility(View.VISIBLE);
+		}else{
+			if(header != null){
+				header.setVisibility(View.GONE);
+			}
 		}
 	}
 

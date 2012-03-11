@@ -10,9 +10,6 @@ import android.widget.BaseAdapter;
 
 public abstract class StickyListHeadersAdapter extends BaseAdapter {
 	
-	public static final int LIST_ITEM_ID = 1337;
-	public static final int HEADER_ID = 2674;
-	
 	private ArrayList<View> headerCache;
 	private ArrayList<WrapperView> wrapperCache;
 	private Context context;
@@ -43,12 +40,12 @@ public abstract class StickyListHeadersAdapter extends BaseAdapter {
 			header = headerCache.remove(0);
 		}
 		header = getHeaderView(position,header);
-		header.setId(HEADER_ID);
+		header.setId(R.id.header_view);
 		return header;
 	}
 	
 	private View attachHeaderToListItem(View header, View listItem){
-		listItem.setId(LIST_ITEM_ID);
+		listItem.setId(R.id.list_item_view);
 		WrapperView wrapper = null;
 		if(wrapperCache.size()>0){
 			wrapper = wrapperCache.remove(0);
@@ -63,7 +60,7 @@ public abstract class StickyListHeadersAdapter extends BaseAdapter {
 	}
 
 	private View wrapListItem(View listItem) {
-		listItem.setId(LIST_ITEM_ID);
+		listItem.setId(R.id.list_item_view);
 		WrapperView wrapper = null;
 		if(wrapperCache.size()>0){
 			wrapper = wrapperCache.remove(0);
@@ -85,12 +82,12 @@ public abstract class StickyListHeadersAdapter extends BaseAdapter {
 		}
 		ViewGroup vg = (ViewGroup) convertView;
 		
-		View header = vg.findViewById(HEADER_ID);
+		View header = vg.findViewById(R.id.header_view);
 		if(header!=null){
 			headerCache.add(header);
 		}
 		
-		View listItem = vg.findViewById(LIST_ITEM_ID);
+		View listItem = vg.findViewById(R.id.list_item_view);
 		vg.removeAllViews();
 		wrapperCache.add(new WrapperView(convertView));
 		
