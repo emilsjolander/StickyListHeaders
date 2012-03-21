@@ -1,12 +1,13 @@
 package com.emilsjolander.components.StickyListHeaders;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 
 /**
  * 
@@ -33,12 +34,14 @@ public abstract class StickyListHeadersAdapter extends BaseAdapter {
 	private ArrayList<View> headerCache;
 	private ArrayList<WrapperView> wrapperCache;
 	private Context context;
-	private HashMap<Integer, View> currentlyVissibleHeaderViews;
+	private Drawable divider;
+	private int dividerHeight;
+	private ArrayList<View> dividerCache;
 	
 	public StickyListHeadersAdapter(Context context) {
 		headerCache = new ArrayList<View>();
+		dividerCache = new ArrayList<View>();
 		wrapperCache = new ArrayList<WrapperView>();
-		currentlyVissibleHeaderViews = new HashMap<Integer, View>();
 		this.context = context;
 	}
 	
@@ -79,7 +82,7 @@ public abstract class StickyListHeadersAdapter extends BaseAdapter {
 		return wrapper.wrapViews(header,listItem);
 	}
 
-	private View wrapListItem(View listItem) {
+	private View attachDividerToListItem(View listItem) {
 		listItem.setId(R.id.list_item_view);
 		WrapperView wrapper = null;
 		if(wrapperCache.size()>0){
@@ -88,7 +91,18 @@ public abstract class StickyListHeadersAdapter extends BaseAdapter {
 		if(wrapper == null){
 			wrapper = new WrapperView(context);
 		}
-		return wrapper.wrapViews(listItem);
+		View divider = null;
+		if(dividerCache.size()>0){
+			divider = dividerCache.remove(0);
+		}
+		if(divider == null){
+			divider = new View(context);
+			divider.setId(R.id.divider_view);
+			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, dividerHeight);
+			divider.setLayoutParams(params);
+		}
+		divider.setBackgroundDrawable(this.divider);
+		return wrapper.wrapViews(divider,listItem);
 	}
 	
 	/**
@@ -97,14 +111,16 @@ public abstract class StickyListHeadersAdapter extends BaseAdapter {
 	 */
 	private View axtractHeaderAndListItemFromConvertView(View convertView){
 		if(convertView == null) return null;
-		if(currentlyVissibleHeaderViews.containsValue(convertView)){
-			currentlyVissibleHeaderViews.remove(convertView.getTag());
-		}
 		ViewGroup vg = (ViewGroup) convertView;
 		
 		View header = vg.findViewById(R.id.header_view);
 		if(header!=null){
 			headerCache.add(header);
+		}
+		
+		View divider = vg.findViewById(R.id.divider_view);
+		if(divider!=null){
+			dividerCache.add(divider);
 		}
 		
 		View listItem = vg.findViewById(R.id.list_item_view);
@@ -128,20 +144,21 @@ public abstract class StickyListHeadersAdapter extends BaseAdapter {
 		View v = getView(position,axtractHeaderAndListItemFromConvertView(convertView));
 		if(position == 0 || getHeaderId(position)!=getHeaderId(position-1)){
 			v = attachHeaderToListItem(getHeaderWithForPosition(position),v);
-			currentlyVissibleHeaderViews.put(position, v);
+			v.setTag(true);
 		}else{
-			v = wrapListItem(v);
+			v = attachDividerToListItem(v);
+			v.setTag(false);
 		}
-		v.setTag(position);
 		return v;
 	}
 
 	public Context getContext() {
 		return context;
 	}
-	
-	public HashMap<Integer, View> getCurrentlyVissibleHeaderViews() {
-		return currentlyVissibleHeaderViews;
+
+	public void setDivider(Drawable divider, int dividerHeight) {
+		this.divider = divider;
+		this.dividerHeight = dividerHeight;
 	}
 
 }

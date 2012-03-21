@@ -9,7 +9,7 @@ package com.emilsjolander.components.StickyListHeaders;
 
 public final class R {
     public static final class array {
-        public static final int countries=0x7f040000;
+        public static int countries=0x7f040000;
     }
     public static final class attr {
         /** <p>Must be a boolean value, either "<code>true</code>" or "<code>false</code>".
@@ -19,28 +19,29 @@ theme attribute (in the form
 "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>")
 containing a value of this type.
          */
-        public static final int areHeadersSticky=0x7f010000;
+        public static int areHeadersSticky=0x7f010000;
     }
     public static final class drawable {
-        public static final int ic_launcher=0x7f020000;
+        public static int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int header_view=0x7f050000;
-        public static final int list=0x7f050004;
-        public static final int list_item_view=0x7f050001;
-        public static final int list_view=0x7f050002;
-        public static final int text=0x7f050003;
-        public static final int wrapper=0x7f050005;
+        public static int divider_view=0x7f050003;
+        public static int header_view=0x7f050000;
+        public static int list=0x7f050005;
+        public static int list_item_view=0x7f050001;
+        public static int list_view=0x7f050002;
+        public static int text=0x7f050004;
+        public static int wrapper=0x7f050006;
     }
     public static final class layout {
-        public static final int header=0x7f030000;
-        public static final int main=0x7f030001;
-        public static final int test_list_item_layout=0x7f030002;
-        public static final int wrapper=0x7f030003;
+        public static int header=0x7f030000;
+        public static int main=0x7f030001;
+        public static int test_list_item_layout=0x7f030002;
+        public static int wrapper=0x7f030003;
     }
     public static final class string {
-        public static final int app_name=0x7f060001;
-        public static final int hello=0x7f060000;
+        public static int app_name=0x7f060001;
+        public static int hello=0x7f060000;
     }
     public static final class styleable {
         /** Attributes that can be used with a StickyListHeadersListView.

@@ -3,4 +3,5 @@
   <item type="id" name="header_view" />
   <item type="id" name="list_item_view" />
   <item type="id" name="list_view" />
+  <item type="id" name="divider_view" />
 </resources>

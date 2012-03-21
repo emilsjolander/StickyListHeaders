@@ -4,10 +4,13 @@ Use classes in com.emilsjolander.components.StickyListHeaders package in src fol
 I have included an apk which is just a compiled version of the code inside the test folder.
 
 HOW TO USE:
-Instead of a normal ListView you will want to use StickyListHeadersListViewWrapper, this is a subclass of FrameLayout that wraps a ListView so in xml you can put both FrameLayout attributes and ListView attributes. Your ListAdapter has to be a subclass of StickyListHeadersAdapter, here you will have to implement getHeaderView(int position, View convertView), getHeaderId(int position) and getView(int position, View convertView).
+Instead of a normal ListView you will want to use StickyListHeadersListViewWrapper, this is a ListView wrapped in a FrameLayout, but style it in xml as you would a normal ListView. Because of this some attributes will be ignored for the framelayout, like padding, margin and background to name a few. Your ListAdapter has to be a subclass of StickyListHeadersAdapter, here you will have to implement getHeaderView(int position, View convertView), getHeaderId(int position) and getView(int position, View convertView).
 
 The headerId indicates when you want to switch header. In an alphabetical list where the first letter is shown in the header you might return the first characters integer values as the headerId for example.
 
+
+!!GOOD TO KNOW!!
+StickyListHeaders do not work together with paddingTop on the listview if you do not specify android:clipToPadding="false" on the listview. this is why i have set this to default.
 
 LICENSE:
 
