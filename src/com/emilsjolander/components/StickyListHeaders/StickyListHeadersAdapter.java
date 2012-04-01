@@ -161,4 +161,12 @@ public abstract class StickyListHeadersAdapter extends BaseAdapter {
 		this.dividerHeight = dividerHeight;
 	}
 
+	public void setDivider(Drawable divider) {
+		this.divider = divider;
+	}
+
+	public void setDividerHeight(int dividerHeight) {
+		this.dividerHeight = dividerHeight;
+	}
+
 }

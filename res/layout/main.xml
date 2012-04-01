@@ -4,11 +4,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <com.emilsjolander.components.StickyListHeaders.StickyListHeadersListViewWrapper
+    <com.emilsjolander.components.StickyListHeaders.StickyListHeadersListView
         xmlns:slh= "http://schemas.android.com/apk/res/com.emilsjolander.components.StickyListHeaders"
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        slh:areHeadersSticky="true"/>
-
+        slh:areHeadersSticky="true"
+        android:padding="16dip"
+        android:clipToPadding="false"/>
+        
 </LinearLayout>
