@@ -5,9 +5,11 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -155,7 +157,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 			
 			if(headerDrawingCache != null){
 				int top = headerBottomPosition - headerHeight;
-				if(clippingToPadding && getPaddingTop()>0){
+				if(clippingToPadding && getPaddingTop()>0 && top!=getPaddingTop()){
 					int rowsToDelete = -1*(top-getPaddingTop());
 					headerDrawingCache.setPixels(new int[rowsToDelete * headerDrawingCache.getWidth()], 0, headerDrawingCache.getWidth(), 0, 0, headerDrawingCache.getWidth(), rowsToDelete);
 					headerDrawingCacheInvalid = true;
@@ -203,6 +205,13 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 					headerBottomPosition = headerHeight;
 					if(clippingToPadding){
 						headerBottomPosition += getPaddingTop();
+					}
+				}
+			}
+			if(Build.VERSION.SDK_INT < 14){//work around to fix bug with firstVisibleItem being to high
+				if(!clippingToPadding && getPaddingTop()>0){
+					if(getChildAt(0).getTop() > 0){
+						if(firstVisibleItem>0) firstVisibleItem -= 1;
 					}
 				}
 			}
