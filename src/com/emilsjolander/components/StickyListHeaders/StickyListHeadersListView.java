@@ -47,6 +47,9 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	private Drawable divider;
 	private boolean clippingToPadding;
 	private boolean clipToPaddingHasBeenSet;
+	private boolean headerDrawingCacheInvalid = true;
+	private Bitmap headerDrawingCache;
+	private long oldHeaderId = -1;
 
 	public StickyListHeadersListView(Context context) {
 		super(context);
@@ -75,6 +78,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 		setDividerHeight(getDividerHeight());
 		super.setDivider(null);
 		super.setDividerHeight(0);
+		setVerticalFadingEdgeEnabled(false);
 	}
 	
 	@Override
@@ -136,22 +140,27 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	protected void dispatchDraw(Canvas canvas) {
 		super.dispatchDraw(canvas);
 		if(header != null && areHeadersSticky){
-			header.setDrawingCacheEnabled(true);  
+			if(headerDrawingCacheInvalid){
+				header.setDrawingCacheEnabled(true);  
+				
+				int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.AT_MOST);
+				int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+				header.measure(widthMeasureSpec, heightMeasureSpec);
+				header.layout(getLeft()+getPaddingLeft(), 0, getRight()-getPaddingRight(), headerHeight);
+				
+				header.buildDrawingCache();
+				headerDrawingCache = Bitmap.createBitmap(header.getDrawingCache());
+				headerDrawingCacheInvalid = false;
+			}
 			
-			int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.AT_MOST);
-			int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
-			header.measure(widthMeasureSpec, heightMeasureSpec);
-			header.layout(getLeft()+getPaddingLeft(), 0, getRight()-getPaddingRight(), headerHeight);
-			
-			header.buildDrawingCache();
-			Bitmap drawingCache = header.getDrawingCache();
-			if(drawingCache != null){
+			if(headerDrawingCache != null){
 				int top = headerBottomPosition - headerHeight;
 				if(clippingToPadding && getPaddingTop()>0){
 					int rowsToDelete = -1*(top-getPaddingTop());
-					drawingCache.setPixels(new int[rowsToDelete * drawingCache.getWidth()], 0, drawingCache.getWidth(), 0, 0, drawingCache.getWidth(), rowsToDelete);
+					headerDrawingCache.setPixels(new int[rowsToDelete * headerDrawingCache.getWidth()], 0, headerDrawingCache.getWidth(), 0, 0, headerDrawingCache.getWidth(), rowsToDelete);
+					headerDrawingCacheInvalid = true;
 				}
-				canvas.drawBitmap(drawingCache, getPaddingLeft(), top, null);
+				canvas.drawBitmap(headerDrawingCache, getPaddingLeft(), top, null);
 			}
 			header.setDrawingCacheEnabled(false); 
 		}
@@ -197,8 +206,11 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 					}
 				}
 			}
-
 			header = ((StickyListHeadersAdapter)getAdapter()).getHeaderView(firstVisibleItem, header);
+			if(oldHeaderId != ((StickyListHeadersAdapter)getAdapter()).getHeaderId(firstVisibleItem)){
+				headerDrawingCacheInvalid = true;
+			}
+			oldHeaderId = ((StickyListHeadersAdapter)getAdapter()).getHeaderId(firstVisibleItem);
 		}
 	}
 
