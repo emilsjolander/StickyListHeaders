@@ -51,6 +51,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	private boolean headerDrawingCacheInvalid = true;
 	private Bitmap headerDrawingCache;
 	private long oldHeaderId = -1;
+	private boolean setupDone;
 
 	public StickyListHeadersListView(Context context) {
 		super(context);
@@ -74,6 +75,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	}
 	
 	private void setup() {
+		setupDone = true;
 		super.setOnScrollListener(this);
 		setDivider(getDivider());
 		setDividerHeight(getDividerHeight());
@@ -106,17 +108,25 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	
 	@Override
 	public void setDivider(Drawable divider) {
-		this.divider = divider;
-		if(getAdapter()!=null){
-			((StickyListHeadersAdapter)getAdapter()).setDivider(divider);
+		if(setupDone){
+			this.divider = divider;
+			if(getAdapter()!=null){
+				((StickyListHeadersAdapter)getAdapter()).setDivider(divider);
+			}
+		}else{
+			super.setDivider(divider);
 		}
 	}
 	
 	@Override
 	public void setDividerHeight(int height) {
-		dividerHeight = height;
-		if(getAdapter()!=null){
-			((StickyListHeadersAdapter)getAdapter()).setDividerHeight(height);
+		if(setupDone){
+			dividerHeight = height;
+			if(getAdapter()!=null){
+				((StickyListHeadersAdapter)getAdapter()).setDividerHeight(height);
+			}
+		}else{
+			super.setDividerHeight(height);
 		}
 	}
 	
@@ -193,8 +203,26 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 		if(areHeadersSticky){
 			if(getChildCount()!=0){
 				View viewToWatch = getChildAt(0);
-				if(!((Boolean)viewToWatch.getTag()) && getChildCount()>1){
-					viewToWatch = getChildAt(1);
+				if(getChildCount()>1){
+					if(!((Boolean)viewToWatch.getTag())){
+						viewToWatch = getChildAt(1);
+					}else if((Boolean)getChildAt(1).getTag()){//both views should be watched! watch the one that is closest
+						int firstChildDistance;
+						if(clippingToPadding && getPaddingTop()>0){
+							firstChildDistance = ((viewToWatch.getTop() - getPaddingTop()) + headerHeight);
+						}else{
+							firstChildDistance = (viewToWatch.getTop() + headerHeight);
+						}
+						int secondChildDistance;
+						if(clippingToPadding && getPaddingTop()>0){
+							secondChildDistance = ((getChildAt(1).getTop() - getPaddingTop()) - headerHeight);
+						}else{
+							secondChildDistance = (getChildAt(1).getTop() - headerHeight);
+						}
+						if(secondChildDistance>firstChildDistance){
+							viewToWatch = getChildAt(1);
+						}
+					}
 				}
 				if((Boolean)viewToWatch.getTag()){
 					if(headerHeight<0) headerHeight=viewToWatch.findViewById(R.id.header_view).getHeight();
