@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -82,7 +83,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 		//null out divider, dividers are handled by adapter so they look good with headers
 		super.setDivider(null);
 		super.setDividerHeight(0);
-		super.setVerticalFadingEdgeEnabled(false);
+		setVerticalFadingEdgeEnabled(false);
 	}
 	
 	@Override
@@ -99,10 +100,15 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 		return instanceState;
 	}
 	
+	/**
+	 * can only be set to false if headers are sticky, not compatible with fading edges
+	 */
 	@Override
 	public void setVerticalFadingEdgeEnabled(boolean verticalFadingEdgeEnabled) {
-		if(true && areHeadersSticky){
-			throw new IllegalArgumentException("Fading edges are not compatible with stickylistheaders");
+		if(areHeadersSticky){
+			super.setVerticalFadingEdgeEnabled(false);
+		}else{
+			super.setVerticalFadingEdgeEnabled(verticalFadingEdgeEnabled);
 		}
 	}
 	
@@ -136,8 +142,8 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	}
 	
 	public void setAreHeadersSticky(boolean areHeadersSticky) {
-		if(isVerticalFadingEdgeEnabled() && areHeadersSticky){
-			throw new IllegalArgumentException("Fading edges are not compatible with stickylistheaders");
+		if(areHeadersSticky){
+			super.setVerticalFadingEdgeEnabled(false);
 		}
 		this.areHeadersSticky = areHeadersSticky;
 	}
@@ -208,18 +214,20 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 						viewToWatch = getChildAt(1);
 					}else if((Boolean)getChildAt(1).getTag()){//both views should be watched! watch the one that is closest
 						int firstChildDistance;
-						if(clippingToPadding && getPaddingTop()>0){
-							firstChildDistance = ((viewToWatch.getTop() - getPaddingTop()) + headerHeight);
+						if(clippingToPadding){
+							firstChildDistance = -1*((viewToWatch.getTop() - getPaddingTop()));
 						}else{
-							firstChildDistance = (viewToWatch.getTop() + headerHeight);
+							firstChildDistance = -1*(viewToWatch.getTop());
 						}
 						int secondChildDistance;
-						if(clippingToPadding && getPaddingTop()>0){
+						if(clippingToPadding){
 							secondChildDistance = ((getChildAt(1).getTop() - getPaddingTop()) - headerHeight);
 						}else{
 							secondChildDistance = (getChildAt(1).getTop() - headerHeight);
 						}
-						if(secondChildDistance>firstChildDistance){
+						Log.d("FGYHUIJKOLPKOIJHUGYTF","FIRST:  "+firstChildDistance);
+						Log.d("IJHUGYFTDRSFTYGHUIJHJ","SECOND: "+secondChildDistance);
+						if(secondChildDistance<firstChildDistance){
 							viewToWatch = getChildAt(1);
 						}
 					}
