@@ -53,12 +53,14 @@ public class TestAdapter extends StickyListHeadersAdapter {
 		return position;
 	}
 
+	//remember that these have to be static, postion=1 should walys return the same Id that is.
 	@Override
 	public long getHeaderId(int position) {
 		//return the first character of the country as ID because this is what headers are based upon
 		return countries[position].subSequence(0, 1).charAt(0);
 	}
 
+	//works in the same way as getview()
 	@Override
 	public View getHeaderView(int position, View convertView) {
 		HeaderViewHolder holder;
@@ -82,6 +84,8 @@ public class TestAdapter extends StickyListHeadersAdapter {
 		TextView text;
 	}
 
+	//note that i do not ovveride getView(int position, View convertView, ViewGroup parent);
+	//as this would break listheader functionality
 	@Override
 	protected View getView(int position, View convertView) {
 		ViewHolder holder;

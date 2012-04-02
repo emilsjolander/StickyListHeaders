@@ -45,6 +45,15 @@ public abstract class StickyListHeadersAdapter extends BaseAdapter {
 		this.context = context;
 	}
 	
+	/**
+	 * 
+	 * @param position
+	 * list item's position in list, NOT the index of the header
+	 * @param convertView
+	 * a reused view, use this if not null
+	 * @return
+	 * the header for list item at position
+	 */
 	public abstract View getHeaderView(int position, View convertView);
 	
 	/**
@@ -55,8 +64,19 @@ public abstract class StickyListHeadersAdapter extends BaseAdapter {
 	 * an identifier for this header, a header for a position must always have a constant ID
 	 */
 	public abstract long getHeaderId(int position);
+	
+	/**
+	 * 
+	 * @param position
+	 * list item's position in list.
+	 * @param convertView
+	 * a reused view, use this if not null
+	 * @return
+	 * the list item at position
+	 */
 	protected abstract View getView(int position, View convertView);
 	
+	//returns a header for position. will pass a header from cache if one exists
 	private View getHeaderWithForPosition(int position){
 		View header = null;
 		if(headerCache.size()>0){
@@ -67,6 +87,7 @@ public abstract class StickyListHeadersAdapter extends BaseAdapter {
 		return header;
 	}
 	
+	//attaches a header to a list item
 	private View attachHeaderToListItem(View header, View listItem){
 		listItem.setId(R.id.list_item_view);
 		WrapperView wrapper = null;
@@ -82,6 +103,7 @@ public abstract class StickyListHeadersAdapter extends BaseAdapter {
 		return wrapper.wrapViews(header,listItem);
 	}
 
+	//attaches a divider to list item
 	private View attachDividerToListItem(View listItem) {
 		listItem.setId(R.id.list_item_view);
 		WrapperView wrapper = null;
@@ -105,10 +127,8 @@ public abstract class StickyListHeadersAdapter extends BaseAdapter {
 		return wrapper.wrapViews(divider,listItem);
 	}
 	
-	/**
-	 * puts header into headerCache, wrapper into wrapperCache and returns listItem
-	 * if convertView is null, returns null
-	 */
+	//puts header into headerCache, wrapper into wrapperCache and returns listItem
+	//if convertView is null, returns null
 	private View axtractHeaderAndListItemFromConvertView(View convertView){
 		if(convertView == null) return null;
 		ViewGroup vg = (ViewGroup) convertView;
@@ -156,15 +176,27 @@ public abstract class StickyListHeadersAdapter extends BaseAdapter {
 		return context;
 	}
 
+	/**
+	 * @internal
+	 * used by the StickyListHeadersListView, set the divider and divider height via listview instead!
+	 */
 	public void setDivider(Drawable divider, int dividerHeight) {
 		this.divider = divider;
 		this.dividerHeight = dividerHeight;
 	}
 
+	/**
+	 * @internal
+	 * used by the StickyListHeadersListView, set the divider and divider height via listview instead!
+	 */
 	public void setDivider(Drawable divider) {
 		this.divider = divider;
 	}
 
+	/**
+	 * @internal
+	 * used by the StickyListHeadersListView, set the divider and divider height via listview instead!
+	 */
 	public void setDividerHeight(int dividerHeight) {
 		this.dividerHeight = dividerHeight;
 	}

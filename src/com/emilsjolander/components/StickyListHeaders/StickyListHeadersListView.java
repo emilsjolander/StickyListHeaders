@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -78,9 +77,10 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 		super.setOnScrollListener(this);
 		setDivider(getDivider());
 		setDividerHeight(getDividerHeight());
+		//null out divider, dividers are handled by adapter so they look good with headers
 		super.setDivider(null);
 		super.setDividerHeight(0);
-		setVerticalFadingEdgeEnabled(false);
+		super.setVerticalFadingEdgeEnabled(false);
 	}
 	
 	@Override
@@ -95,6 +95,13 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 		instanceState.putInt(HEADER_HEIGHT, headerHeight);
 		instanceState.putParcelable(SUPER_INSTANCE_STATE, super.onSaveInstanceState());
 		return instanceState;
+	}
+	
+	@Override
+	public void setVerticalFadingEdgeEnabled(boolean verticalFadingEdgeEnabled) {
+		if(true && areHeadersSticky){
+			throw new IllegalArgumentException("Fading edges are not compatible with stickylistheaders");
+		}
 	}
 	
 	@Override
@@ -119,6 +126,9 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	}
 	
 	public void setAreHeadersSticky(boolean areHeadersSticky) {
+		if(isVerticalFadingEdgeEnabled() && areHeadersSticky){
+			throw new IllegalArgumentException("Fading edges are not compatible with stickylistheaders");
+		}
 		this.areHeadersSticky = areHeadersSticky;
 	}
 
@@ -131,7 +141,6 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 		if(!clipToPaddingHasBeenSet){
 			clippingToPadding = true;
 		}
-		
 		if(!(adapter instanceof StickyListHeadersAdapter)) throw new IllegalArgumentException("Adapter must be a subclass of StickyListHeadersAdapter");
 		((StickyListHeadersAdapter)adapter).setDivider(divider);
 		((StickyListHeadersAdapter)adapter).setDividerHeight(dividerHeight);
