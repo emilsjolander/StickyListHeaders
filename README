@@ -11,8 +11,6 @@ Instead of a normal ListView you will want to use StickyListHeadersListView, It 
 
 The headerId indicates when you want to switch header. In an alphabetical list where the first letter is shown in the header you might return the first characters integer value as the headerId for example.
 
-Header views should not have any transparency. For the transparent header look just give them the same background as the background of the other view. A fix for this is in the works!
-
 LICENSE:
 
 Copyright 2012 Emil Sjölander

@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -225,8 +224,6 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 						}else{
 							secondChildDistance = (getChildAt(1).getTop() - headerHeight);
 						}
-						Log.d("FGYHUIJKOLPKOIJHUGYTF","FIRST:  "+firstChildDistance);
-						Log.d("IJHUGYFTDRSFTYGHUIJHJ","SECOND: "+secondChildDistance);
 						if(secondChildDistance<firstChildDistance){
 							viewToWatch = getChildAt(1);
 						}
@@ -246,6 +243,11 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 							headerBottomPosition = headerBottomPosition<0 ? headerHeight : headerBottomPosition;
 						}
 					}
+					if(headerBottomPosition == (clippingToPadding ? headerHeight+getPaddingTop() : headerHeight) && viewToWatch.getTop()<(clippingToPadding ? headerHeight+getPaddingTop() : headerHeight)){
+						viewToWatch.findViewById(R.id.header_view).setVisibility(View.INVISIBLE);
+					}else{
+						viewToWatch.findViewById(R.id.header_view).setVisibility(View.VISIBLE);
+					}
 				}else{
 					headerBottomPosition = headerHeight;
 					if(clippingToPadding){
@@ -253,7 +255,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 					}
 				}
 			}
-			if(Build.VERSION.SDK_INT < 14){//work around to fix bug with firstVisibleItem being to high
+			if(Build.VERSION.SDK_INT < 11){//work around to fix bug with firstVisibleItem being to high
 				if(!clippingToPadding && getPaddingTop()>0){
 					if(getChildAt(0).getTop() > 0){
 						if(firstVisibleItem>0) firstVisibleItem -= 1;

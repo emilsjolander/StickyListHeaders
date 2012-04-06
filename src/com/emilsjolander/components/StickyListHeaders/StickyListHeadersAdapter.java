@@ -135,6 +135,7 @@ public abstract class StickyListHeadersAdapter extends BaseAdapter {
 		
 		View header = vg.findViewById(R.id.header_view);
 		if(header!=null){
+			header.setVisibility(View.VISIBLE);
 			headerCache.add(header);
 		}
 		
