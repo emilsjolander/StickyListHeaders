@@ -52,6 +52,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	private Bitmap headerDrawingCache;
 	private long oldHeaderId = -1;
 	private boolean setupDone;
+	private View lastWatchedViewHeader;
 
 	public StickyListHeadersListView(Context context) {
 		super(context);
@@ -75,14 +76,16 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	}
 	
 	private void setup() {
-		setupDone = true;
-		super.setOnScrollListener(this);
-		setDivider(getDivider());
-		setDividerHeight(getDividerHeight());
-		//null out divider, dividers are handled by adapter so they look good with headers
-		super.setDivider(null);
-		super.setDividerHeight(0);
-		setVerticalFadingEdgeEnabled(false);
+		if(!setupDone){
+			setupDone = true;
+			super.setOnScrollListener(this);
+			setDivider(getDivider());
+			setDividerHeight(getDividerHeight());
+			//null out divider, dividers are handled by adapter so they look good with headers
+			super.setDivider(null);
+			super.setDividerHeight(0);
+			setVerticalFadingEdgeEnabled(false);
+		}
 	}
 	
 	@Override
@@ -207,6 +210,9 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 		if(getAdapter()==null) return;
 		if(areHeadersSticky){
 			if(getChildCount()!=0){
+				if(lastWatchedViewHeader!=null){
+					lastWatchedViewHeader.setVisibility(View.VISIBLE);
+				}
 				View viewToWatch = getChildAt(0);
 				if(getChildCount()>1){
 					if(!((Boolean)viewToWatch.getTag())){
@@ -232,7 +238,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 				if((Boolean)viewToWatch.getTag()){
 					if(headerHeight<0) headerHeight=viewToWatch.findViewById(R.id.header_view).getHeight();
 					
-					if(firstVisibleItem == 0 && viewToWatch.getTop()>0 && !clippingToPadding){
+					if(firstVisibleItem == 0 && getChildAt(0).getTop()>0 && !clippingToPadding){
 						headerBottomPosition = 0;
 					}else{
 						if(clippingToPadding){
@@ -243,10 +249,11 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 							headerBottomPosition = headerBottomPosition<0 ? headerHeight : headerBottomPosition;
 						}
 					}
+					lastWatchedViewHeader = viewToWatch.findViewById(R.id.header_view);
 					if(headerBottomPosition == (clippingToPadding ? headerHeight+getPaddingTop() : headerHeight) && viewToWatch.getTop()<(clippingToPadding ? headerHeight+getPaddingTop() : headerHeight)){
-						viewToWatch.findViewById(R.id.header_view).setVisibility(View.INVISIBLE);
+						lastWatchedViewHeader.setVisibility(View.INVISIBLE);
 					}else{
-						viewToWatch.findViewById(R.id.header_view).setVisibility(View.VISIBLE);
+						lastWatchedViewHeader.setVisibility(View.VISIBLE);
 					}
 				}else{
 					headerBottomPosition = headerHeight;

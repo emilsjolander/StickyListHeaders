@@ -36,4 +36,5 @@ public class TestActivity extends Activity {
         stickyList = (StickyListHeadersListView) findViewById(R.id.list);
         stickyList.setAdapter(new TestAdapter(this));
     }
+    
 }
