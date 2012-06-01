@@ -1,4 +1,34 @@
+#Android generated
 bin
 gen
+lint.xml
 
+#Eclipse
+.project
+.classpath
+.settings
+.checkstyle
+
+#IntelliJ IDEA
+.idea
+*.iml
+*.ipr
+*.iws
+classes
+gen-external-apklibs
+
+#Maven
+target
+release.properties
+pom.xml.*
+
+website/_site
+
+#Ant
+build.xml
+local.properties
+proguard.cfg
+
+#Other
 .DS_Store
+tmp
