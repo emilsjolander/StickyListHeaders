@@ -2,8 +2,8 @@ package com.emilsjolander.components.StickyListHeaders;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -48,11 +48,11 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	private Drawable divider;
 	private boolean clippingToPadding;
 	private boolean clipToPaddingHasBeenSet;
-	private boolean headerDrawingCacheInvalid = true;
-	private Bitmap headerDrawingCache;
 	private long oldHeaderId = -1;
+	private boolean headerHasChanged = true;
 	private boolean setupDone;
 	private View lastWatchedViewHeader;
+	private Rect clippingRect = new Rect();
 
 	public StickyListHeadersListView(Context context) {
 		super(context);
@@ -169,29 +169,28 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	protected void dispatchDraw(Canvas canvas) {
 		super.dispatchDraw(canvas);
 		if(header != null && areHeadersSticky){
-			if(headerDrawingCacheInvalid){
-				header.setDrawingCacheEnabled(true);  
-				
+			if(headerHasChanged){
 				int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.AT_MOST);
 				int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
 				header.measure(widthMeasureSpec, heightMeasureSpec);
 				header.layout(getLeft()+getPaddingLeft(), 0, getRight()-getPaddingRight(), headerHeight);
-				
-				header.buildDrawingCache();
-				headerDrawingCache = Bitmap.createBitmap(header.getDrawingCache());
-				headerDrawingCacheInvalid = false;
+				headerHasChanged = false;
+			}
+			int top = headerBottomPosition - headerHeight;
+			clippingRect.left = getPaddingLeft();
+			clippingRect.right = getWidth()-getPaddingRight();
+			clippingRect.bottom = top+headerHeight;
+			if(clippingToPadding){
+				clippingRect.top = getPaddingTop();
+			}else{
+				clippingRect.top = 0;
 			}
 			
-			if(headerDrawingCache != null){
-				int top = headerBottomPosition - headerHeight;
-				if(clippingToPadding && getPaddingTop()>0 && top!=getPaddingTop()){
-					int rowsToDelete = -1*(top-getPaddingTop());
-					headerDrawingCache.setPixels(new int[rowsToDelete * headerDrawingCache.getWidth()], 0, headerDrawingCache.getWidth(), 0, 0, headerDrawingCache.getWidth(), rowsToDelete);
-					headerDrawingCacheInvalid = true;
-				}
-				canvas.drawBitmap(headerDrawingCache, getPaddingLeft(), top, null);
-			}
-			header.setDrawingCacheEnabled(false); 
+			canvas.save();
+			canvas.clipRect(clippingRect);
+			canvas.translate(getPaddingLeft(), top);
+			header.draw(canvas);
+			canvas.restore();
 		}
 	}
 	
@@ -262,16 +261,16 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 					}
 				}
 			}
-			if(Build.VERSION.SDK_INT < 11){//work around to fix bug with firstVisibleItem being to high
+			if(Build.VERSION.SDK_INT < 11){//work around to fix bug with firstVisibleItem being to high because listview does not take clipToPadding=false into account
 				if(!clippingToPadding && getPaddingTop()>0){
 					if(getChildAt(0).getTop() > 0){
 						if(firstVisibleItem>0) firstVisibleItem -= 1;
 					}
 				}
 			}
-			header = ((StickyListHeadersAdapter)getAdapter()).getHeaderView(firstVisibleItem, header);
 			if(oldHeaderId != ((StickyListHeadersAdapter)getAdapter()).getHeaderId(firstVisibleItem)){
-				headerDrawingCacheInvalid = true;
+				headerHasChanged = true;
+				header = ((StickyListHeadersAdapter)getAdapter()).getHeaderView(firstVisibleItem, header);
 			}
 			oldHeaderId = ((StickyListHeadersAdapter)getAdapter()).getHeaderId(firstVisibleItem);
 		}

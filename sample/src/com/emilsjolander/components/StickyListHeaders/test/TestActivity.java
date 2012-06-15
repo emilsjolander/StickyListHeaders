@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.emilsjolander.components.StickyListHeaders.R;
-import com.emilsjolander.components.StickyListHeaders.StickyListHeadersListView;
+import com.emilsjolander.components.StickyListHeaders.StickyListHeadersListViewTest;
 /**
  * 
  * @author Emil Sjšlander
@@ -27,14 +27,18 @@ limitations under the License.
  */
 public class TestActivity extends Activity {
 	
-	private StickyListHeadersListView stickyList;
+	private StickyListHeadersListViewTest stickyList;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        stickyList = (StickyListHeadersListView) findViewById(R.id.list);
-        stickyList.setAdapter(new TestAdapter(this));
+        stickyList = (StickyListHeadersListViewTest) findViewById(R.id.list);
+        
+        stickyList.setAdapter(new TestBaseAdapter(this));
+
+//        Cursor cursor = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+//        stickyList.setAdapter(new TestCursorAdapter(this,cursor));
     }
     
 }
