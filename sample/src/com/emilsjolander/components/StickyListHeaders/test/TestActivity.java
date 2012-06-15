@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.emilsjolander.components.StickyListHeaders.R;
-import com.emilsjolander.components.StickyListHeaders.StickyListHeadersListViewTest;
+import com.emilsjolander.components.StickyListHeaders.StickyListHeadersListView;
 /**
  * 
  * @author Emil Sjšlander
@@ -27,13 +27,13 @@ limitations under the License.
  */
 public class TestActivity extends Activity {
 	
-	private StickyListHeadersListViewTest stickyList;
+	private StickyListHeadersListView stickyList;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        stickyList = (StickyListHeadersListViewTest) findViewById(R.id.list);
+        stickyList = (StickyListHeadersListView) findViewById(R.id.list);
         
         stickyList.setAdapter(new TestBaseAdapter(this));
 
