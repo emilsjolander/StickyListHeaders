@@ -1,13 +1,10 @@
-StickyListHeaders is an android library that makes it easy to integrate section headers in your ListView. These section headers stick to the top like in the new people app of android 4.0 Ice cream sandwich. This behavior is also found in lists with sections on iOS devices (If you just want section header but not that they stick to th top, this feature can be turned off via xml). 
+StickyListHeaders is an android library that makes it easy to integrate section headers in your ListView. These section headers stick to the top like in the new people app of android 4.0 Ice cream sandwich. This behavior is also found in lists with sections on iOS devices (If you just want section header but not that they stick to the top, this feature can be turned off via xml). 
 
-Use classes in com.emilsjolander.components.StickyListHeaders package in src folder, It is compatible with versions of android down to 2.1. (It will probably work down to 1.6 but i have not tested it)
-There is a test app in the downloads section which is just a compiled version of the code inside the test folder.
-
-**GOOD TO KNOW**
-I recently had to change the api a bit to make the list work as expected in all situations. At this time i also deprecated StickyListHeadersListViewWrapper. If you have been using this class please switch it for StickyListHeadersListView. This will hopefully resolve any bugs you have been seeing.
+Use classes in library project, It is compatible with versions of android down to 2.1. (It will probably work down to 1.6 but i have not tested it)
+There is a test app in the downloads section which is just a compiled version of the sample project.
 
 **HOW TO USE**
-Instead of a normal ListView you will want to use StickyListHeadersListView, It can be used just as you would a normal ListView. Your ListAdapter has to be a subclass of StickyListHeadersAdapter, here you will have to implement getHeaderView(int position, View convertView), getHeaderId(int position) and getView(int position, View convertView).
+Instead of a normal ListView you will want to use StickyListHeadersListView, It can be used just as you would a normal ListView. Your ListAdapter has to implement StickyListHeadersAdapter, there are two superclasses that are easy to use, one is a BaseAdapter subclass and one is a CursorAdapter subclass.
 
 The headerId indicates when you want to switch header. In an alphabetical list where the first letter is shown in the header you might return the first characters integer value as the headerId for example.
 
