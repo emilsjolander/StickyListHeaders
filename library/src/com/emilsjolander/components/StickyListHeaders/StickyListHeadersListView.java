@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.ListAdapter;
@@ -212,28 +213,29 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 				if(lastWatchedViewHeader!=null){
 					lastWatchedViewHeader.setVisibility(View.VISIBLE);
 				}
+				
 				View viewToWatch = getChildAt(0);
-				if(getChildCount()>1){
-					if(!((Boolean)viewToWatch.getTag())){
-						viewToWatch = getChildAt(1);
-					}else if((Boolean)getChildAt(1).getTag()){//both views should be watched! watch the one that is closest
-						int firstChildDistance;
-						if(clippingToPadding){
-							firstChildDistance = -1*((viewToWatch.getTop() - getPaddingTop()));
-						}else{
-							firstChildDistance = -1*(viewToWatch.getTop());
-						}
-						int secondChildDistance;
-						if(clippingToPadding){
-							secondChildDistance = ((getChildAt(1).getTop() - getPaddingTop()) - headerHeight);
-						}else{
-							secondChildDistance = (getChildAt(1).getTop() - headerHeight);
-						}
-						if(secondChildDistance<firstChildDistance){
-							viewToWatch = getChildAt(1);
-						}
+				for(int i = 1;i<getChildCount();i++){
+					
+					int firstChildDistance;
+					if(clippingToPadding){
+						firstChildDistance = Math.abs((viewToWatch.getTop() - getPaddingTop()));
+					}else{
+						firstChildDistance = Math.abs(viewToWatch.getTop());
+					}
+					
+					int secondChildDistance;
+					if(clippingToPadding){
+						secondChildDistance = Math.abs((getChildAt(i).getTop() - getPaddingTop()) - headerHeight);
+					}else{
+						secondChildDistance = Math.abs(getChildAt(i).getTop() - headerHeight);
+					}
+					
+					if(!(Boolean)viewToWatch.getTag() || ((Boolean)getChildAt(i).getTag() && secondChildDistance<firstChildDistance)){
+						viewToWatch = getChildAt(i);
 					}
 				}
+				
 				if((Boolean)viewToWatch.getTag()){
 					if(headerHeight<0) headerHeight=viewToWatch.findViewById(R.id.header_view).getHeight();
 					
@@ -271,6 +273,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 			if(oldHeaderId != ((StickyListHeadersAdapter)getAdapter()).getHeaderId(firstVisibleItem)){
 				headerHasChanged = true;
 				header = ((StickyListHeadersAdapter)getAdapter()).getHeaderView(firstVisibleItem, header);
+				header.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, headerHeight));
 			}
 			oldHeaderId = ((StickyListHeadersAdapter)getAdapter()).getHeaderId(firstVisibleItem);
 		}

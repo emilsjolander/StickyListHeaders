@@ -4,8 +4,8 @@
     android:layout_height="wrap_content"
     android:background="#640000ff"
     android:orientation="horizontal"
-    android:paddingBottom="10dp"
-    android:paddingTop="10dp" >
+    android:paddingBottom="40dp"
+    android:paddingTop="40dp" >
 
     <TextView
         android:id="@+id/text"
