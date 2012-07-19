@@ -207,7 +207,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 		if(scrollListener!=null){
 			scrollListener.onScroll(view,firstVisibleItem,visibleItemCount,totalItemCount);
 		}
-		if(getAdapter()==null) return;
+		if(getAdapter()==null || getAdapter().getCount() == 0) return;
 		if(areHeadersSticky){
 			if(getChildCount()!=0){
 				if(lastWatchedViewHeader!=null){
