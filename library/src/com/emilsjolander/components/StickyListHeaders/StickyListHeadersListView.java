@@ -92,6 +92,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	@Override
 	public void onRestoreInstanceState(Parcelable state) {
 		headerHeight = ((Bundle)state).getInt(HEADER_HEIGHT);
+		headerHasChanged = true;
 		super.onRestoreInstanceState(((Bundle)state).getParcelable(SUPER_INSTANCE_STATE));
 	}
 	
@@ -171,7 +172,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 		super.dispatchDraw(canvas);
 		if(header != null && areHeadersSticky){
 			if(headerHasChanged){
-				int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.AT_MOST);
+				int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY);
 				int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
 				header.measure(widthMeasureSpec, heightMeasureSpec);
 				header.layout(getLeft()+getPaddingLeft(), 0, getRight()-getPaddingRight(), headerHeight);
