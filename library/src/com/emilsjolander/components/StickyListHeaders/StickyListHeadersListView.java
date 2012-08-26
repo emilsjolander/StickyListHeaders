@@ -52,7 +52,6 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	private long oldHeaderId = -1;
 	private boolean headerHasChanged = true;
 	private boolean setupDone;
-	private View lastWatchedViewHeader;
 	private Rect clippingRect = new Rect();
 
 	public StickyListHeadersListView(Context context) {
@@ -96,7 +95,6 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	    header = null;
 	    oldHeaderId = -1;
 	    headerHasChanged = true;
-	    lastWatchedViewHeader = null;
 	}
 	
 	@Override
@@ -262,12 +260,6 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 							headerBottomPosition = headerBottomPosition<0 ? headerHeight : headerBottomPosition;
 						}
 					}
-					/*lastWatchedViewHeader = viewToWatch.findViewById(R.id.header_view);
-					if(headerBottomPosition == (clippingToPadding ? headerHeight+getPaddingTop() : headerHeight) && viewToWatch.getTop()<(clippingToPadding ? headerHeight+getPaddingTop() : headerHeight)){
-						lastWatchedViewHeader.setVisibility(View.INVISIBLE);
-					}else{
-						lastWatchedViewHeader.setVisibility(View.VISIBLE);
-					}*/
 				}else{
 					headerBottomPosition = headerHeight;
 					if(clippingToPadding){
