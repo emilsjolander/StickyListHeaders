@@ -112,6 +112,15 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 		return instanceState;
 	}
 	
+	@Override
+	public boolean performItemClick(View view, int position, long id)
+	{
+		if((Boolean)view.getTag()){
+			view = view.findViewById(R.id.list_item_view);
+		}
+	    return super.performItemClick(view, position, id);
+	}
+	
 	/**
 	 * can only be set to false if headers are sticky, not compatible with fading edges
 	 */
@@ -224,7 +233,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 					lastWatchedViewHeader.setVisibility(View.VISIBLE);
 				}*/
 				
-				View viewToWatch = getChildAt(0);
+				View viewToWatch = super.getChildAt(0);
 				for(int i = 1;i<getChildCount();i++){
 					
 					int firstChildDistance;
@@ -236,20 +245,20 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 					
 					int secondChildDistance;
 					if(clippingToPadding){
-						secondChildDistance = Math.abs((getChildAt(i).getTop() - getPaddingTop()) - headerHeight);
+						secondChildDistance = Math.abs((super.getChildAt(i).getTop() - getPaddingTop()) - headerHeight);
 					}else{
-						secondChildDistance = Math.abs(getChildAt(i).getTop() - headerHeight);
+						secondChildDistance = Math.abs(super.getChildAt(i).getTop() - headerHeight);
 					}
 					
-					if(!(Boolean)viewToWatch.getTag() || ((Boolean)getChildAt(i).getTag() && secondChildDistance<firstChildDistance)){
-						viewToWatch = getChildAt(i);
+					if(!(Boolean)viewToWatch.getTag() || ((Boolean)super.getChildAt(i).getTag() && secondChildDistance<firstChildDistance)){
+						viewToWatch = super.getChildAt(i);
 					}
 				}
 				
 				if((Boolean)viewToWatch.getTag()){
 					if(headerHeight<0) headerHeight=viewToWatch.findViewById(R.id.header_view).getHeight();
 					
-					if(firstVisibleItem == 0 && getChildAt(0).getTop()>0 && !clippingToPadding){
+					if(firstVisibleItem == 0 && super.getChildAt(0).getTop()>0 && !clippingToPadding){
 						headerBottomPosition = 0;
 					}else{
 						if(clippingToPadding){
@@ -269,7 +278,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 			}
 			if(Build.VERSION.SDK_INT < 11){//work around to fix bug with firstVisibleItem being to high because listview does not take clipToPadding=false into account
 				if(!clippingToPadding && getPaddingTop()>0){
-					if(getChildAt(0).getTop() > 0){
+					if(super.getChildAt(0).getTop() > 0){
 						if(firstVisibleItem>0) firstVisibleItem -= 1;
 					}
 				}
@@ -281,11 +290,11 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 			}
 			oldHeaderId = ((StickyListHeadersAdapter)getAdapter()).getHeaderId(firstVisibleItem);
 			for(int i = 0;i<getChildCount();i++){
-				if((Boolean)getChildAt(i).getTag()){
-					if(getChildAt(i).getTop()<(clippingToPadding ? getPaddingTop() : 0)){
-						getChildAt(i).findViewById(R.id.header_view).setVisibility(View.INVISIBLE);
+				if((Boolean)super.getChildAt(i).getTag()){
+					if(super.getChildAt(i).getTop()<(clippingToPadding ? getPaddingTop() : 0)){
+						super.getChildAt(i).findViewById(R.id.header_view).setVisibility(View.INVISIBLE);
 					}else{
-						getChildAt(i).findViewById(R.id.header_view).setVisibility(View.VISIBLE);
+						super.getChildAt(i).findViewById(R.id.header_view).setVisibility(View.VISIBLE);
 					}
 				}
 			}
