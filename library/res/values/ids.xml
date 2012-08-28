@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <item type="id" name="header_view" />
-  <item type="id" name="list_item_view" />
-  <item type="id" name="list_view" />
-  <item type="id" name="divider_view" />
+  <item type="id" name="com_emilsjolander_components_stickylistheaders_header_view" />
+  <item type="id" name="com_emilsjolander_components_stickylistheaders_list_item_view" />
+  <item type="id" name="com_emilsjolander_components_stickylistheaders_list_view" />
+  <item type="id" name="com_emilsjolander_components_stickylistheaders_divider_view" />
 </resources>
