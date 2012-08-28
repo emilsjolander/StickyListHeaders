@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -185,6 +186,9 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 
 	@Override
 	protected void dispatchDraw(Canvas canvas) {
+		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO){
+			scrollChanged(getFirstVisiblePosition());
+		}
 		super.dispatchDraw(canvas);
 		if(header != null && areHeadersSticky){
 			if(headerHasChanged){
@@ -218,12 +222,24 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 		clippingToPadding  = clipToPadding;
 		clipToPaddingHasBeenSet = true;
 	}
+	
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		boolean returnValue = super.dispatchTouchEvent(ev);
+		return returnValue;
+	}
 
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 		if(scrollListener!=null){
 			scrollListener.onScroll(view,firstVisibleItem,visibleItemCount,totalItemCount);
 		}
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO){
+			scrollChanged(firstVisibleItem);
+		}
+	}
+	
+	private void scrollChanged(int firstVisibleItem){
 		if(getAdapter()==null || getAdapter().getCount() == 0) return;
 		if(areHeadersSticky){
 			if(getChildCount()!=0){
