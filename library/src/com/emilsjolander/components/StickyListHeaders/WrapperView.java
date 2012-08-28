@@ -1,7 +1,6 @@
 package com.emilsjolander.components.StickyListHeaders;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 /**
@@ -27,10 +26,11 @@ limitations under the License.
 public class WrapperView {
 	
 	private LinearLayout v;
-	private int layoutId = R.layout.wrapper;
 	
 	public WrapperView(Context c) {
-		v = (LinearLayout) LayoutInflater.from(c).inflate(layoutId, null);
+		v = new LinearLayout(c);
+		v.setId(R.id.__stickylistheaders_wrapper_view);
+		v.setOrientation(LinearLayout.VERTICAL);
 	}
 	
 	public WrapperView(View v) {

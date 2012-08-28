@@ -83,13 +83,13 @@ public abstract class StickyListHeadersBaseAdapter extends BaseAdapter implement
 			header = headerCache.remove(0);
 		}
 		header = getHeaderView(position,header);
-		header.setId(R.id.header_view);
+		header.setId(R.id.__stickylistheaders_header_view);
 		return header;
 	}
 	
 	//attaches a header to a list item
 	private View attachHeaderToListItem(View header, View listItem){
-		listItem.setId(R.id.list_item_view);
+		listItem.setId(R.id.__stickylistheaders_list_item_view);
 		WrapperView wrapper = null;
 		if(wrapperCache.size()>0){
 			wrapper = wrapperCache.remove(0);
@@ -105,7 +105,7 @@ public abstract class StickyListHeadersBaseAdapter extends BaseAdapter implement
 
 	//attaches a divider to list item
 	private View attachDividerToListItem(View listItem) {
-		listItem.setId(R.id.list_item_view);
+		listItem.setId(R.id.__stickylistheaders_list_item_view);
 		WrapperView wrapper = null;
 		if(wrapperCache.size()>0){
 			wrapper = wrapperCache.remove(0);
@@ -119,7 +119,7 @@ public abstract class StickyListHeadersBaseAdapter extends BaseAdapter implement
 		}
 		if(divider == null){
 			divider = new View(context);
-			divider.setId(R.id.divider_view);
+			divider.setId(R.id.__stickylistheaders_divider_view);
 			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, dividerHeight);
 			divider.setLayoutParams(params);
 		}
@@ -133,18 +133,18 @@ public abstract class StickyListHeadersBaseAdapter extends BaseAdapter implement
 		if(convertView == null) return null;
 		ViewGroup vg = (ViewGroup) convertView;
 		
-		View header = vg.findViewById(R.id.header_view);
+		View header = vg.findViewById(R.id.__stickylistheaders_header_view);
 		if(header!=null){
 			header.setVisibility(View.VISIBLE);
 			headerCache.add(header);
 		}
 		
-		View divider = vg.findViewById(R.id.divider_view);
+		View divider = vg.findViewById(R.id.__stickylistheaders_divider_view);
 		if(divider!=null){
 			dividerCache.add(divider);
 		}
 		
-		View listItem = vg.findViewById(R.id.list_item_view);
+		View listItem = vg.findViewById(R.id.__stickylistheaders_list_item_view);
 		vg.removeAllViews();
 		wrapperCache.add(new WrapperView(convertView));
 		
