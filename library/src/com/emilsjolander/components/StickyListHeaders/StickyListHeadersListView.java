@@ -17,10 +17,10 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 /**
  * 
- * @author Emil Sjölander
+ * @author Emil Sj√∂lander
  * 
  * 
-Copyright 2012 Emil Sjölander
+Copyright 2012 Emil Sj√∂lander
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -116,7 +116,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	public boolean performItemClick(View view, int position, long id)
 	{
 		if((Boolean)view.getTag()){
-			view = view.findViewById(R.id.list_item_view);
+			view = view.findViewById(R.id.com_emilsjolander_components_stickylistheaders_list_item_view);
 		}
 	    return super.performItemClick(view, position, id);
 	}
@@ -256,7 +256,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 				}
 				
 				if((Boolean)viewToWatch.getTag()){
-					if(headerHeight<0) headerHeight=viewToWatch.findViewById(R.id.header_view).getHeight();
+					if(headerHeight<0) headerHeight=viewToWatch.findViewById(R.id.com_emilsjolander_components_stickylistheaders_header_view).getHeight();
 					
 					if(firstVisibleItem == 0 && super.getChildAt(0).getTop()>0 && !clippingToPadding){
 						headerBottomPosition = 0;
@@ -292,9 +292,9 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 			for(int i = 0;i<getChildCount();i++){
 				if((Boolean)super.getChildAt(i).getTag()){
 					if(super.getChildAt(i).getTop()<(clippingToPadding ? getPaddingTop() : 0)){
-						super.getChildAt(i).findViewById(R.id.header_view).setVisibility(View.INVISIBLE);
+						super.getChildAt(i).findViewById(R.id.com_emilsjolander_components_stickylistheaders_header_view).setVisibility(View.INVISIBLE);
 					}else{
-						super.getChildAt(i).findViewById(R.id.header_view).setVisibility(View.VISIBLE);
+						super.getChildAt(i).findViewById(R.id.com_emilsjolander_components_stickylistheaders_header_view).setVisibility(View.VISIBLE);
 					}
 				}
 			}
