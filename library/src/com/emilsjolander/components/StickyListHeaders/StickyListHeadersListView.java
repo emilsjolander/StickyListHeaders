@@ -222,12 +222,6 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 		clippingToPadding  = clipToPadding;
 		clipToPaddingHasBeenSet = true;
 	}
-	
-	@Override
-	public boolean dispatchTouchEvent(MotionEvent ev) {
-		boolean returnValue = super.dispatchTouchEvent(ev);
-		return returnValue;
-	}
 
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
