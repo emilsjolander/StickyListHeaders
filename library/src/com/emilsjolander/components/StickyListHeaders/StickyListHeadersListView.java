@@ -288,12 +288,13 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 					}
 				}
 			}
-			if(oldHeaderId != ((StickyListHeadersAdapter)getAdapter()).getHeaderId(firstVisibleItem)){
+			long currentHeaderId = ((StickyListHeadersAdapter)getAdapter()).getHeaderId(firstVisibleItem);
+			if(oldHeaderId != currentHeaderId){
 				headerHasChanged = true;
 				header = ((StickyListHeadersAdapter)getAdapter()).getHeaderView(firstVisibleItem, header);
 				header.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, headerHeight));
 			}
-			oldHeaderId = ((StickyListHeadersAdapter)getAdapter()).getHeaderId(firstVisibleItem);
+			oldHeaderId = currentHeaderId;
 			for(int i = 0;i<getChildCount();i++){
 				if((Boolean)super.getChildAt(i).getTag()){
 					if(super.getChildAt(i).getTop()<(clippingToPadding ? getPaddingTop() : 0)){
