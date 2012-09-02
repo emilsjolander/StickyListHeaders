@@ -61,7 +61,7 @@ public abstract class StickyListHeadersBaseAdapter extends BaseAdapter implement
 	 * @param position
 	 * the list position
 	 * @return
-	 * an identifier for this header, a header for a position must always have a constant positive ID
+	 * an identifier for this header, a header for a position must always have a constant ID
 	 */
 	public abstract long getHeaderId(int position);
 	

@@ -113,7 +113,7 @@ public abstract class StickyListHeadersCursorAdapter extends CursorAdapter imple
 	 * @param position
 	 * the list position
 	 * @return
-	 * an identifier for this header, a header for a position must always have a constant positive ID
+	 * an identifier for this header, a header for a position must always have a constant ID
 	 */
 	public long getHeaderId(int position){
 		if (!getCursor().moveToPosition(position)) {

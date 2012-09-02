@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -50,7 +49,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	private Drawable divider;
 	private boolean clippingToPadding;
 	private boolean clipToPaddingHasBeenSet;
-	private long oldHeaderId = -1;
+	private Long oldHeaderId = null;
 	private boolean headerHasChanged = true;
 	private boolean setupDone;
 	private Rect clippingRect = new Rect();
@@ -94,7 +93,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	    headerBottomPosition = 0;
 	    headerHeight = -1;
 	    header = null;
-	    oldHeaderId = -1;
+	    oldHeaderId = null;
 	    headerHasChanged = true;
 	}
 	
@@ -289,7 +288,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 				}
 			}
 			long currentHeaderId = ((StickyListHeadersAdapter)getAdapter()).getHeaderId(firstVisibleItem);
-			if(oldHeaderId != currentHeaderId){
+			if(oldHeaderId == null || oldHeaderId != currentHeaderId){
 				headerHasChanged = true;
 				header = ((StickyListHeadersAdapter)getAdapter()).getHeaderView(firstVisibleItem, header);
 				header.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, headerHeight));
