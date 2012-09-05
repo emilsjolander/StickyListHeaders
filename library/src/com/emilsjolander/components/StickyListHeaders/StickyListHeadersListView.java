@@ -313,4 +313,11 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 		}
 	}
 
+	@Override
+	public void setSelectionFromTop(int position, int y) {
+		if (areHeadersSticky && header != null)
+			y = y + header.getHeight();
+		super.setSelectionFromTop(position, y);
+	}
+
 }
