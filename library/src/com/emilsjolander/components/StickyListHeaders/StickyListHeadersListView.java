@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -246,6 +247,8 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	
 	private void scrollChanged(int firstVisibleItem){
 		if(getAdapter()==null || getAdapter().getCount() == 0) return;
+		
+		firstVisibleItem = getFixedFirstVisibleItem(firstVisibleItem);
 		if(areHeadersSticky){
 			if(getChildCount()!=0){
 				
@@ -272,6 +275,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 				}
 				
 				if((Boolean)viewToWatch.getTag()){
+					
 					if(headerHeight<0) headerHeight=viewToWatch.findViewById(R.id.__stickylistheaders_header_view).getHeight();
 					
 					if(firstVisibleItem == 0 && super.getChildAt(0).getTop()>0 && !clippingToPadding){
@@ -292,14 +296,9 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 					}
 				}
 			}
-			if(Build.VERSION.SDK_INT < 11){//work around to fix bug with firstVisibleItem being to high because listview does not take clipToPadding=false into account
-				if(!clippingToPadding && getPaddingTop()>0){
-					if(super.getChildAt(0).getTop() > 0){
-						if(firstVisibleItem>0) firstVisibleItem -= 1;
-					}
-				}
-			}
+			
 			long currentHeaderId = ((StickyListHeadersAdapter)getAdapter()).getHeaderId(firstVisibleItem);
+			
 			if(oldHeaderId == null || oldHeaderId != currentHeaderId){
 				headerHasChanged = true;
 				header = ((StickyListHeadersAdapter)getAdapter()).getHeaderView(firstVisibleItem, header);
@@ -316,6 +315,30 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 				}
 			}
 		}
+	}
+	
+	private int getFixedFirstVisibleItem(int firstVisibleItem){
+		if(Build.VERSION.SDK_INT < 11){
+
+			for(int i = 0 ; i<getChildCount() ; i++){
+				if(getChildAt(i).getBottom()>=0){
+					firstVisibleItem += i;
+					break;
+				}
+			}
+			
+			//work around to fix bug with firstVisibleItem being to high because listview does not take clipToPadding=false into account
+			if(!clippingToPadding && getPaddingTop()>0){
+				if(super.getChildAt(0).getTop() > 0){
+					if(firstVisibleItem>0){
+						firstVisibleItem -= 1;
+					}
+				}
+			}
+		}
+		
+		Log.d("", ""+getChildAt(0).getBottom());
+		return firstVisibleItem;
 	}
 
 	@Override
