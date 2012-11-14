@@ -13,10 +13,10 @@ import android.widget.LinearLayout;
 
 /**
  * 
- * @author Emil Sjšlander
+ * @author Emil Sjï¿½lander
  * 
  * 
-Copyright 2012 Emil Sjšlander
+Copyright 2012 Emil Sjï¿½lander
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -134,7 +134,7 @@ public abstract class StickyListHeadersCursorAdapter extends CursorAdapter imple
 	protected abstract long getHeaderId(Context context, Cursor cursor);
 
 	//returns a header for position. will pass a header from cache if one exists
-	private View getHeaderWithForPosition(int position){
+	private View getHeaderForPosition(int position){
 		View header = null;
 		if(headerCache.size()>0){
 			header = headerCache.remove(0);
@@ -212,7 +212,7 @@ public abstract class StickyListHeadersCursorAdapter extends CursorAdapter imple
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = super.getView(position,axtractHeaderAndListItemFromConvertView(convertView),parent);
 		if(position == 0 || getHeaderId(position)!=getHeaderId(position-1)){
-			v = attachHeaderToListItem(getHeaderWithForPosition(position),v);
+			v = attachHeaderToListItem(getHeaderForPosition(position),v);
 			v.setTag(true);
 		}else{
 			v = attachDividerToListItem(v);
@@ -248,6 +248,14 @@ public abstract class StickyListHeadersCursorAdapter extends CursorAdapter imple
 	 */
 	public void setDividerHeight(int dividerHeight) {
 		this.dividerHeight = dividerHeight;
+	}
+	
+	@Override
+	public void notifyDataSetChanged() {
+		wrapperCache.clear();
+		headerCache.clear();
+		dividerCache.clear();
+		super.notifyDataSetChanged();
 	}
 
 }

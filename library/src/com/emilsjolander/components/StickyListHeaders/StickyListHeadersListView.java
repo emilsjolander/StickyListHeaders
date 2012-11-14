@@ -2,6 +2,7 @@ package com.emilsjolander.components.StickyListHeaders;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.database.DataSetObserver;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -17,10 +18,10 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 /**
  * 
- * @author Emil Sjšlander
+ * @author Emil Sjï¿½ï¿½lander
  * 
  * 
-Copyright 2012 Emil Sjšlander
+Copyright 2012 Emil Sjï¿½ï¿½lander
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -53,6 +54,16 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	private boolean headerHasChanged = true;
 	private boolean setupDone;
 	private Rect clippingRect = new Rect();
+	
+	private DataSetObserver dataSetChangedObserver = new DataSetObserver() {
+		@Override
+		public void onChanged() {
+			reset();
+		}
+		public void onInvalidated() {
+			reset();
+		};
+	};
 
 	public StickyListHeadersListView(Context context) {
 		super(context);
@@ -181,6 +192,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 		((StickyListHeadersAdapter)adapter).setDividerHeight(dividerHeight);
 		reset();
 		super.setAdapter(adapter);
+		getAdapter().registerDataSetObserver(dataSetChangedObserver);
 	}
 
 	@Override

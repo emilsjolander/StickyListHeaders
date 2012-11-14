@@ -9,10 +9,10 @@ import com.emilsjolander.components.StickyListHeaders.R;
 import com.emilsjolander.components.StickyListHeaders.StickyListHeadersBaseAdapter;
 /**
  * 
- * @author Emil Sjšlander
+ * @author Emil Sjï¿½lander
  * 
  * 
-Copyright 2012 Emil Sjšlander
+Copyright 2012 Emil Sjï¿½lander
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

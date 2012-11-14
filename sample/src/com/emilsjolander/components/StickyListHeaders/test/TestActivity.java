@@ -2,15 +2,17 @@ package com.emilsjolander.components.StickyListHeaders.test;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 
 import com.emilsjolander.components.StickyListHeaders.R;
 import com.emilsjolander.components.StickyListHeaders.StickyListHeadersListView;
 /**
  * 
- * @author Emil Sjšlander
+ * @author Emil Sjï¿½lander
  * 
  * 
-Copyright 2012 Emil Sjšlander
+Copyright 2012 Emil Sjï¿½lander
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -25,20 +27,46 @@ See the License for the specific language governing permissions and
 limitations under the License.
  *
  */
-public class TestActivity extends Activity {
-	
-	private StickyListHeadersListView stickyList;
-	
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-        stickyList = (StickyListHeadersListView) findViewById(R.id.list);
-        
-        stickyList.setAdapter(new TestBaseAdapter(this));
+public class TestActivity extends Activity implements OnScrollListener {
 
-//        Cursor cursor = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
-//        stickyList.setAdapter(new TestCursorAdapter(this,cursor));
-    }
-    
+	private static final String KEY_LIST_POSITION = "KEY_LIST_POSITION";
+	private StickyListHeadersListView stickyList;
+	private int firstVisible;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.main);
+		stickyList = (StickyListHeadersListView) findViewById(R.id.list);
+		stickyList.setOnScrollListener(this);
+		
+		if (savedInstanceState != null) {
+			firstVisible = savedInstanceState.getInt(KEY_LIST_POSITION);
+		}
+
+		stickyList.setAdapter(new TestBaseAdapter(this));
+		stickyList.setSelection(firstVisible );
+
+		//        Cursor cursor = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
+		//        stickyList.setAdapter(new TestCursorAdapter(this,cursor));
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putInt(KEY_LIST_POSITION, firstVisible);
+	}
+	
+	@Override
+	public void onScroll(AbsListView view, int firstVisibleItem,
+			int visibleItemCount, int totalItemCount) {
+		this.firstVisible = firstVisibleItem;
+	}
+
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState) {
+		// TODO Auto-generated method stub
+
+	}
+
 }
