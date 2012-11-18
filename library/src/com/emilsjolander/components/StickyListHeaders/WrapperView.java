@@ -1,4 +1,4 @@
-package com.emilsjolander.components.StickyListHeaders;
+package com.emilsjolander.components.stickylistheaders;
 
 import android.content.Context;
 import android.view.View;
@@ -23,26 +23,42 @@ See the License for the specific language governing permissions and
 limitations under the License.
  *
  */
-public class WrapperView {
-	
-	private LinearLayout v;
-	
+public class WrapperView extends LinearLayout {
+
+	private View item;
+	private View divider;
+	private View header;
+
 	public WrapperView(Context c) {
-		v = new LinearLayout(c);
-		v.setId(R.id.__stickylistheaders_wrapper_view);
-		v.setOrientation(LinearLayout.VERTICAL);
-	}
-	
-	public WrapperView(View v) {
-		this.v = (LinearLayout) v;
+		super(c, null);
+		setOrientation(VERTICAL);
 	}
 
-	public View wrapViews(View... views){
-		v.removeAllViews();
-		for(View child : views){
-			v.addView(child);
-		}
-		return v;
+	public View getItem() {
+		return item;
+	}
+
+	public View getDivider() {
+		return divider;
+	}
+
+	public View getHeader() {
+		return header;
+	}
+
+	public boolean hasHeader() {
+		return header != null;
+	}
+
+	public WrapperView wrapViews(View item, View divider, View header){
+		removeAllViews();
+		this.item = item;
+		this.divider = divider;
+		this.header = header;
+		if (divider != null) addView(divider);
+		if (header != null) addView(header);
+		addView(item);
+		return this;
 	}
 
 }

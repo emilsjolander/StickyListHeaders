@@ -1,17 +1,17 @@
-package com.emilsjolander.components.StickyListHeaders.test;
+package com.emilsjolander.components.stickylistheaders.test;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
-import com.emilsjolander.components.StickyListHeaders.R;
-import com.emilsjolander.components.StickyListHeaders.StickyListHeadersBaseAdapter;
+import com.emilsjolander.components.stickylistheaders.R;
+import com.emilsjolander.components.stickylistheaders.StickyListHeadersBaseAdapter;
 /**
- * 
+ *
  * @author Emil Sj�lander
- * 
- * 
+ *
+ *
 Copyright 2012 Emil Sj�lander
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,7 @@ limitations under the License.
  *
  */
 public class TestBaseAdapter extends StickyListHeadersBaseAdapter {
-	
+
 	private String[] countries;
 	private LayoutInflater inflater;
 
@@ -64,7 +64,7 @@ public class TestBaseAdapter extends StickyListHeadersBaseAdapter {
 	@Override
 	public View getHeaderView(int position, View convertView) {
 		HeaderViewHolder holder;
-		
+
 		if(convertView == null){
 			holder = new HeaderViewHolder();
 			convertView = inflater.inflate(R.layout.header, null);
@@ -73,13 +73,13 @@ public class TestBaseAdapter extends StickyListHeadersBaseAdapter {
 		}else{
 			holder = (HeaderViewHolder) convertView.getTag();
 		}
-		
+
 		//set header text as first char in name
 		holder.text.setText(countries[position].subSequence(0, 1));
-		
+
 		return convertView;
 	}
-	
+
 	class HeaderViewHolder{
 		TextView text;
 	}
@@ -89,7 +89,7 @@ public class TestBaseAdapter extends StickyListHeadersBaseAdapter {
 	@Override
 	protected View getView(int position, View convertView) {
 		ViewHolder holder;
-		
+
 		if(convertView == null){
 			holder = new ViewHolder();
 			convertView = inflater.inflate(R.layout.test_list_item_layout, null);
@@ -98,12 +98,12 @@ public class TestBaseAdapter extends StickyListHeadersBaseAdapter {
 		}else{
 			holder = (ViewHolder) convertView.getTag();
 		}
-		
+
 		holder.text.setText(countries[position]);
-		
+
 		return convertView;
 	}
-	
+
 	class ViewHolder{
 		TextView text;
 	}

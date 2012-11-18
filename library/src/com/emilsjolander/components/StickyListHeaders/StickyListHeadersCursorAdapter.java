@@ -1,4 +1,4 @@
-package com.emilsjolander.components.StickyListHeaders;
+package com.emilsjolander.components.stickylistheaders;
 
 import java.util.ArrayList;
 
@@ -11,11 +11,13 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.LinearLayout;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 /**
- * 
+ *
  * @author Emil Sj�lander
- * 
- * 
+ *
+ *
 Copyright 2012 Emil Sj�lander
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,7 +54,7 @@ public abstract class StickyListHeadersCursorAdapter extends CursorAdapter imple
 	}
 
 	/**
-	 * 
+	 *
 	 * WARNING! will crash on api lvls pre 11
 	 */
 	@SuppressLint("NewApi")
@@ -60,7 +62,7 @@ public abstract class StickyListHeadersCursorAdapter extends CursorAdapter imple
 		super(context,c,flags);
 		setup(context);
 	}
-	
+
 	private void setup(Context context){
 		headerCache = new ArrayList<View>();
 		dividerCache = new ArrayList<View>();
@@ -69,7 +71,7 @@ public abstract class StickyListHeadersCursorAdapter extends CursorAdapter imple
 	}
 
 	/**
-	 * 
+	 *
 	 * @param position
 	 * list item's position in list, NOT the index of the header
 	 * @param convertView
@@ -109,7 +111,7 @@ public abstract class StickyListHeadersCursorAdapter extends CursorAdapter imple
 	protected abstract void bindHeaderView(View view, Context context, Cursor cursor);
 
 	/**
-	 * 
+	 *
 	 * @param position
 	 * the list position
 	 * @return
@@ -121,9 +123,9 @@ public abstract class StickyListHeadersCursorAdapter extends CursorAdapter imple
 		}
 		return getHeaderId(context,getCursor());
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param context
 	 * Interface to application's global information
 	 * @param cursor
@@ -140,13 +142,11 @@ public abstract class StickyListHeadersCursorAdapter extends CursorAdapter imple
 			header = headerCache.remove(0);
 		}
 		header = getHeaderView(position,header);
-		header.setId(R.id.__stickylistheaders_header_view);
 		return header;
 	}
 
 	//attaches a header to a list item
 	private View attachHeaderToListItem(View header, View listItem){
-		listItem.setId(R.id.__stickylistheaders_list_item_view);
 		WrapperView wrapper = null;
 		if(wrapperCache.size()>0){
 			wrapper = wrapperCache.remove(0);
@@ -157,12 +157,11 @@ public abstract class StickyListHeadersCursorAdapter extends CursorAdapter imple
 		//this does so touches on header are not counted as listitem clicks
 		header.setClickable(true);
 		header.setFocusable(false);
-		return wrapper.wrapViews(header,listItem);
+		return wrapper.wrapViews(listItem, null, header);
 	}
 
 	//attaches a divider to list item
 	private View attachDividerToListItem(View listItem) {
-		listItem.setId(R.id.__stickylistheaders_list_item_view);
 		WrapperView wrapper = null;
 		if(wrapperCache.size()>0){
 			wrapper = wrapperCache.remove(0);
@@ -176,47 +175,44 @@ public abstract class StickyListHeadersCursorAdapter extends CursorAdapter imple
 		}
 		if(divider == null){
 			divider = new View(context);
-			divider.setId(R.id.__stickylistheaders_divider_view);
-			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, dividerHeight);
+			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(MATCH_PARENT, dividerHeight);
 			divider.setLayoutParams(params);
 		}
 		divider.setBackgroundDrawable(this.divider);
-		return wrapper.wrapViews(divider,listItem);
+		return wrapper.wrapViews(listItem, divider, null);
 	}
 
 	//puts header into headerCache, wrapper into wrapperCache and returns listItem
 	//if convertView is null, returns null
-	private View axtractHeaderAndListItemFromConvertView(View convertView){
+	private View extractHeaderAndListItemFromConvertView(View convertView){
 		if(convertView == null) return null;
-		ViewGroup vg = (ViewGroup) convertView;
+		WrapperView wv = (WrapperView) convertView;
 
-		View header = vg.findViewById(R.id.__stickylistheaders_header_view);
+		View header = wv.getHeader();
 		if(header!=null){
 			header.setVisibility(View.VISIBLE);
 			headerCache.add(header);
 		}
 
-		View divider = vg.findViewById(R.id.__stickylistheaders_divider_view);
+		View divider = wv.getDivider();
 		if(divider!=null){
 			dividerCache.add(divider);
 		}
 
-		View listItem = vg.findViewById(R.id.__stickylistheaders_list_item_view);
-		vg.removeAllViews();
-		wrapperCache.add(new WrapperView(convertView));
+		View listItem = wv.getItem();
+		wv.removeAllViews();
+		wrapperCache.add(wv);
 
 		return listItem;
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		View v = super.getView(position,axtractHeaderAndListItemFromConvertView(convertView),parent);
+		View v = super.getView(position,extractHeaderAndListItemFromConvertView(convertView),parent);
 		if(position == 0 || getHeaderId(position)!=getHeaderId(position-1)){
 			v = attachHeaderToListItem(getHeaderForPosition(position),v);
-			v.setTag(true);
 		}else{
 			v = attachDividerToListItem(v);
-			v.setTag(false);
 		}
 		return v;
 	}
@@ -249,7 +245,7 @@ public abstract class StickyListHeadersCursorAdapter extends CursorAdapter imple
 	public void setDividerHeight(int dividerHeight) {
 		this.dividerHeight = dividerHeight;
 	}
-	
+
 	@Override
 	public void notifyDataSetChanged() {
 		wrapperCache.clear();
