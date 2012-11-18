@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-  <item type="id" name="__stickylistheaders_header_view" />
-  <item type="id" name="__stickylistheaders_list_item_view" />
-  <item type="id" name="__stickylistheaders_list_view" />
-  <item type="id" name="__stickylistheaders_divider_view" />
-  <item type="id" name="__stickylistheaders_wrapper_view" />
-</resources>

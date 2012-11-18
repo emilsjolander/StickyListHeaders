@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:slh="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" xmlns:app="http://schemas.android.com/apk/res/com.emilsjolander.components.StickyListHeaders.test">
+    android:orientation="vertical">
 
-    <com.emilsjolander.components.StickyListHeaders.StickyListHeadersListView
-        xmlns:slh="http://schemas.android.com/apk/res-auto"
+    <com.emilsjolander.components.stickylistheaders.StickyListHeadersListView
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         slh:areHeadersSticky="true"
         android:padding="16dip"
         android:clipToPadding="false"/>
-        
+
 </LinearLayout>
