@@ -24,7 +24,6 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>stickylistheaders</artifactId>
 			<version>${project.version}</version>
-			<type>apklib</type>
 		</dependency>
 	</dependencies>
 
