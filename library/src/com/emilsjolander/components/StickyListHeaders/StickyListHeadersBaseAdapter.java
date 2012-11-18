@@ -1,4 +1,4 @@
-package com.emilsjolander.components.StickyListHeaders;
+package com.emilsjolander.components.stickylistheaders;
 
 import java.util.ArrayList;
 
@@ -9,11 +9,13 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
 /**
- * 
+ *
  * @author Emil Sj�lander
- * 
- * 
+ *
+ *
 Copyright 2012 Emil Sj�lander
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,23 +32,23 @@ limitations under the License.
  *
  */
 public abstract class StickyListHeadersBaseAdapter extends BaseAdapter implements StickyListHeadersAdapter{
-	
+
 	private ArrayList<View> headerCache;
 	private ArrayList<WrapperView> wrapperCache;
 	private Context context;
 	private Drawable divider;
 	private int dividerHeight;
 	private ArrayList<View> dividerCache;
-	
+
 	public StickyListHeadersBaseAdapter(Context context) {
 		headerCache = new ArrayList<View>();
 		dividerCache = new ArrayList<View>();
 		wrapperCache = new ArrayList<WrapperView>();
 		this.context = context;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param position
 	 * list item's position in list, NOT the index of the header
 	 * @param convertView
@@ -55,18 +57,18 @@ public abstract class StickyListHeadersBaseAdapter extends BaseAdapter implement
 	 * the header for list item at position
 	 */
 	public abstract View getHeaderView(int position, View convertView);
-	
+
 	/**
-	 * 
+	 *
 	 * @param position
 	 * the list position
 	 * @return
 	 * an identifier for this header, a header for a position must always have a constant ID
 	 */
 	public abstract long getHeaderId(int position);
-	
+
 	/**
-	 * 
+	 *
 	 * @param position
 	 * list item's position in list.
 	 * @param convertView
@@ -75,7 +77,7 @@ public abstract class StickyListHeadersBaseAdapter extends BaseAdapter implement
 	 * the list item at position
 	 */
 	protected abstract View getView(int position, View convertView);
-	
+
 	//returns a header for position. will pass a header from cache if one exists
 	private View getHeaderWithForPosition(int position){
 		View header = null;
@@ -83,13 +85,11 @@ public abstract class StickyListHeadersBaseAdapter extends BaseAdapter implement
 			header = headerCache.remove(0);
 		}
 		header = getHeaderView(position,header);
-		header.setId(R.id.__stickylistheaders_header_view);
 		return header;
 	}
-	
+
 	//attaches a header to a list item
 	private View attachHeaderToListItem(View header, View listItem){
-		listItem.setId(R.id.__stickylistheaders_list_item_view);
 		WrapperView wrapper = null;
 		if(wrapperCache.size()>0){
 			wrapper = wrapperCache.remove(0);
@@ -100,12 +100,11 @@ public abstract class StickyListHeadersBaseAdapter extends BaseAdapter implement
 		//this does so touches on header are not counted as listitem clicks
 		header.setClickable(true);
 		header.setFocusable(false);
-		return wrapper.wrapViews(header,listItem);
+		return wrapper.wrapViews(listItem, null, header);
 	}
 
 	//attaches a divider to list item
 	private View attachDividerToListItem(View listItem) {
-		listItem.setId(R.id.__stickylistheaders_list_item_view);
 		WrapperView wrapper = null;
 		if(wrapperCache.size()>0){
 			wrapper = wrapperCache.remove(0);
@@ -119,56 +118,47 @@ public abstract class StickyListHeadersBaseAdapter extends BaseAdapter implement
 		}
 		if(divider == null){
 			divider = new View(context);
-			divider.setId(R.id.__stickylistheaders_divider_view);
-			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, dividerHeight);
+			LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(MATCH_PARENT, dividerHeight);
 			divider.setLayoutParams(params);
 		}
 		divider.setBackgroundDrawable(this.divider);
-		return wrapper.wrapViews(divider,listItem);
+		return wrapper.wrapViews(listItem, divider, null);
 	}
-	
+
 	//puts header into headerCache, wrapper into wrapperCache and returns listItem
 	//if convertView is null, returns null
-	private View axtractHeaderAndListItemFromConvertView(View convertView){
+	private View extractHeaderAndListItemFromConvertView(View convertView){
 		if(convertView == null) return null;
-		ViewGroup vg = (ViewGroup) convertView;
-		
-		View header = vg.findViewById(R.id.__stickylistheaders_header_view);
+		WrapperView wv = (WrapperView) convertView;
+
+		View header = wv.getHeader();
 		if(header!=null){
 			header.setVisibility(View.VISIBLE);
 			headerCache.add(header);
 		}
-		
-		View divider = vg.findViewById(R.id.__stickylistheaders_divider_view);
+
+		View divider = wv.getDivider();
 		if(divider!=null){
 			dividerCache.add(divider);
 		}
-		
-		View listItem = vg.findViewById(R.id.__stickylistheaders_list_item_view);
-		vg.removeAllViews();
-		wrapperCache.add(new WrapperView(convertView));
-		
+
+		View listItem = wv.getItem();
+		wv.removeAllViews();
+		wrapperCache.add(wv);
+
 		return listItem;
 	}
-	
+
 	/**
-	 * 
-	 * !!!DO NOT OVERRIDE THIS METHOD!!!
-	 * !!!DO NOT OVERRIDE THIS METHOD!!!
-	 * !!!DO NOT OVERRIDE THIS METHOD!!!
-	 * 
-	 * Override getView(int position,View convertView) instead!
-	 * 
+	 * @see #getView(int position,View convertView) instead!
 	 */
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		View v = getView(position,axtractHeaderAndListItemFromConvertView(convertView));
+	public final View getView(int position, View convertView, ViewGroup parent) {
+		View v = getView(position,extractHeaderAndListItemFromConvertView(convertView));
 		if(position == 0 || getHeaderId(position)!=getHeaderId(position-1)){
 			v = attachHeaderToListItem(getHeaderWithForPosition(position),v);
-			v.setTag(true);
 		}else{
 			v = attachDividerToListItem(v);
-			v.setTag(false);
 		}
 		return v;
 	}
@@ -201,7 +191,7 @@ public abstract class StickyListHeadersBaseAdapter extends BaseAdapter implement
 	public void setDividerHeight(int dividerHeight) {
 		this.dividerHeight = dividerHeight;
 	}
-	
+
 	@Override
 	public void notifyDataSetChanged() {
 		wrapperCache.clear();

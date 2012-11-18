@@ -1,4 +1,4 @@
-package com.emilsjolander.components.StickyListHeaders.test;
+package com.emilsjolander.components.stickylistheaders.test;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -8,11 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.emilsjolander.components.StickyListHeaders.R;
-import com.emilsjolander.components.StickyListHeaders.StickyListHeadersCursorAdapter;
+import com.emilsjolander.components.stickylistheaders.R;
+import com.emilsjolander.components.stickylistheaders.StickyListHeadersCursorAdapter;
 
 public class TestCursorAdapter extends StickyListHeadersCursorAdapter {
-	
+
 	private LayoutInflater inflater;
 
 	public TestCursorAdapter(Context context, Cursor c) {
@@ -28,7 +28,7 @@ public class TestCursorAdapter extends StickyListHeadersCursorAdapter {
 		v.setTag(holder);
 		return v;
 	}
-	
+
 	class HeaderViewHolder{
 		TextView text;
 	}
@@ -59,7 +59,7 @@ public class TestCursorAdapter extends StickyListHeadersCursorAdapter {
 		v.setTag(holder);
 		return v;
 	}
-	
+
 	class ViewHolder{
 		TextView text;
 	}
