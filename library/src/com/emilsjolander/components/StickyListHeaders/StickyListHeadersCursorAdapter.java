@@ -1,15 +1,15 @@
 package com.emilsjolander.components.stickylistheaders;
 
-import java.util.ArrayList;
-
-import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.LinearLayout;
+import java.util.ArrayList;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
@@ -35,50 +35,33 @@ limitations under the License.
  */
 public abstract class StickyListHeadersCursorAdapter extends CursorAdapter implements StickyListHeadersAdapter{
 
-	private ArrayList<View> headerCache;
-	private ArrayList<WrapperView> wrapperCache;
-	private Context context;
+	private final ArrayList<View> headerCache = new ArrayList<View>();
+	private final ArrayList<View> dividerCache = new ArrayList<View>();
+	private final ArrayList<WrapperView> wrapperCache = new ArrayList<WrapperView>();
+	private final Context context;
 	private Drawable divider;
 	private int dividerHeight;
-	private ArrayList<View> dividerCache;
 
 	@Deprecated
 	public StickyListHeadersCursorAdapter(Context context, Cursor c) {
 		super(context,c);
-		setup(context);
+		this.context = context;
 	}
 
 	public StickyListHeadersCursorAdapter(Context context, Cursor c, boolean autoRequery) {
 		super(context,c,autoRequery);
-		setup(context);
-	}
-
-	/**
-	 *
-	 * WARNING! will crash on api lvls pre 11
-	 */
-	@SuppressLint("NewApi")
-	public StickyListHeadersCursorAdapter(Context context, Cursor c, int flags) {
-		super(context,c,flags);
-		setup(context);
-	}
-
-	private void setup(Context context){
-		headerCache = new ArrayList<View>();
-		dividerCache = new ArrayList<View>();
-		wrapperCache = new ArrayList<WrapperView>();
 		this.context = context;
 	}
 
 	/**
-	 *
-	 * @param position
-	 * list item's position in list, NOT the index of the header
-	 * @param convertView
-	 * a reused view, use this if not null
-	 * @return
-	 * the header for list item at position
+	 * WARNING! This constructor requires API 11 or newer.
 	 */
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	public StickyListHeadersCursorAdapter(Context context, Cursor c, int flags) {
+		super(context,c,flags);
+		this.context = context;
+	}
+
 	public View getHeaderView(int position, View convertView){
 		if (!getCursor().moveToPosition(position)) {
 			throw new IllegalStateException("couldn't move cursor to position " + position);
@@ -95,28 +78,31 @@ public abstract class StickyListHeadersCursorAdapter extends CursorAdapter imple
 
 	/**
 	 * Makes a new header to hold the data pointed to by cursor.
-	 * @param context Interface to application's global information
-	 * @param cursor The cursor from which to get the data. The cursor is already moved to the correct position.
+   *
+	 * @param context
+   * Interface to application's global information.
+	 * @param cursor
+   * The cursor from which to get the data. The cursor is already moved to the
+   * correct position.
 	 * @return
-	 * the newly created header.
+	 * The newly created header.
 	 */
 	protected abstract View newHeaderView(Context context, Cursor cursor);
 
 	/**
-	 * Bind an existing header to the data pointed to by cursor
-	 * @param view Existing view, returned earlier by newHeaderView
-	 * @param context Interface to application's global information
-	 * @param cursor The cursor from which to get the data. The cursor is already moved to the correct position.
+	 * Bind an existing header to the data pointed to by cursor.
+   *
+	 * @param view
+   * Existing view, returned earlier by
+   * {@link #newHeaderView(android.content.Context, android.database.Cursor)}
+	 * @param context
+   * Interface to application's global information.
+	 * @param cursor
+   * The cursor from which to get the data. The cursor is already moved to the
+   * correct position.
 	 */
 	protected abstract void bindHeaderView(View view, Context context, Cursor cursor);
 
-	/**
-	 *
-	 * @param position
-	 * the list position
-	 * @return
-	 * an identifier for this header, a header for a position must always have a constant ID
-	 */
 	public long getHeaderId(int position){
 		if (!getCursor().moveToPosition(position)) {
 			throw new IllegalStateException("couldn't move cursor to position " + position);
