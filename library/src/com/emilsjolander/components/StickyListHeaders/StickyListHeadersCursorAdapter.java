@@ -225,15 +225,7 @@ public abstract class StickyListHeadersCursorAdapter extends CursorAdapter imple
 	 * @internal
 	 * used by the StickyListHeadersListView, set the divider and divider height via listview instead!
 	 */
-	public void setDivider(Drawable divider, int dividerHeight) {
-		this.divider = divider;
-		this.dividerHeight = dividerHeight;
-	}
-
-	/**
-	 * @internal
-	 * used by the StickyListHeadersListView, set the divider and divider height via listview instead!
-	 */
+	@Override
 	public void setDivider(Drawable divider) {
 		this.divider = divider;
 	}
@@ -242,6 +234,7 @@ public abstract class StickyListHeadersCursorAdapter extends CursorAdapter imple
 	 * @internal
 	 * used by the StickyListHeadersListView, set the divider and divider height via listview instead!
 	 */
+	@Override
 	public void setDividerHeight(int dividerHeight) {
 		this.dividerHeight = dividerHeight;
 	}
