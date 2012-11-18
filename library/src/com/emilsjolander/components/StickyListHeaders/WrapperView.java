@@ -4,11 +4,11 @@ import android.content.Context;
 import android.view.View;
 import android.widget.LinearLayout;
 /**
- * 
- * @author Emil Sjšlander
- * 
- * 
-Copyright 2012 Emil Sjšlander
+ *
+ * @author Emil Sjï¿½lander
+ *
+ *
+Copyright 2012 Emil Sjï¿½lander
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
