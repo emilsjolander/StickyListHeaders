@@ -23,42 +23,33 @@ See the License for the specific language governing permissions and
 limitations under the License.
  *
  */
-public class WrapperView extends LinearLayout {
+final class WrapperView extends LinearLayout {
+	// TODO Draw divider as Drawable rather than using a whole view
+	// TODO Custom ViewGroup that is much more simple and faster than LinearLayout
 
-	private View item;
-	private View divider;
-	private View header;
+	View item;
+	View divider;
+	View header;
 
-	public WrapperView(Context c) {
-		super(c, null);
+	WrapperView(Context c) {
+		super(c);
 		setOrientation(VERTICAL);
 	}
 
-	public View getItem() {
-		return item;
-	}
-
-	public View getDivider() {
-		return divider;
-	}
-
-	public View getHeader() {
-		return header;
-	}
-
-	public boolean hasHeader() {
-		return header != null;
-	}
-
-	public WrapperView wrapViews(View item, View divider, View header){
+	void update(View item, View header, View divider) {
+		if (item == null) {
+			throw new NullPointerException("List view item must not be null.");
+		}
 		removeAllViews();
 		this.item = item;
-		this.divider = divider;
 		this.header = header;
-		if (divider != null) addView(divider);
+		this.divider = divider;
 		if (header != null) addView(header);
+		if (divider != null) addView(divider);
 		addView(item);
-		return this;
 	}
 
+	boolean hasHeader() {
+		return header != null;
+	}
 }

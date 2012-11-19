@@ -2,9 +2,14 @@ package com.emilsjolander.components.stickylistheaders.test;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
+import android.widget.Toast;
 import com.emilsjolander.components.stickylistheaders.StickyListHeadersListView;
+
+import static android.widget.Toast.LENGTH_SHORT;
 
 /**
  *
@@ -26,7 +31,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
  *
  */
-public class TestActivity extends Activity implements OnScrollListener {
+public class TestActivity extends Activity implements OnScrollListener,
+		AdapterView.OnItemClickListener {
 
 	private static final String KEY_LIST_POSITION = "KEY_LIST_POSITION";
 	private int firstVisible;
@@ -37,6 +43,7 @@ public class TestActivity extends Activity implements OnScrollListener {
 		setContentView(R.layout.main);
 		StickyListHeadersListView stickyList = (StickyListHeadersListView) findViewById(R.id.list);
 		stickyList.setOnScrollListener(this);
+		stickyList.setOnItemClickListener(this);
 
 		if (savedInstanceState != null) {
 			firstVisible = savedInstanceState.getInt(KEY_LIST_POSITION);
@@ -44,9 +51,6 @@ public class TestActivity extends Activity implements OnScrollListener {
 
 		stickyList.setAdapter(new TestBaseAdapter(this));
 		stickyList.setSelection(firstVisible);
-
-		//        Cursor cursor = getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null);
-		//        stickyList.setAdapter(new TestCursorAdapter(this,cursor));
 	}
 
 	@Override
@@ -65,4 +69,7 @@ public class TestActivity extends Activity implements OnScrollListener {
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 	}
 
+	@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		Toast.makeText(this, "Item " + position + " clicked!", LENGTH_SHORT).show();
+	}
 }

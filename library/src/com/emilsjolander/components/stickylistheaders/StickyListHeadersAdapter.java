@@ -1,7 +1,7 @@
 package com.emilsjolander.components.stickylistheaders;
 
-import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListAdapter;
 
 public interface StickyListHeadersAdapter extends ListAdapter {
@@ -18,10 +18,12 @@ public interface StickyListHeadersAdapter extends ListAdapter {
 	 * non-null and of an appropriate type before using. If it is not possible to
 	 * convert this view to display the correct data, this method can create a new
 	 * view.
+	 * @param parent
+	 * The parent that this view will eventually be attached to.
 	 * @return
 	 * A View corresponding to the data at the specified position.
 	 */
-	View getHeaderView(int position, View convertView);
+	View getHeaderView(int position, View convertView, ViewGroup parent);
 
 	/**
 	 * Get the header id associated with the specified position in the list.
@@ -33,7 +35,4 @@ public interface StickyListHeadersAdapter extends ListAdapter {
 	 * The id of the header at the specified position.
 	 */
 	long getHeaderId(int position);
-
-	void setDivider(Drawable divider);
-	void setDividerHeight(int dividerHeight);
 }
