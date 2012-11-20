@@ -33,48 +33,34 @@ limitations under the License.
  */
 public abstract class StickyListHeadersBaseAdapter extends BaseAdapter implements StickyListHeadersAdapter{
 
-	private ArrayList<View> headerCache;
-	private ArrayList<WrapperView> wrapperCache;
-	private Context context;
+	private final ArrayList<View> headerCache = new ArrayList<View>();
+	private final ArrayList<View> dividerCache = new ArrayList<View>();
+	private final ArrayList<WrapperView> wrapperCache = new ArrayList<WrapperView>();
+	private final Context context;
 	private Drawable divider;
 	private int dividerHeight;
-	private ArrayList<View> dividerCache;
 
 	public StickyListHeadersBaseAdapter(Context context) {
-		headerCache = new ArrayList<View>();
-		dividerCache = new ArrayList<View>();
-		wrapperCache = new ArrayList<WrapperView>();
 		this.context = context;
 	}
 
 	/**
+	 * Get a View that displays the data at the specified position in the data
+	 * set. You can either create a View manually or inflate it from an XML layout
+	 * file.
 	 *
 	 * @param position
-	 * list item's position in list, NOT the index of the header
+	 * The position of the item within the adapter's data set of the item whose
+	 * view we want.
 	 * @param convertView
-	 * a reused view, use this if not null
+	 * The old view to reuse, if possible. Note: You should check that this view is
+	 * non-null and of an appropriate type before using. If it is not possible to
+	 * convert this view to display the correct data, this method can create a new
+	 * view. Heterogeneous lists can specify their number of view types, so that
+	 * this View is always of the right type (see {@link #getViewTypeCount()} and
+	 * {@link #getItemViewType(int)}).
 	 * @return
-	 * the header for list item at position
-	 */
-	public abstract View getHeaderView(int position, View convertView);
-
-	/**
-	 *
-	 * @param position
-	 * the list position
-	 * @return
-	 * an identifier for this header, a header for a position must always have a constant ID
-	 */
-	public abstract long getHeaderId(int position);
-
-	/**
-	 *
-	 * @param position
-	 * list item's position in list.
-	 * @param convertView
-	 * a reused view, use this if not null
-	 * @return
-	 * the list item at position
+	 * A View corresponding to the data at the specified position.
 	 */
 	protected abstract View getView(int position, View convertView);
 
