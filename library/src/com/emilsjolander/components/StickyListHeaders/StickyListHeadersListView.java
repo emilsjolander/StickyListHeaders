@@ -1,7 +1,6 @@
 package com.emilsjolander.components.stickylistheaders;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -39,12 +38,13 @@ limitations under the License.
  */
 public class StickyListHeadersListView extends ListView implements OnScrollListener {
 
+	private static final boolean DEBUG = false;
 	private static final String TAG = "StickyListHeadersListView";
 	private static final String HEADER_HEIGHT = "headerHeight";
 	private static final String SUPER_INSTANCE_STATE = "superInstanceState";
 
 	private OnScrollListener scrollListener;
-	private boolean areHeadersSticky;
+	private boolean areHeadersSticky = true;
 	private int headerBottomPosition;
 	private int headerHeight = -1;
 	private View header;
@@ -54,7 +54,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	private boolean clipToPaddingHasBeenSet;
 	private Long oldHeaderId = null;
 	private boolean headerHasChanged = true;
-	private boolean setupDone;
+	private boolean setupDone = false;
 	private final Rect clippingRect = new Rect();
 
 	private DataSetObserver dataSetChangedObserver = new DataSetObserver() {
@@ -78,20 +78,14 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 
 	public StickyListHeadersListView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		TypedArray a = context.obtainStyledAttributes(attrs,R.styleable.StickyListHeadersListView);
-		setAreHeadersSticky(a.getBoolean(R.styleable.StickyListHeadersListView_areHeadersSticky, true));
-		a.recycle();
-
-		if(!setupDone){
-			setupDone = true;
-			super.setOnScrollListener(this);
-			setDivider(getDivider());
-			setDividerHeight(getDividerHeight());
-			//null out divider, dividers are handled by adapter so they look good with headers
-			super.setDivider(null);
-			super.setDividerHeight(0);
-			setVerticalFadingEdgeEnabled(false);
-		}
+		setupDone = true;
+		super.setOnScrollListener(this);
+		setDivider(getDivider());
+		setDividerHeight(getDividerHeight());
+		//null out divider, dividers are handled by adapter so they look good with headers
+		super.setDivider(null);
+		super.setDividerHeight(0);
+		setVerticalFadingEdgeEnabled(false);
 	}
 
 	private void reset() {
@@ -335,7 +329,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 			}
 		}
 
-		if (BuildConfig.DEBUG) Log.d(TAG, String.valueOf(getChildAt(0).getBottom()));
+		if (DEBUG) Log.d(TAG, String.valueOf(getChildAt(0).getBottom()));
 		return firstVisibleItem;
 	}
 

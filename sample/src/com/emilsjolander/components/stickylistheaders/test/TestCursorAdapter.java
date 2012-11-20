@@ -8,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.emilsjolander.components.stickylistheaders.R;
 import com.emilsjolander.components.stickylistheaders.StickyListHeadersCursorAdapter;
 
 public class TestCursorAdapter extends StickyListHeadersCursorAdapter {
