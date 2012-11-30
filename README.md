@@ -17,9 +17,8 @@ Usage
 -----
 
 Instead of a normal `ListView` you will want to use `StickyListHeadersListView`,
-it can be used just as you would a normal `ListView`. Your `ListAdapter` has
-to implement `StickyListHeadersAdapter`, there are two superclasses that are
-easy to use, one is a `BaseAdapter` subclass and one is a `CursorAdapter` subclass.
+it can be used just as you would a normal `ListView`. To do so, your `ListAdapter`
+has to implement the `StickyListHeadersAdapter` interface.
 
 The `headerId` indicates when you want to switch header. In an alphabetical
 list where the first letter is shown in the header you might return
