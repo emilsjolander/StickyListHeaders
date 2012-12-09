@@ -1,16 +1,18 @@
 package com.emilsjolander.components.stickylistheaders;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListAdapter;
-import java.util.ArrayList;
-import java.util.List;
-
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-import static com.emilsjolander.components.stickylistheaders.WrapperView.LayoutParams;
 
 /**
  * A {@link ListAdapter} which wraps a {@link StickyListHeadersAdapter} and automatically handles
@@ -21,18 +23,26 @@ import static com.emilsjolander.components.stickylistheaders.WrapperView.LayoutP
  *
  * @author Jake Wharton (jakewharton@gmail.com)
  */
-final class StickyListHeadersAdapterWrapper extends DataSetObserver implements ListAdapter {
+final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 	private final List<View> headerCache = new ArrayList<View>();
 	private final List<View> dividerCache = new ArrayList<View>();
 	private final Context context;
 	final StickyListHeadersAdapter delegate;
 	private Drawable divider;
 	private int dividerHeight;
+	private DataSetObserver dataSetObserver = new DataSetObserver() {
+
+		@Override
+		public void onInvalidated() {
+			headerCache.clear();
+			dividerCache.clear();
+		}
+	};
 
 	StickyListHeadersAdapterWrapper(Context context, StickyListHeadersAdapter delegate) {
 		this.context = context;
 		this.delegate = delegate;
-		delegate.registerDataSetObserver(this);
+		delegate.registerDataSetObserver(dataSetObserver);
 	}
 
 	void setDivider(Drawable divider) {
@@ -43,11 +53,6 @@ final class StickyListHeadersAdapterWrapper extends DataSetObserver implements L
 		this.dividerHeight = dividerHeight;
 	}
 
-	@Override
-	public void onInvalidated() {
-		headerCache.clear();
-		dividerCache.clear();
-	}
 
 	@Override
 	public boolean areAllItemsEnabled() {
