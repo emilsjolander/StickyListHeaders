@@ -13,6 +13,7 @@ import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.ListAdapter;
@@ -66,6 +67,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	private boolean headerBeingPressed = false;
 	private OnHeaderClickListener onHeaderClickListener;
 	private int headerPosition;
+	private ViewConfiguration viewConfig;
 	
 	private StickyListHeadersAdapterWrapper.OnHeaderClickListener addapterHeaderClickListener = new StickyListHeadersAdapterWrapper.OnHeaderClickListener() {
 		
@@ -108,6 +110,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 		super.setDivider(null);
 		super.setDividerHeight(0);
 		setVerticalFadingEdgeEnabled(false);
+		viewConfig = ViewConfiguration.get(context);
 	}
 
 	private void reset() {
@@ -391,7 +394,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 			return true;
 		}
 		if(headerBeingPressed){
-			if(Math.abs(ev.getY()-headerDownY)<20){
+			if(Math.abs(ev.getY()-headerDownY)<viewConfig.getScaledTouchSlop()){
 				if(ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_CANCEL){
 					headerDownY = -1;
 					headerBeingPressed = false;
