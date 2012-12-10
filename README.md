@@ -5,7 +5,7 @@ StickyListHeaders is an Android library that makes it easy to integrate
 section headers in your `ListView`. These section headers stick to the top like
 in the new People app of Android 4.0 Ice Cream Sandwich. This behavior is also
 found in lists with sections on iOS devices (if you just want section header
-but not that they stick to the top, this feature can be turned off via xml).
+but not that they stick to the top, this feature can be turned off via a call to setAreHeadersSticky(false)).
 
 Use classes in library project, it is compatible with versions of Android
 down to 2.1 (it will probably work down to 1.6 but i have not tested it).
@@ -23,6 +23,9 @@ has to implement the `StickyListHeadersAdapter` interface.
 The `headerId` indicates when you want to switch header. In an alphabetical
 list where the first letter is shown in the header you might return
 the first characters integer value as the `headerId` for example.
+
+If you want to recieve callback for clicks on the header, 
+call setOnHeaderCLickListener() on `StickyListHeadersListView`.
 
 
 License

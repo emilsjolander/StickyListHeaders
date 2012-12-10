@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="header_normal">#ff00ff00</color>
+    <color name="header_pressed">#ffff00</color>
+    
+</resources>

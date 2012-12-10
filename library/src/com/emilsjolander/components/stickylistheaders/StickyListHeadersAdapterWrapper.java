@@ -9,21 +9,29 @@ import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListAdapter;
 
 /**
- * A {@link ListAdapter} which wraps a {@link StickyListHeadersAdapter} and automatically handles
- * wrapping the result of
- * {@link StickyListHeadersAdapter#getView(int, android.view.View, android.view.ViewGroup)} and
+ * A {@link ListAdapter} which wraps a {@link StickyListHeadersAdapter} and
+ * automatically handles wrapping the result of
+ * {@link StickyListHeadersAdapter#getView(int, android.view.View, android.view.ViewGroup)}
+ * and
  * {@link StickyListHeadersAdapter#getHeaderView(int, android.view.View, android.view.ViewGroup)}
  * appropriately.
- *
+ * 
  * @author Jake Wharton (jakewharton@gmail.com)
  */
 final class StickyListHeadersAdapterWrapper extends BaseAdapter {
+
+	
+	public interface OnHeaderClickListener{
+		public void onHeaderClick(View header, int itemPosition, long headerId);
+	}
+	
 	private final List<View> headerCache = new ArrayList<View>();
 	private final List<View> dividerCache = new ArrayList<View>();
 	private final Context context;
@@ -38,8 +46,10 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 			dividerCache.clear();
 		}
 	};
+	private OnHeaderClickListener onHeaderClickListener;
 
-	StickyListHeadersAdapterWrapper(Context context, StickyListHeadersAdapter delegate) {
+	StickyListHeadersAdapterWrapper(Context context,
+			StickyListHeadersAdapter delegate) {
 		this.context = context;
 		this.delegate = delegate;
 		delegate.registerDataSetObserver(dataSetObserver);
@@ -52,7 +62,6 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 	void setDividerHeight(int dividerHeight) {
 		this.dividerHeight = dividerHeight;
 	}
-
 
 	@Override
 	public boolean areAllItemsEnabled() {
@@ -110,7 +119,8 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 	}
 
 	/** Load a divider from the cache or create one if the cache is empty. */
-	@SuppressWarnings("deprecation") // setBackgroundDrawable is needed for older API support.
+	@SuppressWarnings("deprecation")
+	// setBackgroundDrawable is needed for older API support.
 	private View obtainDivider() {
 		View divider;
 		if (dividerCache.isEmpty()) {
@@ -125,8 +135,8 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 	}
 
 	/**
-	 * Get a divider view. This optionally pulls a divider from the supplied {@link WrapperView} and
-	 * will also recycle the header if it exists.
+	 * Get a divider view. This optionally pulls a divider from the supplied
+	 * {@link WrapperView} and will also recycle the header if it exists.
 	 */
 	private View configureDivider(WrapperView wv) {
 		View divider;
@@ -144,10 +154,10 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 	}
 
 	/**
-	 * Get a header view. This optionally pulls a header from the supplied {@link WrapperView} and
-	 * will also recycle the divider if it exists.
+	 * Get a header view. This optionally pulls a header from the supplied
+	 * {@link WrapperView} and will also recycle the divider if it exists.
 	 */
-	private View configureHeader(WrapperView wv, int position) {
+	private View configureHeader(WrapperView wv, final int position) {
 		View divider = wv.divider;
 		View header = null;
 		if (divider != null) {
@@ -162,17 +172,32 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 		if (header == null) {
 			throw new NullPointerException("Header view must not be null.");
 		}
+		//if the header isn't clickable, the listselector will be drawn on top of the header
+		header.setClickable(true);
+		header.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(onHeaderClickListener != null){
+					long headerId = delegate.getHeaderId(position);
+					onHeaderClickListener.onHeaderClick(v, position, headerId);
+				}
+			}
+		});
 		return header;
 	}
 
 	/** Returns {@code true} if the previous position has the same header ID. */
 	private boolean previousPositionHasSameHeader(int position) {
-		return position != 0 && delegate.getHeaderId(position) == delegate.getHeaderId(position - 1);
+		return position != 0
+				&& delegate.getHeaderId(position) == delegate
+						.getHeaderId(position - 1);
 	}
 
 	@Override
 	public WrapperView getView(int position, View convertView, ViewGroup parent) {
-		WrapperView wv = (convertView == null) ? new WrapperView(context) : (WrapperView) convertView;
+		WrapperView wv = (convertView == null) ? new WrapperView(context)
+				: (WrapperView) convertView;
 		View item = delegate.getView(position, wv.item, wv);
 		View header = null;
 		View divider = null;
@@ -184,4 +209,9 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 		wv.update(item, header, divider);
 		return wv;
 	}
+	
+	public void setOnHeaderClickListener(OnHeaderClickListener onHeaderClickListener){
+		this.onHeaderClickListener = onHeaderClickListener;
+	}
+	
 }

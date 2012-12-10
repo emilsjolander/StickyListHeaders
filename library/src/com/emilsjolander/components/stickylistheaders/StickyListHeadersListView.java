@@ -1,5 +1,6 @@
 package com.emilsjolander.components.stickylistheaders;
 
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.DataSetObserver;
@@ -10,13 +11,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 /**
  * @author Emil Sj��lander
@@ -37,6 +37,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 public class StickyListHeadersListView extends ListView implements OnScrollListener {
+	
+	public interface OnHeaderClickListener{
+		public void onHeaderClick(StickyListHeadersListView l, View header, int itemPosition, long headerId, boolean currentlySticky);
+	}
 
 	private static final String HEADER_HEIGHT = "headerHeight";
 	private static final String SUPER_INSTANCE_STATE = "superInstanceState";
@@ -55,9 +59,23 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	private boolean clippingToPadding;
 	private boolean clipToPaddingHasBeenSet;
 	private final Rect clippingRect = new Rect();
-	private Long oldHeaderId = null;
+	private Long currentHeaderId = null;
 	private boolean headerHasChanged = true;
 	private StickyListHeadersAdapterWrapper adapter;
+	private float headerDownY = -1;
+	private boolean headerBeingPressed = false;
+	private OnHeaderClickListener onHeaderClickListener;
+	private int headerPosition;
+	
+	private StickyListHeadersAdapterWrapper.OnHeaderClickListener addapterHeaderClickListener = new StickyListHeadersAdapterWrapper.OnHeaderClickListener() {
+		
+		@Override
+		public void onHeaderClick(View header, int itemPosition, long headerId) {
+			if(onHeaderClickListener != null){
+				onHeaderClickListener.onHeaderClick(StickyListHeadersListView.this, header, itemPosition, headerId, false);
+			}
+		}
+	};
 
 	private DataSetObserver dataSetChangedObserver = new DataSetObserver() {
 		@Override
@@ -96,7 +114,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 		headerBottomPosition = 0;
 		headerHeight = -1;
 		header = null;
-		oldHeaderId = null;
+		currentHeaderId = null;
 		headerHasChanged = true;
 	}
 
@@ -180,6 +198,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 		this.adapter.setDivider(divider);
 		this.adapter.setDividerHeight(dividerHeight);
 		this.adapter.registerDataSetObserver(dataSetChangedObserver);
+		this.adapter.setOnHeaderClickListener(addapterHeaderClickListener);
 		reset();
 		super.setAdapter(this.adapter);
 	}
@@ -296,14 +315,15 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 			}
 		}
 
-		long currentHeaderId = adapter.delegate.getHeaderId(firstVisibleItem);
+		long newHeaderId = adapter.delegate.getHeaderId(firstVisibleItem);
 
-		if (oldHeaderId == null || oldHeaderId != currentHeaderId) {
+		if (currentHeaderId == null || currentHeaderId != newHeaderId) {
 			headerHasChanged = true;
-			header = adapter.delegate.getHeaderView(firstVisibleItem, header, this);
+			headerPosition = firstVisibleItem;
+			header = adapter.delegate.getHeaderView(headerPosition, header, this);
 			header.setLayoutParams(new LayoutParams(MATCH_PARENT, headerHeight));
 		}
-		oldHeaderId = currentHeaderId;
+		currentHeaderId = newHeaderId;
 		int top = clippingToPadding ? getPaddingTop() : 0;
 		for (int i = 0; i < childCount; i++) {
 			WrapperView child = (WrapperView) super.getChildAt(i);
@@ -355,4 +375,43 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 		}
 		super.setSelectionFromTop(position, y);
 	}
+
+	public void setOnHeaderClickListener(OnHeaderClickListener onHeaderClickListener) {
+		this.onHeaderClickListener = onHeaderClickListener;
+	}
+	
+	@Override
+	public boolean onTouchEvent(MotionEvent ev) {
+		if(ev.getAction() == MotionEvent.ACTION_DOWN && ev.getY()<=headerBottomPosition){
+			headerDownY = ev.getY();
+			headerBeingPressed = true;
+			header.setPressed(true);
+			header.invalidate();
+			invalidate(0,0,getWidth(),headerBottomPosition);
+			return true;
+		}
+		if(headerBeingPressed){
+			if(Math.abs(ev.getY()-headerDownY)<20){
+				if(ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_CANCEL){
+					headerDownY = -1;
+					headerBeingPressed = false;
+					header.setPressed(false);
+					header.invalidate();
+					invalidate(0,0,getWidth(),headerBottomPosition);
+					if(onHeaderClickListener != null){
+						onHeaderClickListener.onHeaderClick(this, header, headerPosition, currentHeaderId, true);
+					}
+				}
+				return true;
+			}else {
+				headerDownY = -1;
+				headerBeingPressed = false;
+				header.setPressed(false);
+				header.invalidate();
+				invalidate(0,0,getWidth(),headerBottomPosition);
+			}
+		}
+		return super.onTouchEvent(ev);
+	}
+	
 }
