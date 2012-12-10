@@ -2,7 +2,7 @@ package com.emilsjolander.components.stickylistheaders;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import android.content.Context;
@@ -24,8 +24,8 @@ import android.widget.ListAdapter;
  * @author Jake Wharton (jakewharton@gmail.com)
  */
 final class StickyListHeadersAdapterWrapper extends BaseAdapter {
-	private final List<View> headerCache = new ArrayList<View>();
-	private final List<View> dividerCache = new ArrayList<View>();
+	private final List<View> headerCache = new LinkedList<View>();
+	private final List<View> dividerCache = new LinkedList<View>();
 	private final Context context;
 	final StickyListHeadersAdapter delegate;
 	private Drawable divider;
