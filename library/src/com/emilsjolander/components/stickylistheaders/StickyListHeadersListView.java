@@ -185,6 +185,11 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	}
 
 	@Override
+	public StickyListHeadersAdapter getAdapter() {
+		return adapter == null ? null : adapter.delegate;
+	}
+
+	@Override
 	protected void dispatchDraw(Canvas canvas) {
 		if(Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO){
 			scrollChanged(getFirstVisiblePosition());
