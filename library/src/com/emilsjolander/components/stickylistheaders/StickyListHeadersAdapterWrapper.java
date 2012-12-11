@@ -1,7 +1,5 @@
 package com.emilsjolander.components.stickylistheaders;
 
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +10,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListAdapter;
 
 /**
@@ -33,7 +30,6 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 	}
 	
 	private final List<View> headerCache = new ArrayList<View>();
-	private final List<View> dividerCache = new ArrayList<View>();
 	private final Context context;
 	final StickyListHeadersAdapter delegate;
 	private Drawable divider;
@@ -43,7 +39,6 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 		@Override
 		public void onInvalidated() {
 			headerCache.clear();
-			dividerCache.clear();
 		}
 	};
 	private OnHeaderClickListener onHeaderClickListener;
@@ -118,39 +113,14 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 		return delegate.isEmpty();
 	}
 
-	/** Load a divider from the cache or create one if the cache is empty. */
-	@SuppressWarnings("deprecation")
-	// setBackgroundDrawable is needed for older API support.
-	private View obtainDivider() {
-		View divider;
-		if (dividerCache.isEmpty()) {
-			divider = new View(context);
-			LayoutParams params = new LayoutParams(MATCH_PARENT, dividerHeight);
-			divider.setLayoutParams(params);
-		} else {
-			divider = dividerCache.remove(0);
-		}
-		divider.setBackgroundDrawable(this.divider);
-		return divider;
-	}
-
 	/**
-	 * Get a divider view. This optionally pulls a divider from the supplied
-	 * {@link WrapperView} and will also recycle the header if it exists.
+	 * Will recycle header from {@link WrapperView} if it exists
 	 */
-	private View configureDivider(WrapperView wv) {
-		View divider;
+	private void recycleHeaderIfExists(WrapperView wv) {
 		View header = wv.header;
 		if (header != null) {
 			headerCache.add(header);
-			divider = obtainDivider();
-		} else {
-			divider = wv.divider;
-			if (divider == null) {
-				divider = obtainDivider();
-			}
 		}
-		return divider;
 	}
 
 	/**
@@ -158,16 +128,7 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 	 * {@link WrapperView} and will also recycle the divider if it exists.
 	 */
 	private View configureHeader(WrapperView wv, final int position) {
-		View divider = wv.divider;
-		View header = null;
-		if (divider != null) {
-			dividerCache.add(divider);
-			if (!headerCache.isEmpty()) {
-				header = headerCache.remove(0);
-			}
-		} else {
-			header = wv.header;
-		}
+		View header = wv.header;
 		header = delegate.getHeaderView(position, header, wv);
 		if (header == null) {
 			throw new NullPointerException("Header view must not be null.");
@@ -200,13 +161,12 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 				: (WrapperView) convertView;
 		View item = delegate.getView(position, wv.item, wv);
 		View header = null;
-		View divider = null;
 		if (previousPositionHasSameHeader(position)) {
-			divider = configureDivider(wv);
+			recycleHeaderIfExists(wv);
 		} else {
 			header = configureHeader(wv, position);
 		}
-		wv.update(item, header, divider);
+		wv.update(item, header, divider, dividerHeight);
 		return wv;
 	}
 	

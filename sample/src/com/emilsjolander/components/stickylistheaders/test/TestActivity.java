@@ -2,6 +2,7 @@ package com.emilsjolander.components.stickylistheaders.test;
 
 import static android.widget.Toast.LENGTH_SHORT;
 import android.app.Activity;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AbsListView;
@@ -43,6 +44,8 @@ public class TestActivity extends Activity implements OnScrollListener,
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		StickyListHeadersListView stickyList = (StickyListHeadersListView) findViewById(R.id.list);
+		stickyList.setDivider(new ColorDrawable(0xffffffff));
+		stickyList.setDividerHeight(1);
 		stickyList.setOnScrollListener(this);
 		stickyList.setOnItemClickListener(this);
 		stickyList.setOnHeaderClickListener(this);
