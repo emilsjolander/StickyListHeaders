@@ -385,7 +385,8 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
-		if(ev.getAction() == MotionEvent.ACTION_DOWN && ev.getY()<=headerBottomPosition){
+		int action = ev.getAction();
+		if(action == MotionEvent.ACTION_DOWN && ev.getY()<=headerBottomPosition){
 			headerDownY = ev.getY();
 			headerBeingPressed = true;
 			header.setPressed(true);
@@ -395,7 +396,7 @@ public class StickyListHeadersListView extends ListView implements OnScrollListe
 		}
 		if(headerBeingPressed){
 			if(Math.abs(ev.getY()-headerDownY)<viewConfig.getScaledTouchSlop()){
-				if(ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_CANCEL){
+				if(action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL){
 					headerDownY = -1;
 					headerBeingPressed = false;
 					header.setPressed(false);
