@@ -3,13 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/header_bg"
-    android:orientation="horizontal"
-    android:paddingBottom="40dp"
-    android:paddingTop="40dp" >
+    android:orientation="horizontal" >
 
     <TextView
         android:id="@+id/text"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content" 
+        android:textColor="@android:color/black"/>
 
 </LinearLayout>

@@ -104,6 +104,7 @@ final class WrapperView extends ViewGroup {
 	protected void dispatchDraw(Canvas canvas) {
 		super.dispatchDraw(canvas);
 		if(header == null && divider != null){
+			canvas.clipRect(0, 0, getWidth(), dividerHeight);
 			divider.draw(canvas);
 		}
 	}
