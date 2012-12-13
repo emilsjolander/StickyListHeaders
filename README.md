@@ -25,7 +25,7 @@ list where the first letter is shown in the header you might return
 the first characters integer value as the `headerId` for example.
 
 If you want to recieve callback for clicks on the header, 
-call setOnHeaderCLickListener() on `StickyListHeadersListView`.
+call `setOnHeaderClickListener()` on `StickyListHeadersListView`.
 
 
 License
