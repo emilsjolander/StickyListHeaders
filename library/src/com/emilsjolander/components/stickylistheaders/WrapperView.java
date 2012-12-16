@@ -42,18 +42,28 @@ final class WrapperView extends ViewGroup {
 		if (item == null) {
 			throw new NullPointerException("List view item must not be null.");
 		}
-
-		removeAllViews();
-
-		this.item = item;
-		this.header = header;
-		this.divider = divider;
-		this.dividerHeight = dividerHeight;
-
-		if (header != null) {
-			addView(header);
+		
+		if(this.item != item){
+			removeView(this.item);
+			this.item = item;
+			addView(item);
 		}
-		addView(item);
+		
+		if(this.header != header){
+			if(this.header != null){
+				removeView(this.header);
+			}
+			this.header = header;
+			if (header != null) {
+				addView(header);
+			}
+		}
+		
+		if(this.divider != divider){
+			this.divider = divider;
+			this.dividerHeight = dividerHeight;
+			invalidate();
+		}
 	}
 
 	boolean hasHeader() {
