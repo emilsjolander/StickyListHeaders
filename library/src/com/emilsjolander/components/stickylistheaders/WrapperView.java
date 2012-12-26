@@ -34,7 +34,7 @@ final class WrapperView extends ViewGroup implements Checkable {
 	Drawable divider;
 	int dividerHeight;
 	View header;
-	boolean checked;
+	boolean checkable;
 
 	public WrapperView(Context c) {
 		super(c);
@@ -48,6 +48,9 @@ final class WrapperView extends ViewGroup implements Checkable {
 		if(this.item != item){
 			removeView(this.item);
 			this.item = item;
+			// keep track of whether or not the wrapped item is Checkable 
+			// to know if we can delegate Checkable methods to it.
+			checkable = item instanceof Checkable;
 			addView(item);
 		}
 		
@@ -126,24 +129,23 @@ final class WrapperView extends ViewGroup implements Checkable {
 		}
 	}
 
-    @Override
-    public boolean isChecked() {
-        return checked;
-    }
+	@Override
+	public boolean isChecked() {
+		return checkable ? ((Checkable) item).isChecked() : false;
+	}
 
-    @Override
-    public void setChecked(boolean checked) {
-        if (item instanceof Checkable) {
-            // delegate checked state to wrapped view if it implements Checkable
-            // interface to support listviews that indicate choices (single,
-            // multiple, multiple modal).
-            ((Checkable) item).setChecked(checked);
-        }
-        this.checked = checked;
-    }
+	@Override
+	public void setChecked(boolean checked) {
+		if (checkable) {
+			// delegate checked state to wrapped view if it implements Checkable
+			// interface to support listviews that indicate choices (single,
+			// multiple, multiple modal).
+			((Checkable) item).setChecked(checked);
+		}
+	}
 
-    @Override
-    public void toggle() {
-        setChecked(!isChecked());
-    }
+	@Override
+	public void toggle() {
+		setChecked(!isChecked());
+	}
 }
