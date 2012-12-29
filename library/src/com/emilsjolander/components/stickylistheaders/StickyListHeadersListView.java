@@ -280,40 +280,34 @@ public class StickyListHeadersListView extends ListView implements
 		
 		final int childCount = getChildCount();
 		if (childCount != 0) {
+			WrapperView viewToWatch = null;
+			int watchingChildDistance = 99999;
 
-			WrapperView viewToWatch = (WrapperView) super.getChildAt(0);
+			for (int i = 0; i < childCount; i++) {
+				WrapperView child = (WrapperView) super.getChildAt(i);
 
-			int firstChildDistance;
-			if (clippingToPadding) {
-				firstChildDistance = Math
-						.abs((viewToWatch.getTop() - getPaddingTop()));
-			} else {
-				firstChildDistance = Math.abs(viewToWatch.getTop());
+				int childDistance;
+				if (clippingToPadding) {
+					childDistance = child.getTop() - getPaddingTop();
+				} else {
+					childDistance = child.getTop();
+				}
+				
+				if(childDistance<0){
+					continue;
+				}
+
+				if (viewToWatch == null || !viewToWatch.hasHeader()
+						|| (child.hasHeader() && childDistance < watchingChildDistance)) {
+					viewToWatch = child;
+					watchingChildDistance = childDistance;
+				}
 			}
 
 			int headerHeight = getHeaderHeight();
 
-			for (int i = 1; i < childCount; i++) {
-				WrapperView child = (WrapperView) super.getChildAt(i);
-
-				int secondChildDistance;
-				if (clippingToPadding) {
-					secondChildDistance = Math
-							.abs((child.getTop() - getPaddingTop())
-									- headerHeight);
-				} else {
-					secondChildDistance = Math.abs(child.getTop()
-							- headerHeight);
-				}
-
-				if (!viewToWatch.hasHeader()
-						|| (child.hasHeader() && secondChildDistance < firstChildDistance)) {
-					viewToWatch = child;
-				}
-			}
-
-			if (viewToWatch.hasHeader()) {
-
+			if (viewToWatch != null && viewToWatch.hasHeader()) {
+				
 				if (firstVisibleItem == 0 && super.getChildAt(0).getTop() > 0
 						&& !clippingToPadding) {
 					headerBottomPosition = 0;

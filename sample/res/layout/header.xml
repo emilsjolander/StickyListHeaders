@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/header_bg"
-    android:orientation="horizontal" >
+    android:layout_height="100dp"
+    android:background="#ffff0000"
+    android:gravity="bottom"
+    android:orientation="vertical" >
 
     <TextView
         android:id="@+id/text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" 
-        android:textColor="@android:color/black"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:paddingLeft="4dp"
+        android:textColor="#ff33b5e5"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="2dp"
+        android:background="#ff33b5e5" />
 
 </LinearLayout>
