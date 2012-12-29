@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Checkable;
 
 /**
  * 
@@ -27,12 +28,13 @@ import android.view.ViewGroup;
  *         permissions and limitations under the License.
  * 
  */
-final class WrapperView extends ViewGroup {
+final class WrapperView extends ViewGroup implements Checkable {
 
 	View item;
 	Drawable divider;
 	int dividerHeight;
 	View header;
+	boolean checkable;
 
 	public WrapperView(Context c) {
 		super(c);
@@ -46,6 +48,9 @@ final class WrapperView extends ViewGroup {
 		if(this.item != item){
 			removeView(this.item);
 			this.item = item;
+			// keep track of whether or not the wrapped item is Checkable 
+			// to know if we can delegate Checkable methods to it.
+			checkable = item instanceof Checkable;
 			addView(item);
 		}
 		
@@ -124,4 +129,23 @@ final class WrapperView extends ViewGroup {
 		}
 	}
 
+	@Override
+	public boolean isChecked() {
+		return checkable ? ((Checkable) item).isChecked() : false;
+	}
+
+	@Override
+	public void setChecked(boolean checked) {
+		if (checkable) {
+			// delegate checked state to wrapped view if it implements Checkable
+			// interface to support listviews that indicate choices (single,
+			// multiple, multiple modal).
+			((Checkable) item).setChecked(checked);
+		}
+	}
+
+	@Override
+	public void toggle() {
+		setChecked(!isChecked());
+	}
 }
