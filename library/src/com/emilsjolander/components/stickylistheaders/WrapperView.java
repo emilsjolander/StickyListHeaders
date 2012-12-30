@@ -44,18 +44,18 @@ final class WrapperView extends ViewGroup implements Checkable {
 		if (item == null) {
 			throw new NullPointerException("List view item must not be null.");
 		}
-		
-		if(this.item != item){
+
+		if (this.item != item) {
 			removeView(this.item);
 			this.item = item;
-			// keep track of whether or not the wrapped item is Checkable 
+			// keep track of whether or not the wrapped item is Checkable
 			// to know if we can delegate Checkable methods to it.
 			checkable = item instanceof Checkable;
 			addView(item);
 		}
-		
-		if(this.header != header){
-			if(this.header != null){
+
+		if (this.header != header) {
+			if (this.header != null) {
 				removeView(this.header);
 			}
 			this.header = header;
@@ -63,8 +63,8 @@ final class WrapperView extends ViewGroup implements Checkable {
 				addView(header);
 			}
 		}
-		
-		if(this.divider != divider){
+
+		if (this.divider != divider) {
 			this.divider = divider;
 			this.dividerHeight = dividerHeight;
 			invalidate();
@@ -78,18 +78,30 @@ final class WrapperView extends ViewGroup implements Checkable {
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		int measuredWidth = MeasureSpec.getSize(widthMeasureSpec);
+		int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(measuredWidth,
+				MeasureSpec.EXACTLY);
 		int measuredHeight = 0;
 		if (header != null) {
-			header.measure(MeasureSpec.makeMeasureSpec(measuredWidth,
-					MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(0,
-					MeasureSpec.UNSPECIFIED));
+			ViewGroup.LayoutParams params = header.getLayoutParams();
+			if (params != null && params.height > 0) {
+				header.measure(childWidthMeasureSpec,
+						MeasureSpec.makeMeasureSpec(params.height, MeasureSpec.EXACTLY));
+			} else {
+				header.measure(childWidthMeasureSpec,
+						MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+			}
 			measuredHeight += header.getMeasuredHeight();
 		} else if (divider != null) {
 			measuredHeight += dividerHeight;
 		}
-		item.measure(
-				MeasureSpec.makeMeasureSpec(measuredWidth, MeasureSpec.EXACTLY),
-				MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+		ViewGroup.LayoutParams params = item.getLayoutParams();
+		if (params != null && params.height > 0) {
+			item.measure(childWidthMeasureSpec,
+					MeasureSpec.makeMeasureSpec(params.height, MeasureSpec.EXACTLY));
+		} else {
+			item.measure(childWidthMeasureSpec,
+					MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+		}
 		measuredHeight += item.getMeasuredHeight();
 
 		setMeasuredDimension(measuredWidth, measuredHeight);

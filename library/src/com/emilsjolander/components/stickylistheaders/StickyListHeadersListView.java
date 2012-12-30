@@ -11,6 +11,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.ListAdapter;
@@ -118,7 +119,7 @@ public class StickyListHeadersListView extends ListView implements
 		header = null;
 		currentHeaderId = null;
 	}
-	
+
 	@Override
 	public boolean performItemClick(View view, int position, long id) {
 		view = ((WrapperView) view).item;
@@ -208,7 +209,7 @@ public class StickyListHeadersListView extends ListView implements
 		if (header == null || !areHeadersSticky) {
 			return;
 		}
-		
+
 		int headerHeight = getHeaderHeight();
 		int top = headerBottomPosition - headerHeight;
 		clippingRect.left = getPaddingLeft();
@@ -226,12 +227,18 @@ public class StickyListHeadersListView extends ListView implements
 		header.draw(canvas);
 		canvas.restore();
 	}
-	
-	private void measureHeader(){
+
+	private void measureHeader() {
 		int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth(),
 				MeasureSpec.EXACTLY);
-		int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0,
-				MeasureSpec.UNSPECIFIED);
+		int heightMeasureSpec = 0;
+
+		ViewGroup.LayoutParams params = header.getLayoutParams();
+		if (params != null && params.height > 0) {
+			heightMeasureSpec = MeasureSpec.makeMeasureSpec(params.height, MeasureSpec.EXACTLY);
+		} else {
+			heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+		}
 		header.measure(widthMeasureSpec, heightMeasureSpec);
 		header.layout(getLeft() + getPaddingLeft(), 0, getRight()
 				- getPaddingRight(), header.getMeasuredHeight());
@@ -277,7 +284,7 @@ public class StickyListHeadersListView extends ListView implements
 			measureHeader();
 		}
 		currentHeaderId = newHeaderId;
-		
+
 		final int childCount = getChildCount();
 		if (childCount != 0) {
 			WrapperView viewToWatch = null;
@@ -292,12 +299,13 @@ public class StickyListHeadersListView extends ListView implements
 				} else {
 					childDistance = child.getTop();
 				}
-				
-				if(childDistance<0){
+
+				if (childDistance < 0) {
 					continue;
 				}
 
-				if (viewToWatch == null || !viewToWatch.hasHeader()
+				if (viewToWatch == null
+						|| !viewToWatch.hasHeader()
 						|| (child.hasHeader() && childDistance < watchingChildDistance)) {
 					viewToWatch = child;
 					watchingChildDistance = childDistance;
@@ -307,7 +315,7 @@ public class StickyListHeadersListView extends ListView implements
 			int headerHeight = getHeaderHeight();
 
 			if (viewToWatch != null && viewToWatch.hasHeader()) {
-				
+
 				if (firstVisibleItem == 0 && super.getChildAt(0).getTop() > 0
 						&& !clippingToPadding) {
 					headerBottomPosition = 0;
@@ -332,7 +340,7 @@ public class StickyListHeadersListView extends ListView implements
 				}
 			}
 		}
-		
+
 		int top = clippingToPadding ? getPaddingTop() : 0;
 		for (int i = 0; i < childCount; i++) {
 			WrapperView child = (WrapperView) super.getChildAt(i);
