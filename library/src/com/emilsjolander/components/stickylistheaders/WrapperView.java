@@ -6,14 +6,14 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Checkable;
+import android.view.ViewParent;
 
 /**
  * 
- * @author Emil Sj�lander
+ * @author Emil Sjölander
  * 
  * 
- *         Copyright 2012 Emil Sj�lander
+ *         Copyright 2012 Emil Sjölander
  * 
  *         Licensed under the Apache License, Version 2.0 (the "License"); you
  *         may not use this file except in compliance with the License. You may
@@ -28,13 +28,12 @@ import android.widget.Checkable;
  *         permissions and limitations under the License.
  * 
  */
-final class WrapperView extends ViewGroup implements Checkable {
+class WrapperView extends ViewGroup {
 
 	View item;
 	Drawable divider;
 	int dividerHeight;
 	View header;
-	boolean checkable;
 
 	public WrapperView(Context c) {
 		super(c);
@@ -48,9 +47,12 @@ final class WrapperView extends ViewGroup implements Checkable {
 		if (this.item != item) {
 			removeView(this.item);
 			this.item = item;
-			// keep track of whether or not the wrapped item is Checkable
-			// to know if we can delegate Checkable methods to it.
-			checkable = item instanceof Checkable;
+			final ViewParent parent = item.getParent();
+			if(parent != null && parent != this) {
+				if(parent instanceof ViewGroup) {
+					((ViewGroup) parent).removeView(item);
+				}
+			}
 			addView(item);
 		}
 
@@ -139,25 +141,5 @@ final class WrapperView extends ViewGroup implements Checkable {
 			}
 			divider.draw(canvas);
 		}
-	}
-
-	@Override
-	public boolean isChecked() {
-		return checkable ? ((Checkable) item).isChecked() : false;
-	}
-
-	@Override
-	public void setChecked(boolean checked) {
-		if (checkable) {
-			// delegate checked state to wrapped view if it implements Checkable
-			// interface to support listviews that indicate choices (single,
-			// multiple, multiple modal).
-			((Checkable) item).setChecked(checked);
-		}
-	}
-
-	@Override
-	public void toggle() {
-		setChecked(!isChecked());
 	}
 }
