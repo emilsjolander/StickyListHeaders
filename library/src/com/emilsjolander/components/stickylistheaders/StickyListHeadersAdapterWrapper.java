@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Checkable;
 import android.widget.ListAdapter;
 
 /**
@@ -19,16 +20,16 @@ import android.widget.ListAdapter;
  * and
  * {@link StickyListHeadersAdapter#getHeaderView(int, android.view.View, android.view.ViewGroup)}
  * appropriately.
- * 
+ *
  * @author Jake Wharton (jakewharton@gmail.com)
  */
 final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 
-	
+
 	public interface OnHeaderClickListener{
 		public void onHeaderClick(View header, int itemPosition, long headerId);
 	}
-	
+
 	private final List<View> headerCache = new ArrayList<View>();
 	private final Context context;
 	final StickyListHeadersAdapter delegate;
@@ -136,7 +137,7 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 		//if the header isn't clickable, the listselector will be drawn on top of the header
 		header.setClickable(true);
 		header.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				if(onHeaderClickListener != null){
@@ -157,8 +158,7 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 
 	@Override
 	public WrapperView getView(int position, View convertView, ViewGroup parent) {
-		WrapperView wv = (convertView == null) ? new WrapperView(context)
-				: (WrapperView) convertView;
+		WrapperView wv = (convertView == null) ? new WrapperView(context) : (WrapperView) convertView;
 		View item = delegate.getView(position, wv.item, wv);
 		View header = null;
 		if (previousPositionHasSameHeader(position)) {
@@ -166,12 +166,18 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 		} else {
 			header = configureHeader(wv, position);
 		}
+		if((item instanceof Checkable) && !(wv instanceof CheckableWrapperView)) {
+			// Need to create Checkable subclass of WrapperView for ListView to work correctly
+			wv = new CheckableWrapperView(context);
+		} else if(!(item instanceof Checkable) && (wv instanceof CheckableWrapperView)) {
+			wv = new WrapperView(context);
+		}
 		wv.update(item, header, divider, dividerHeight);
 		return wv;
 	}
-	
+
 	public void setOnHeaderClickListener(OnHeaderClickListener onHeaderClickListener){
 		this.onHeaderClickListener = onHeaderClickListener;
 	}
-	
+
 }
