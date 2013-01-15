@@ -1,7 +1,6 @@
 package com.emilsjolander.components.stickylistheaders;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -42,12 +41,7 @@ public class StickyListHeadersListView extends ListView implements
 		public void onHeaderClick(StickyListHeadersListView l, View header,
 				int itemPosition, long headerId, boolean currentlySticky);
 	}
-
-	private static final int[] ATTRS = { android.R.attr.dividerHeight,
-			android.R.attr.listDivider };
-	private static final int ATTRS_dividerHeight = 0;
-	private static final int ATTRS_listDivider = 1;
-
+	
 	private OnScrollListener scrollListener;
 	private boolean areHeadersSticky = true;
 	private int headerBottomPosition;
@@ -100,10 +94,6 @@ public class StickyListHeadersListView extends ListView implements
 	public StickyListHeadersListView(Context context, AttributeSet attrs,
 			int defStyle) {
 		super(context, attrs, defStyle);
-		TypedArray a = context.obtainStyledAttributes(attrs, ATTRS);
-		divider = a.getDrawable(ATTRS_listDivider);
-		dividerHeight = a.getDimensionPixelSize(ATTRS_dividerHeight, -1);
-		a.recycle();
 
 		super.setOnScrollListener(this);
 		// null out divider, dividers are handled by adapter so they look good
