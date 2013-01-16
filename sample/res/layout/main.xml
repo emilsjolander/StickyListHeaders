@@ -9,8 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dip"
-        android:divider="#ffffff"
-        android:dividerHeight="1dip"
         android:clipToPadding="false"/>
 
 </LinearLayout>

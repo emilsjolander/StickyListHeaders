@@ -132,10 +132,17 @@ public class StickyListHeadersListView extends ListView implements
 	@Override
 	public void setDivider(Drawable divider) {
 		this.divider = divider;
+		if(divider != null){
+			int dividerDrawableHeight = divider.getIntrinsicHeight();
+			if(dividerDrawableHeight>=0){
+				setDividerHeight(dividerDrawableHeight);
+			}
+		}
 		if (adapter != null) {
 			adapter.setDivider(divider);
+			requestLayout();
+			invalidate();
 		}
-		// TODO what to do here? notifyDataSetChanged()?
 	}
 
 	@Override
@@ -143,8 +150,9 @@ public class StickyListHeadersListView extends ListView implements
 		dividerHeight = height;
 		if (adapter != null) {
 			adapter.setDividerHeight(height);
+			requestLayout();
+			invalidate();
 		}
-		// TODO what to do here? notifyDataSetChanged()?
 	}
 
 	@Override
