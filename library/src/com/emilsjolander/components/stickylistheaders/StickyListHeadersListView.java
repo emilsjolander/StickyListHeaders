@@ -267,6 +267,7 @@ public class StickyListHeadersListView extends ListView implements
 		final int childCount = getChildCount();
 		final int headerCount = getHeaderViewsCount();
 		final int footerCount = getFooterViewsCount();
+		final int headerEnd = childCount - footerCount;
 
 		firstVisibleItem = getFixedFirstVisibleItem(firstVisibleItem) - headerCount;
 		if (firstVisibleItem < 0) {
@@ -289,7 +290,7 @@ public class StickyListHeadersListView extends ListView implements
 			WrapperView viewToWatch = null;
 			int watchingChildDistance = 99999;
 
-			for (int i = headerCount; i < childCount - footerCount; i++) {
+			for (int i = headerCount; i < headerEnd; i++) {
 				WrapperView child = (WrapperView) super.getChildAt(i);
 
 				int childDistance;
@@ -341,7 +342,7 @@ public class StickyListHeadersListView extends ListView implements
 		}
 
 		int top = clippingToPadding ? getPaddingTop() : 0;
-		for (int i = headerCount; i < childCount - footerCount; i++) {
+		for (int i = headerCount; i < headerEnd; i++) {
 			WrapperView child = (WrapperView) super.getChildAt(i);
 			if (child.hasHeader()) {
 				View childHeader = child.header;
