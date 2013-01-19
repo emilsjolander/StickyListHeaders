@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Checkable;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 
 /**
@@ -119,6 +120,7 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 	 */
 	private void recycleHeaderIfExists(WrapperView wv) {
 		View header = wv.header;
+
 		if (header != null) {
 			headerCache.add(header);
 		}
@@ -129,8 +131,18 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 	 * {@link WrapperView} and will also recycle the divider if it exists.
 	 */
 	private View configureHeader(WrapperView wv, final int position) {
-		View header = wv.header;
-		header = delegate.getHeaderView(position, header, wv);
+		ViewGroup header = (ViewGroup)wv.header;
+
+		// Avoid reusing the first header, which has trimmed top margin
+		if (header != null) {
+			LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)header.getChildAt(0)
+					.getLayoutParams();
+			if (lp.topMargin == 0) {
+				header = null;
+			}
+		}
+
+		header = (ViewGroup)delegate.getHeaderView(position, header, wv);
 		if (header == null) {
 			throw new NullPointerException("Header view must not be null.");
 		}
@@ -152,26 +164,39 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 	/** Returns {@code true} if the previous position has the same header ID. */
 	private boolean previousPositionHasSameHeader(int position) {
 		return position != 0
-				&& delegate.getHeaderId(position) == delegate
-						.getHeaderId(position - 1);
+				&& delegate.getHeaderId(position) == delegate.getHeaderId(position - 1);
 	}
 
 	@Override
 	public WrapperView getView(int position, View convertView, ViewGroup parent) {
 		WrapperView wv = (convertView == null) ? new WrapperView(context) : (WrapperView) convertView;
-		View item = delegate.getView(position, wv.item, wv);
-		View header = null;
+		ViewGroup item = (ViewGroup)delegate.getView(position, wv.item, wv);
+		ViewGroup header = null;
+
 		if (previousPositionHasSameHeader(position)) {
 			recycleHeaderIfExists(wv);
 		} else {
-			header = configureHeader(wv, position);
+			header = (ViewGroup)configureHeader(wv, position);
 		}
+
+		// Trim top margin in the first header
+		if (position == 0) {
+			View child = header.getChildAt(0);
+			LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)child.getLayoutParams();
+
+			if (lp.topMargin != 0) {
+				lp.topMargin = 0;
+				child.setLayoutParams(lp);
+			}
+		}
+
 		if((item instanceof Checkable) && !(wv instanceof CheckableWrapperView)) {
 			// Need to create Checkable subclass of WrapperView for ListView to work correctly
 			wv = new CheckableWrapperView(context);
 		} else if(!(item instanceof Checkable) && (wv instanceof CheckableWrapperView)) {
 			wv = new WrapperView(context);
 		}
+
 		wv.update(item, header, divider, dividerHeight);
 		return wv;
 	}

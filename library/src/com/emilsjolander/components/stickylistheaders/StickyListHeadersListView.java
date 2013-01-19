@@ -13,6 +13,7 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
@@ -45,7 +46,9 @@ public class StickyListHeadersListView extends ListView implements
 	private OnScrollListener scrollListener;
 	private boolean areHeadersSticky = true;
 	private int headerBottomPosition;
-	private View header;
+	private ViewGroup header;
+	private WrapperView firstViewWithHeader;
+	private int firstViewWithHeaderPosition;
 	private int dividerHeight;
 	private Drawable divider;
 	private boolean clippingToPadding;
@@ -208,8 +211,19 @@ public class StickyListHeadersListView extends ListView implements
 			return;
 		}
 
+		// Calculate header top margins for fixing header to the top correctly
+		int children = header.getChildCount();
+		int top_margin = 0;
+		for (int i=0; i<children; i++) {
+			View child = header.getChildAt(i);
+			LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)child.getLayoutParams();
+			top_margin += lp.topMargin;
+		}
+
 		int headerHeight = getHeaderHeight();
-		int top = headerBottomPosition - headerHeight;
+		// take header top_margin into account
+		int top = headerBottomPosition - headerHeight - top_margin;
+
 		clippingRect.left = getPaddingLeft();
 		clippingRect.right = getWidth() - getPaddingRight();
 		clippingRect.bottom = top + headerHeight;
@@ -237,6 +251,7 @@ public class StickyListHeadersListView extends ListView implements
 		} else {
 			heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
 		}
+
 		header.measure(widthMeasureSpec, heightMeasureSpec);
 		header.layout(getLeft() + getPaddingLeft(), 0, getRight()
 				- getPaddingRight(), header.getMeasuredHeight());
@@ -269,22 +284,38 @@ public class StickyListHeadersListView extends ListView implements
 	}
 
 	private void scrollChanged(int firstVisibleItem) {
+		/*
+		 * Calculates headerBottomPosition which is used to fix and clip header to the top
+		 * of the ListView in dispatchDraw
+		 */
 		if (adapter == null || adapter.getCount() == 0 || !areHeadersSticky)
 			return;
 
 		firstVisibleItem = getFixedFirstVisibleItem(firstVisibleItem);
 
+		// When headerId changes we get the new header
 		long newHeaderId = adapter.delegate.getHeaderId(firstVisibleItem);
+
 		if (currentHeaderId == null || currentHeaderId != newHeaderId) {
 			headerPosition = firstVisibleItem;
-			header = adapter.delegate.getHeaderView(headerPosition, header,
+			header = (ViewGroup)adapter.delegate.getHeaderView(headerPosition, header,
 					this);
 			measureHeader();
 		}
+
+		// This checks if current top element has a header, if so we need to track it
+		WrapperView currentTopElement = (WrapperView)getChildAt(0);
+		if (currentTopElement.hasHeader()) {
+			firstViewWithHeader = currentTopElement;
+			firstViewWithHeaderPosition = firstVisibleItem;
+		}
+
 		currentHeaderId = newHeaderId;
 
 		final int childCount = getChildCount();
 		if (childCount != 0) {
+			// Find the next ListView WrapperView visible with a header
+			// If there is no one visible with header, then the WrapperView most to the bottom
 			WrapperView viewToWatch = null;
 			int watchingChildDistance = 99999;
 
@@ -312,18 +343,31 @@ public class StickyListHeadersListView extends ListView implements
 
 			int headerHeight = getHeaderHeight();
 
-			if (viewToWatch != null && viewToWatch.hasHeader()) {
+			// Calculate header top margin and bottom margin for fixing header to the top correctly
+			int children = header.getChildCount();
+			int top_margin = 0;
+			int bottom_margin = 0;
+			for (int i=0; i<children; i++) {
+				View child = header.getChildAt(i);
+				LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams)child.getLayoutParams();
+				top_margin += lp.topMargin;
+				bottom_margin += lp.bottomMargin;
+			}
 
+			// If the watched WrapperView has a header
+			if (viewToWatch != null && viewToWatch.hasHeader()) {
 				if (firstVisibleItem == 0 && super.getChildAt(0).getTop() > 0
 						&& !clippingToPadding) {
 					headerBottomPosition = 0;
 				} else {
 					if (clippingToPadding) {
-						headerBottomPosition = Math.min(viewToWatch.getTop(),
+						// We need to take margins into account
+						headerBottomPosition = Math.min(viewToWatch.getTop() + top_margin + bottom_margin,
 								headerHeight + getPaddingTop());
 						headerBottomPosition = headerBottomPosition < getPaddingTop() ? headerHeight
 								+ getPaddingTop()
 								: headerBottomPosition;
+
 					} else {
 						headerBottomPosition = Math.min(viewToWatch.getTop(),
 								headerHeight);
@@ -332,9 +376,27 @@ public class StickyListHeadersListView extends ListView implements
 					}
 				}
 			} else {
+				// If the watched WrapperView doesn't have a header
 				headerBottomPosition = headerHeight;
 				if (clippingToPadding) {
 					headerBottomPosition += getPaddingTop();
+				}
+			}
+
+			// When we are in the first item that introduces a new header
+			// If the header has a top margin, we need to consider it:
+			// When scrolling down, the header needs to scroll up slowly
+			// When scrolling up, the header needs to stop going up on the right place
+			if (firstViewWithHeaderPosition == firstVisibleItem && firstViewWithHeader != viewToWatch) {
+				// First header in the ListView shouldn't have top margin
+				if (firstVisibleItem == 0) {
+					top_margin = 0;
+				}
+
+				int correction = top_margin - Math.abs(firstViewWithHeader.getTop() - getPaddingTop());
+
+				if (correction > 0) {
+					headerBottomPosition += correction;
 				}
 			}
 		}
