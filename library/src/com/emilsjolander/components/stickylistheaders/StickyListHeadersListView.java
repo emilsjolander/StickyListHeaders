@@ -272,23 +272,37 @@ public class StickyListHeadersListView extends ListView implements
 		if (adapter == null || adapter.getCount() == 0 || !areHeadersSticky)
 			return;
 
-		firstVisibleItem = getFixedFirstVisibleItem(firstVisibleItem);
+		final int childCount = getChildCount();
+		final int headerCount = getHeaderViewsCount();
 
-		long newHeaderId = adapter.delegate.getHeaderId(firstVisibleItem);
+		firstVisibleItem = getFixedFirstVisibleItem(firstVisibleItem);
+		if (firstVisibleItem  - headerCount < 0 
+			|| firstVisibleItem > headerCount + adapter.getCount()) {
+			header = null;
+			currentHeaderId = null;
+			return;
+		}
+
+		int iterCount = childCount;
+
+		if (firstVisibleItem + childCount > headerCount + adapter.getCount()) {
+			iterCount = headerCount + adapter.getCount() - firstVisibleItem;
+		}
+
+		long newHeaderId = adapter.delegate.getHeaderId(firstVisibleItem - headerCount);
 		if (currentHeaderId == null || currentHeaderId != newHeaderId) {
-			headerPosition = firstVisibleItem;
+			headerPosition = firstVisibleItem - headerCount;
 			header = adapter.delegate.getHeaderView(headerPosition, header,
 					this);
 			measureHeader();
 		}
 		currentHeaderId = newHeaderId;
 
-		final int childCount = getChildCount();
 		if (childCount != 0) {
 			WrapperView viewToWatch = null;
 			int watchingChildDistance = 99999;
 
-			for (int i = 0; i < childCount; i++) {
+			for (int i = 0; i < iterCount; i++) {
 				WrapperView child = (WrapperView) super.getChildAt(i);
 
 				int childDistance;
@@ -313,9 +327,9 @@ public class StickyListHeadersListView extends ListView implements
 			int headerHeight = getHeaderHeight();
 
 			if (viewToWatch != null && viewToWatch.hasHeader()) {
-
-				if (firstVisibleItem == 0 && super.getChildAt(0).getTop() > 0
-						&& !clippingToPadding) {
+				if (firstVisibleItem == 0 
+					&& super.getChildAt(0).getTop() > 0
+					&& !clippingToPadding) {
 					headerBottomPosition = 0;
 				} else {
 					if (clippingToPadding) {
@@ -340,7 +354,7 @@ public class StickyListHeadersListView extends ListView implements
 		}
 
 		int top = clippingToPadding ? getPaddingTop() : 0;
-		for (int i = 0; i < childCount; i++) {
+		for (int i = 0; i < iterCount; i++) {
 			WrapperView child = (WrapperView) super.getChildAt(i);
 			if (child.hasHeader()) {
 				View childHeader = child.header;
