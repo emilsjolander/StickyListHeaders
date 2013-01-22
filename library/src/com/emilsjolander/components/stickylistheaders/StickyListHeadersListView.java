@@ -1,5 +1,7 @@
 package com.emilsjolander.components.stickylistheaders;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
@@ -58,6 +60,7 @@ public class StickyListHeadersListView extends ListView implements
 	private OnHeaderClickListener onHeaderClickListener;
 	private int headerPosition;
 	private ViewConfiguration viewConfig;
+	private ArrayList<View> footerViews;
 
 	private StickyListHeadersAdapterWrapper.OnHeaderClickListener addapterHeaderClickListener = new StickyListHeadersAdapterWrapper.OnHeaderClickListener() {
 
@@ -112,7 +115,9 @@ public class StickyListHeadersListView extends ListView implements
 
 	@Override
 	public boolean performItemClick(View view, int position, long id) {
-		view = ((WrapperView) view).item;
+		if(view instanceof WrapperView){
+			view = ((WrapperView) view).item;
+		}
 		return super.performItemClick(view, position, id);
 	}
 
@@ -269,10 +274,26 @@ public class StickyListHeadersListView extends ListView implements
 	}
 
 	private void scrollChanged(int firstVisibleItem) {
-		if (adapter == null || adapter.getCount() == 0 || !areHeadersSticky)
+		if (adapter == null){
 			return;
+		}
+		
+		int adapterCount = adapter.getCount();
+		if(adapterCount == 0 || !areHeadersSticky){
+			
+		}
 
-		firstVisibleItem = getFixedFirstVisibleItem(firstVisibleItem);
+		final int listViewHeaderCount = getHeaderViewsCount();
+		firstVisibleItem = getFixedFirstVisibleItem(firstVisibleItem) - listViewHeaderCount;
+		
+		if(firstVisibleItem < 0 || firstVisibleItem > adapterCount-1){
+			header = null;
+			currentHeaderId = null;
+			headerBottomPosition = -1;
+			updateHeaderVisibilities();
+			invalidate();
+			return;
+		}
 
 		long newHeaderId = adapter.delegate.getHeaderId(firstVisibleItem);
 		if (currentHeaderId == null || currentHeaderId != newHeaderId) {
@@ -283,14 +304,17 @@ public class StickyListHeadersListView extends ListView implements
 		}
 		currentHeaderId = newHeaderId;
 
-		final int childCount = getChildCount();
+		int childCount = getChildCount();
+		
 		if (childCount != 0) {
-			WrapperView viewToWatch = null;
+			View viewToWatch = null;
 			int watchingChildDistance = 99999;
+			boolean viewToWatchIsFooter = false;
 
 			for (int i = 0; i < childCount; i++) {
-				WrapperView child = (WrapperView) super.getChildAt(i);
-
+				View child = super.getChildAt(i);
+				boolean childIsFooter = footerViews != null && footerViews.contains(child);
+				
 				int childDistance;
 				if (clippingToPadding) {
 					childDistance = child.getTop() - getPaddingTop();
@@ -303,18 +327,19 @@ public class StickyListHeadersListView extends ListView implements
 				}
 
 				if (viewToWatch == null
-						|| !viewToWatch.hasHeader()
-						|| (child.hasHeader() && childDistance < watchingChildDistance)) {
+						|| (!viewToWatchIsFooter && !((WrapperView)viewToWatch).hasHeader())
+						|| ((childIsFooter || ((WrapperView)child).hasHeader()) && childDistance < watchingChildDistance)) {
 					viewToWatch = child;
+					viewToWatchIsFooter = childIsFooter;
 					watchingChildDistance = childDistance;
 				}
 			}
 
 			int headerHeight = getHeaderHeight();
 
-			if (viewToWatch != null && viewToWatch.hasHeader()) {
+			if (viewToWatch != null && (viewToWatchIsFooter || ((WrapperView)viewToWatch).hasHeader())) {
 
-				if (firstVisibleItem == 0 && super.getChildAt(0).getTop() > 0
+				if (firstVisibleItem == listViewHeaderCount && super.getChildAt(0).getTop() > 0
 						&& !clippingToPadding) {
 					headerBottomPosition = 0;
 				} else {
@@ -338,16 +363,43 @@ public class StickyListHeadersListView extends ListView implements
 				}
 			}
 		}
-
+		
+		updateHeaderVisibilities();
+		invalidate();
+	}
+	
+	@Override
+	public void addFooterView(View v) {
+		super.addFooterView(v);
+		if(footerViews == null){
+			footerViews = new ArrayList<View>();
+		}
+		footerViews.add(v);
+	}
+	
+	@Override
+	public boolean removeFooterView(View v) {
+		boolean removed = super.removeFooterView(v);
+		if(removed){
+			footerViews.remove(v);
+		}
+		return removed;
+	}
+	
+	private void updateHeaderVisibilities(){
 		int top = clippingToPadding ? getPaddingTop() : 0;
+		int childCount = getChildCount();
 		for (int i = 0; i < childCount; i++) {
-			WrapperView child = (WrapperView) super.getChildAt(i);
-			if (child.hasHeader()) {
-				View childHeader = child.header;
-				if (child.getTop() < top) {
-					childHeader.setVisibility(View.INVISIBLE);
-				} else {
-					childHeader.setVisibility(View.VISIBLE);
+			View child = super.getChildAt(i);
+			if(child instanceof WrapperView){
+				WrapperView wrapperViewChild = (WrapperView) child;
+				if (wrapperViewChild.hasHeader()) {
+					View childHeader = wrapperViewChild.header;
+					if (wrapperViewChild.getTop() < top) {
+						childHeader.setVisibility(View.INVISIBLE);
+					} else {
+						childHeader.setVisibility(View.VISIBLE);
+					}
 				}
 			}
 		}

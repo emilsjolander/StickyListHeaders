@@ -51,6 +51,8 @@ public class TestActivity extends Activity implements OnScrollListener,
 			firstVisible = savedInstanceState.getInt(KEY_LIST_POSITION);
 		}
 
+		stickyList.addHeaderView(getLayoutInflater().inflate(R.layout.list_header, null));
+		stickyList.addFooterView(getLayoutInflater().inflate(R.layout.list_footer, null));
 		stickyList.setAdapter(new TestBaseAdapter(this));
 		stickyList.setSelection(firstVisible);
 	}
