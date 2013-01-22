@@ -266,20 +266,24 @@ public class StickyListHeadersListView extends ListView implements
 
 		final int childCount = getChildCount();
 		final int headerCount = getHeaderViewsCount();
-		final int footerCount = getFooterViewsCount();
-		final int headerEnd = childCount - footerCount;
 
-		firstVisibleItem = getFixedFirstVisibleItem(firstVisibleItem) - headerCount;
-		if (firstVisibleItem < 0) {
+		firstVisibleItem = getFixedFirstVisibleItem(firstVisibleItem);
+		if (firstVisibleItem  - headerCount < 0 
+			|| firstVisibleItem > headerCount + adapter.getCount()) {
 			header = null;
 			currentHeaderId = null;
 			return;
 		}
 
+		int iterCount = childCount;
+
+		if (firstVisibleItem + childCount > headerCount + adapter.getCount()) {
+			iterCount = headerCount + adapter.getCount() - firstVisibleItem;
+		}
 
 		long newHeaderId = adapter.delegate.getHeaderId(firstVisibleItem);
 		if (currentHeaderId == null || currentHeaderId != newHeaderId) {
-			headerPosition = firstVisibleItem;
+			headerPosition = firstVisibleItem - headerCount;
 			header = adapter.delegate.getHeaderView(headerPosition, header,
 					this);
 			measureHeader();
@@ -290,7 +294,7 @@ public class StickyListHeadersListView extends ListView implements
 			WrapperView viewToWatch = null;
 			int watchingChildDistance = 99999;
 
-			for (int i = headerCount; i < headerEnd; i++) {
+			for (int i = 0; i < iterCount; i++) {
 				WrapperView child = (WrapperView) super.getChildAt(i);
 
 				int childDistance;
@@ -316,7 +320,7 @@ public class StickyListHeadersListView extends ListView implements
 
 			if (viewToWatch != null && viewToWatch.hasHeader()) {
 				if (firstVisibleItem == 0 
-					&& super.getChildAt(headerCount).getTop() > 0
+					&& super.getChildAt(0).getTop() > 0
 					&& !clippingToPadding) {
 					headerBottomPosition = 0;
 				} else {
@@ -342,7 +346,7 @@ public class StickyListHeadersListView extends ListView implements
 		}
 
 		int top = clippingToPadding ? getPaddingTop() : 0;
-		for (int i = headerCount; i < headerEnd; i++) {
+		for (int i = 0; i < iterCount; i++) {
 			WrapperView child = (WrapperView) super.getChildAt(i);
 			if (child.hasHeader()) {
 				View childHeader = child.header;
