@@ -281,7 +281,7 @@ public class StickyListHeadersListView extends ListView implements
 			iterCount = headerCount + adapter.getCount() - firstVisibleItem;
 		}
 
-		long newHeaderId = adapter.delegate.getHeaderId(firstVisibleItem);
+		long newHeaderId = adapter.delegate.getHeaderId(firstVisibleItem - headerCount);
 		if (currentHeaderId == null || currentHeaderId != newHeaderId) {
 			headerPosition = firstVisibleItem - headerCount;
 			header = adapter.delegate.getHeaderView(headerPosition, header,
