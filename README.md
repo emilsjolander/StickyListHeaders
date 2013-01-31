@@ -1,3 +1,15 @@
+Notice
+=================
+
+I am currently re-writing core parts of the library to make it easier to 
+implement some long awaited features. This will take some time to get right
+so do not expect any issues or pull requests being answered during this time.
+I have wanted to do this for some time but have not until now felt that the library was 
+stable enough to stop commits for a couple of weeks.
+
+Feature requests and issues are more than welcome during this time but they just won't be fixed until a bit later.
+
+
 StickyListHeaders
 =================
 
