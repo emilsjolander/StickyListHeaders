@@ -25,7 +25,6 @@ import android.widget.ListAdapter;
  */
 final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 
-
 	public interface OnHeaderClickListener{
 		public void onHeaderClick(View header, int itemPosition, long headerId);
 	}

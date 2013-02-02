@@ -5,13 +5,11 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -35,14 +33,10 @@ public class StickyListHeadersListView extends ListView implements
 	private Drawable divider;
 	private boolean clippingToPadding;
 	private boolean clipToPaddingHasBeenSet;
-	private final Rect clippingRect = new Rect();
 	private Long currentHeaderId = null;
 	private StickyListHeadersAdapterWrapper adapter;
-	private float headerDownY = -1;
-	private boolean headerBeingPressed = false;
 	private OnHeaderClickListener onHeaderClickListener;
 	private int headerPosition;
-	private ViewConfiguration viewConfig;
 	private ArrayList<View> footerViews;
 	private StickyListHeadersListViewWrapper frame;
 
@@ -88,7 +82,6 @@ public class StickyListHeadersListView extends ListView implements
 		super.setDivider(null);
 		super.setDividerHeight(0);
 		setVerticalFadingEdgeEnabled(false);
-		viewConfig = ViewConfiguration.get(context);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -236,19 +229,6 @@ public class StickyListHeadersListView extends ListView implements
 			scrollChanged(getFirstVisiblePosition());
 		}
 		super.dispatchDraw(canvas);
-		/*
-		 * if (header == null || !areHeadersSticky) { return; }
-		 * 
-		 * int headerHeight = getHeaderHeight(); int top = headerBottomPosition
-		 * - headerHeight; clippingRect.left = getPaddingLeft();
-		 * clippingRect.right = getWidth() - getPaddingRight();
-		 * clippingRect.bottom = top + headerHeight; if (clippingToPadding) {
-		 * clippingRect.top = getPaddingTop(); } else { clippingRect.top = 0; }
-		 * 
-		 * canvas.save(); canvas.clipRect(clippingRect);
-		 * canvas.translate(getPaddingLeft(), top); header.draw(canvas);
-		 * canvas.restore();
-		 */
 	}
 
 	@Override
