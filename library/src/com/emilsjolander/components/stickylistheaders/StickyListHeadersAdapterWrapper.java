@@ -23,7 +23,7 @@ import android.widget.ListAdapter;
  *
  * @author Jake Wharton (jakewharton@gmail.com)
  */
-final class StickyListHeadersAdapterWrapper extends BaseAdapter {
+final class StickyListHeadersAdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 
 	public interface OnHeaderClickListener{
 		public void onHeaderClick(View header, int itemPosition, long headerId);
@@ -31,7 +31,7 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 
 	private final List<View> headerCache = new ArrayList<View>();
 	private final Context context;
-	final StickyListHeadersAdapter delegate;
+	private final StickyListHeadersAdapter delegate;
 	private Drawable divider;
 	private int dividerHeight;
 	private DataSetObserver dataSetObserver = new DataSetObserver() {
@@ -177,6 +177,46 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter {
 
 	public void setOnHeaderClickListener(OnHeaderClickListener onHeaderClickListener){
 		this.onHeaderClickListener = onHeaderClickListener;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		return delegate.equals(o); 
+	}
+
+	@Override
+	public View getDropDownView(int position, View convertView, ViewGroup parent) {
+		return ((BaseAdapter) delegate).getDropDownView(position, convertView, parent);
+	}
+
+	@Override
+	public int hashCode() {
+		return delegate.hashCode();
+	}
+
+	@Override
+	public void notifyDataSetChanged() {
+		((BaseAdapter) delegate).notifyDataSetChanged();
+	}
+
+	@Override
+	public void notifyDataSetInvalidated() {
+		((BaseAdapter) delegate).notifyDataSetInvalidated();
+	}
+
+	@Override
+	public String toString() {
+		return delegate.toString();
+	}
+
+	@Override
+	public View getHeaderView(int position, View convertView, ViewGroup parent) {
+		return delegate.getHeaderView(position, convertView, parent);
+	}
+
+	@Override
+	public long getHeaderId(int position) {
+		return delegate.getHeaderId(position);
 	}
 
 }
