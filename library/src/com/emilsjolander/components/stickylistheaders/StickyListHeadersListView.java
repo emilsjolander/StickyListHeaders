@@ -207,11 +207,6 @@ public class StickyListHeadersListView extends ListView implements
 	}
 
 	@Override
-	public StickyListHeadersAdapter getAdapter() {
-		return adapter == null ? null : adapter.delegate;
-	}
-
-	@Override
 	protected void dispatchDraw(Canvas canvas) {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
 			scrollChanged(getFirstVisiblePosition());
@@ -303,10 +298,10 @@ public class StickyListHeadersListView extends ListView implements
 			return;
 		}
 
-		long newHeaderId = adapter.delegate.getHeaderId(firstVisibleItem);
+		long newHeaderId = adapter.getHeaderId(firstVisibleItem);
 		if (currentHeaderId == null || currentHeaderId != newHeaderId) {
 			headerPosition = firstVisibleItem;
-			header = adapter.delegate.getHeaderView(headerPosition, header,
+			header = adapter.getHeaderView(headerPosition, header,
 					this);
 			measureHeader();
 		}
