@@ -74,8 +74,7 @@ public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAda
 		if (convertView == null) {
 			holder = new HeaderViewHolder();
 			convertView = inflater.inflate(R.layout.header, parent, false);
-			holder.text1 = (TextView) convertView.findViewById(R.id.text1);
-			holder.text2 = (TextView) convertView.findViewById(R.id.text2);
+			holder.text = (TextView) convertView.findViewById(R.id.text);
 			convertView.setTag(holder);
 		} else {
 			holder = (HeaderViewHolder) convertView.getTag();
@@ -88,8 +87,7 @@ public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAda
 		}else{
 			headerText = headerChar + "\n" + headerChar;
 		}
-		holder.text1.setText(headerText);
-		holder.text2.setText(headerText);
+		holder.text.setText(headerText);
 		return convertView;
 	}
 
@@ -101,8 +99,7 @@ public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAda
 	}
 
 	class HeaderViewHolder {
-		TextView text1;
-		TextView text2;
+		TextView text;
 	}
 
 	class ViewHolder {

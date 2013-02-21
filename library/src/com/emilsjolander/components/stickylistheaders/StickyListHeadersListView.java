@@ -3,6 +3,7 @@ package com.emilsjolander.components.stickylistheaders;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -39,22 +40,14 @@ public class StickyListHeadersListView extends ListView implements
 	private int headerPosition;
 	private ArrayList<View> footerViews;
 	private StickyListHeadersListViewWrapper frame;
-
-	private StickyListHeadersAdapterWrapper.OnHeaderClickListener addapterHeaderClickListener = new StickyListHeadersAdapterWrapper.OnHeaderClickListener() {
-
-		@Override
-		public void onHeaderClick(View header, int itemPosition, long headerId) {
-			if (onHeaderClickListener != null) {
-				onHeaderClickListener.onHeaderClick(
-						StickyListHeadersListView.this, header, itemPosition,
-						headerId, false);
-			}
-		}
-	};
+	private int adapterCount;
+	private boolean drawingListUnderStickyHeader = true;
 
 	private DataSetObserver dataSetChangedObserver = new DataSetObserver() {
+
 		@Override
 		public void onChanged() {
+			adapterCount = adapter.getCount();
 			reset();
 		}
 
@@ -63,6 +56,7 @@ public class StickyListHeadersListView extends ListView implements
 			reset();
 		}
 	};
+	private boolean drawSelectorOnTop;
 
 	public StickyListHeadersListView(Context context) {
 		this(context, null);
@@ -82,6 +76,15 @@ public class StickyListHeadersListView extends ListView implements
 		super.setDivider(null);
 		super.setDividerHeight(0);
 		setVerticalFadingEdgeEnabled(false);
+		
+		int[] attrsArray = new int[] {
+		       android.R.attr.drawSelectorOnTop
+		    };
+		
+		TypedArray a = context.obtainStyledAttributes(attrs,
+				attrsArray, defStyle, 0);
+		drawSelectorOnTop = a.getBoolean(0, false);
+		a.recycle();
 	}
 
 	@SuppressWarnings("deprecation")
@@ -94,14 +97,18 @@ public class StickyListHeadersListView extends ListView implements
 			parent.removeView(this);
 
 			frame = new StickyListHeadersListViewWrapper(getContext());
-
+			frame.setSelector(getSelector());
+			frame.setDrawSelectorOnTop(drawSelectorOnTop);
+			
 			ViewGroup.MarginLayoutParams p = (MarginLayoutParams) getLayoutParams();
 			if (clippingToPadding) {
 				frame.setPadding(0, getPaddingTop(), 0, getPaddingBottom());
 				setPadding(getPaddingLeft(), 0, getPaddingRight(), 0);
 			}
 
-			ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+			ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+					ViewGroup.LayoutParams.MATCH_PARENT,
+					ViewGroup.LayoutParams.MATCH_PARENT);
 			setLayoutParams(params);
 			frame.addView(this);
 			frame.setBackgroundDrawable(getBackground());
@@ -115,14 +122,16 @@ public class StickyListHeadersListView extends ListView implements
 	@Override
 	@Deprecated
 	public void setBackgroundDrawable(Drawable background) {
-		if(frame != null){
+		if (frame != null) {
 			frame.setBackgroundDrawable(background);
 		}
 	}
 
 	@Override
-	protected void onLayout(boolean changed, int l, int t, int r, int b) {
-		super.onLayout(changed, l, t, r, b);
+	public void setDrawSelectorOnTop(boolean onTop) {
+		super.setDrawSelectorOnTop(onTop);
+		drawSelectorOnTop = onTop;
+		frame.setDrawSelectorOnTop(drawSelectorOnTop);
 	}
 
 	private void reset() {
@@ -135,10 +144,30 @@ public class StickyListHeadersListView extends ListView implements
 
 	@Override
 	public boolean performItemClick(View view, int position, long id) {
-		if (view instanceof WrapperView) {
-			view = ((WrapperView) view).item;
+		OnItemClickListener listener = getOnItemClickListener();
+		int headerViewsCount = getHeaderViewsCount();
+		final int viewType = adapter.getItemViewType(position-headerViewsCount);
+		if (viewType == adapter.headerViewType) {
+			if (onHeaderClickListener != null) {
+				position = adapter.getRealPositionDisregardingHeadersAndDividers(position-headerViewsCount);
+				onHeaderClickListener.onHeaderClick(this, view, position, id, false);
+				return true;
+			}
+			return false;
+		} else if (viewType == adapter.dividerViewType) {
+			return false;
+		} else {
+			if (listener != null) {
+				if(position>=adapterCount){
+					position -= adapter.getHeaderCount();
+				}else if(!(position<headerViewsCount)){
+					position = adapter.getRealPositionDisregardingHeadersAndDividers(position-headerViewsCount) + headerViewsCount;
+				}
+				listener.onItemClick(this, view, position, id);
+				return true;
+			}
+			return false;
 		}
-		return super.performItemClick(view, position, id);
 	}
 
 	/**
@@ -204,29 +233,49 @@ public class StickyListHeadersListView extends ListView implements
 		if (!clipToPaddingHasBeenSet) {
 			clippingToPadding = true;
 		}
-		if (!(adapter instanceof StickyListHeadersAdapter)) {
+		if (adapter != null && !(adapter instanceof StickyListHeadersAdapter)) {
 			throw new IllegalArgumentException(
 					"Adapter must implement StickyListHeadersAdapter");
 		}
-		this.adapter = new StickyListHeadersAdapterWrapper(getContext(),
-				(StickyListHeadersAdapter) adapter);
-		this.adapter.setDivider(divider);
-		this.adapter.setDividerHeight(dividerHeight);
-		this.adapter.registerDataSetObserver(dataSetChangedObserver);
-		this.adapter.setOnHeaderClickListener(addapterHeaderClickListener);
+
+		if(this.adapter != null){
+			this.adapter.unregisterDataSetObserver(dataSetChangedObserver);
+			this.adapter = null;
+		}
+
+		if(adapter != null){
+			this.adapter = new StickyListHeadersAdapterWrapper(getContext(),
+					(StickyListHeadersAdapter) adapter);
+			this.adapter.setDivider(divider);
+			this.adapter.setDividerHeight(dividerHeight);
+			this.adapter.registerDataSetObserver(dataSetChangedObserver);
+			adapterCount = this.adapter.getCount();
+		}
+		
 		reset();
 		super.setAdapter(this.adapter);
 	}
 
-	@Override
-	public StickyListHeadersAdapter getAdapter() {
-		return adapter == null ? null : adapter.delegate;
+	public StickyListHeadersAdapter getWrappedAdapter() {
+		if (adapter != null) {
+			return adapter.getDelegate();
+		}
+		return null;
 	}
 
 	@Override
 	protected void dispatchDraw(Canvas canvas) {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
-			scrollChanged(getFirstVisiblePosition());
+			post(new Runnable() {
+				
+				@Override
+				public void run() {
+					scrollChanged(getFirstVisiblePosition());
+				}
+			});
+		}
+		if(!drawingListUnderStickyHeader){
+			canvas.clipRect(0, Math.max(frame.getHeaderBottomPosition(), 0), canvas.getWidth(), canvas.getHeight());
 		}
 		super.dispatchDraw(canvas);
 	}
@@ -255,9 +304,8 @@ public class StickyListHeadersListView extends ListView implements
 			return;
 		}
 
-		int adapterCount = adapter.getCount();
 		if (adapterCount == 0 || !areHeadersSticky) {
-
+			return;
 		}
 
 		final int listViewHeaderCount = getHeaderViewsCount();
@@ -265,22 +313,26 @@ public class StickyListHeadersListView extends ListView implements
 				- listViewHeaderCount;
 
 		if (firstVisibleItem < 0 || firstVisibleItem > adapterCount - 1) {
-			reset();
-			updateHeaderVisibilities();
-			invalidate();
+			if(currentHeaderId != null){
+				reset();
+				updateHeaderVisibilities();
+				invalidate();
+			}
 			return;
 		}
 
-		long newHeaderId = adapter.delegate.getHeaderId(firstVisibleItem);
+		boolean headerHasChanged = false;
+		long newHeaderId = adapter.getHeaderId(firstVisibleItem);
 		if (currentHeaderId == null || currentHeaderId != newHeaderId) {
 			headerPosition = firstVisibleItem;
-			View header = adapter.delegate.getHeaderView(headerPosition,
+			View header = adapter.getHeaderView(headerPosition,
 					frame.removeHeader(), frame);
 			header.setOnClickListener(this);
 			frame.setHeader(header);
+			headerHasChanged = true;
 		}
 		currentHeaderId = newHeaderId;
-
+		
 		int childCount = getChildCount();
 
 		if (childCount > 0) {
@@ -305,9 +357,9 @@ public class StickyListHeadersListView extends ListView implements
 				}
 
 				if (viewToWatch == null
-						|| (!viewToWatchIsFooter && !((WrapperView) viewToWatch)
-								.hasHeader())
-						|| ((childIsFooter || ((WrapperView) child).hasHeader()) && childDistance < watchingChildDistance)) {
+						|| (!viewToWatchIsFooter && !adapter
+								.isHeader(viewToWatch))
+						|| ((childIsFooter || adapter.isHeader(child)) && childDistance < watchingChildDistance)) {
 					viewToWatch = child;
 					viewToWatchIsFooter = childIsFooter;
 					watchingChildDistance = childDistance;
@@ -317,8 +369,7 @@ public class StickyListHeadersListView extends ListView implements
 			int headerHeight = frame.getHeaderHeight();
 			int headerBottomPosition = 0;
 			if (viewToWatch != null
-					&& (viewToWatchIsFooter || ((WrapperView) viewToWatch)
-							.hasHeader())) {
+					&& (viewToWatchIsFooter || adapter.isHeader(viewToWatch))) {
 
 				if (firstVisibleItem == listViewHeaderCount
 						&& getChildAt(0).getTop() > 0 && !clippingToPadding) {
@@ -343,11 +394,19 @@ public class StickyListHeadersListView extends ListView implements
 					headerBottomPosition += getPaddingTop();
 				}
 			}
-			frame.setHeaderBottomPosition(headerBottomPosition);
+			if(frame.getHeaderBottomPosition() != headerBottomPosition || headerHasChanged){
+				frame.setHeaderBottomPosition(headerBottomPosition);
+			}
+			updateHeaderVisibilities();
 		}
-
-		updateHeaderVisibilities();
-		invalidate();
+	}
+	
+	@Override
+	public void setSelector(Drawable sel) {
+		super.setSelector(sel);
+		if(frame != null){
+			frame.setSelector(sel);
+		}
 	}
 
 	@Override
@@ -373,14 +432,14 @@ public class StickyListHeadersListView extends ListView implements
 		int childCount = getChildCount();
 		for (int i = 0; i < childCount; i++) {
 			View child = getChildAt(i);
-			if (child instanceof WrapperView) {
-				WrapperView wrapperViewChild = (WrapperView) child;
-				if (wrapperViewChild.hasHeader()) {
-					View childHeader = wrapperViewChild.header;
-					if (wrapperViewChild.getTop() < top) {
-						childHeader.setVisibility(View.INVISIBLE);
-					} else {
-						childHeader.setVisibility(View.VISIBLE);
+			if (adapter.isHeader(child)) {
+				if (child.getTop() < top) {
+					if(child.getVisibility() != View.INVISIBLE){
+						child.setVisibility(View.INVISIBLE);
+					}
+				} else {
+					if(child.getVisibility() != View.VISIBLE){
+						child.setVisibility(View.VISIBLE);
 					}
 				}
 			}
@@ -441,6 +500,14 @@ public class StickyListHeadersListView extends ListView implements
 						currentHeaderId, true);
 			}
 		}
+	}
+
+	public boolean isDrawingListUnderStickyHeader() {
+		return drawingListUnderStickyHeader;
+	}
+
+	public void setDrawingListUnderStickyHeader(boolean drawingListUnderStickyHeader) {
+		this.drawingListUnderStickyHeader = drawingListUnderStickyHeader;
 	}
 
 }

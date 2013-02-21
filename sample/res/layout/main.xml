@@ -9,6 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dip"
+        android:dividerHeight="5dp"
+        android:scrollbarStyle="outsideOverlay"
         android:clipToPadding="false"/>
 
 </LinearLayout>

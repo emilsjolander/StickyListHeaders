@@ -1,16 +1,15 @@
 package com.emilsjolander.components.stickylistheaders;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.WeakHashMap;
 
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.drawable.Drawable;
+import android.util.SparseIntArray;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
-import android.widget.Checkable;
 import android.widget.ListAdapter;
 
 /**
@@ -20,34 +19,33 @@ import android.widget.ListAdapter;
  * and
  * {@link StickyListHeadersAdapter#getHeaderView(int, android.view.View, android.view.ViewGroup)}
  * appropriately.
- *
+ * 
  * @author Jake Wharton (jakewharton@gmail.com)
  */
-final class StickyListHeadersAdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
+final class StickyListHeadersAdapterWrapper extends BaseAdapter implements
+		StickyListHeadersAdapter {
 
-	public interface OnHeaderClickListener{
-		public void onHeaderClick(View header, int itemPosition, long headerId);
-	}
+	static final int VIEW_TYPE_DIVIDER_OFFSET = 1;
+	static final int VIEW_TYPE_HEADER_OFFSET = 0;
+	private static final int EXTRA_VIEW_TYPE_COUNT = 2;
+	private static final int HEADER_POSITION = -1;
+	private static final int DIVIDER_POSITION = -2;
 
-	private final List<View> headerCache = new ArrayList<View>();
 	private final Context context;
 	private final StickyListHeadersAdapter delegate;
 	private Drawable divider;
 	private int dividerHeight;
-	private DataSetObserver dataSetObserver = new DataSetObserver() {
-
-		@Override
-		public void onInvalidated() {
-			headerCache.clear();
-		}
-	};
-	private OnHeaderClickListener onHeaderClickListener;
+	private WeakHashMap<View, Void> headers = new WeakHashMap<View, Void>();
+	private SparseIntArray positionMapping = new SparseIntArray();
+	int dividerViewType;
+	int headerViewType;
+	private int headerCount;
+	private int dividerCount;
 
 	StickyListHeadersAdapterWrapper(Context context,
 			StickyListHeadersAdapter delegate) {
 		this.context = context;
 		this.delegate = delegate;
-		delegate.registerDataSetObserver(dataSetObserver);
 	}
 
 	void setDivider(Drawable divider) {
@@ -58,14 +56,27 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements Stick
 		this.dividerHeight = dividerHeight;
 	}
 
+	boolean isHeader(View v) {
+		return headers.containsKey(v);
+	}
+
 	@Override
 	public boolean areAllItemsEnabled() {
-		return delegate.areAllItemsEnabled();
+		return false;
 	}
 
 	@Override
 	public boolean isEnabled(int position) {
-		return delegate.isEnabled(position);
+		int viewType = getItemViewType(position);
+		if (viewType == headerViewType) {
+			// TODO should change depending on if a onHeaderClickListener is
+			// specified
+			return true;
+		}else if(viewType == dividerViewType){
+			return false;
+		}
+		position = getRealPositionDisregardingHeadersAndDividers(position);
+		return delegate.areAllItemsEnabled() || delegate.isEnabled(position);
 	}
 
 	@Override
@@ -80,16 +91,57 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements Stick
 
 	@Override
 	public int getCount() {
-		return delegate.getCount();
+		positionMapping.clear();
+		countHeadersAndUpdatePositionMapping();
+		return delegate.getCount() + headerCount + dividerCount;
+	}
+
+	private void countHeadersAndUpdatePositionMapping() {
+		int headerCount = 1;
+		int dividerCount = 0;
+		int itemCount = delegate.getCount();
+		long lastHeaderId = delegate.getHeaderId(0);
+		positionMapping.put(0, HEADER_POSITION);
+		positionMapping.put(1, 0);
+		for (int i = 1; i < itemCount; i++) {
+			long headerId = delegate.getHeaderId(i);
+			if (lastHeaderId != headerId) {
+				lastHeaderId = headerId;
+				positionMapping.put(i + headerCount + dividerCount,
+						HEADER_POSITION);
+				headerCount++;
+			} else {
+				positionMapping.put(i + headerCount + dividerCount,
+						DIVIDER_POSITION);
+				dividerCount++;
+			}
+			positionMapping.put(i + headerCount + dividerCount, i);
+		}
+		this.dividerCount = dividerCount;
+		this.headerCount = headerCount;
+	}
+
+	int getHeaderCount() {
+		return headerCount;
 	}
 
 	@Override
 	public Object getItem(int position) {
+		int viewType = getItemViewType(position);
+		if (viewType == headerViewType || viewType == dividerViewType) {
+			return null;
+		}
+		position = getRealPositionDisregardingHeadersAndDividers(position);
 		return delegate.getItem(position);
 	}
 
 	@Override
 	public long getItemId(int position) {
+		if (getItemViewType(position) == headerViewType) {
+			position = getRealPositionDisregardingHeadersAndDividers(position);
+			return delegate.getHeaderId(position);
+		}
+		position = getRealPositionDisregardingHeadersAndDividers(position);
 		return delegate.getItemId(position);
 	}
 
@@ -98,14 +150,39 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements Stick
 		return delegate.hasStableIds();
 	}
 
+	int getRealPositionDisregardingHeadersAndDividers(int position) {
+		int viewType = getItemViewType(position);
+		if (viewType == headerViewType) {
+			return positionMapping.get(position + 1);
+		} else if (viewType == dividerViewType) {
+			return positionMapping.get(position - 1);
+		} else {
+			return positionMapping.get(position);
+		}
+	}
+
 	@Override
 	public int getItemViewType(int position) {
+
+		position = positionMapping.get(position);
+
+		if (position == HEADER_POSITION) {
+			return headerViewType;
+		}
+
+		if (position == DIVIDER_POSITION) {
+			return dividerViewType;
+		}
+
 		return delegate.getItemViewType(position);
 	}
 
 	@Override
 	public int getViewTypeCount() {
-		return delegate.getViewTypeCount();
+		headerViewType = delegate.getViewTypeCount() + VIEW_TYPE_HEADER_OFFSET;
+		dividerViewType = delegate.getViewTypeCount()
+				+ VIEW_TYPE_DIVIDER_OFFSET;
+		return delegate.getViewTypeCount() + EXTRA_VIEW_TYPE_COUNT;
 	}
 
 	@Override
@@ -113,80 +190,53 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements Stick
 		return delegate.isEmpty();
 	}
 
-	/**
-	 * Will recycle header from {@link WrapperView} if it exists
-	 */
-	private void recycleHeaderIfExists(WrapperView wv) {
-		View header = wv.header;
-		if (header != null) {
-			headerCache.add(header);
-		}
-	}
-
-	/**
-	 * Get a header view. This optionally pulls a header from the supplied
-	 * {@link WrapperView} and will also recycle the divider if it exists.
-	 */
-	private View configureHeader(WrapperView wv, final int position) {
-		View header = wv.header;
-		header = delegate.getHeaderView(position, header, wv);
-		if (header == null) {
-			throw new NullPointerException("Header view must not be null.");
-		}
-		//if the header isn't clickable, the listselector will be drawn on top of the header
-		header.setClickable(true);
-		header.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if(onHeaderClickListener != null){
-					long headerId = delegate.getHeaderId(position);
-					onHeaderClickListener.onHeaderClick(v, position, headerId);
-				}
-			}
-		});
-		return header;
-	}
-
-	/** Returns {@code true} if the previous position has the same header ID. */
-	private boolean previousPositionHasSameHeader(int position) {
-		return position != 0
-				&& delegate.getHeaderId(position) == delegate
-						.getHeaderId(position - 1);
-	}
-
 	@Override
-	public WrapperView getView(int position, View convertView, ViewGroup parent) {
-		WrapperView wv = (convertView == null) ? new WrapperView(context) : (WrapperView) convertView;
-		View item = delegate.getView(position, wv.item, wv);
-		View header = null;
-		if (previousPositionHasSameHeader(position)) {
-			recycleHeaderIfExists(wv);
+	public View getView(int position, View convertView, ViewGroup parent) {
+		final int viewType = getItemViewType(position);
+
+		if (viewType == headerViewType) {
+			headers.remove(convertView);
+			convertView = delegate
+					.getHeaderView(
+							getRealPositionDisregardingHeadersAndDividers(position),
+							convertView, parent);
+			headers.put(convertView, null);
+		} else if (viewType == dividerViewType) {
+			if (convertView == null) {
+				convertView = makeDivider();
+			}
+			return convertView;
 		} else {
-			header = configureHeader(wv, position);
+			convertView = delegate.getView(
+					getRealPositionDisregardingHeadersAndDividers(position),
+					convertView, parent);
 		}
-		if((item instanceof Checkable) && !(wv instanceof CheckableWrapperView)) {
-			// Need to create Checkable subclass of WrapperView for ListView to work correctly
-			wv = new CheckableWrapperView(context);
-		} else if(!(item instanceof Checkable) && (wv instanceof CheckableWrapperView)) {
-			wv = new WrapperView(context);
-		}
-		wv.update(item, header, divider, dividerHeight);
-		return wv;
+		return convertView;
 	}
 
-	public void setOnHeaderClickListener(OnHeaderClickListener onHeaderClickListener){
-		this.onHeaderClickListener = onHeaderClickListener;
+	@SuppressWarnings("deprecation")
+	private View makeDivider() {
+		View v = new View(context);
+		v.setBackgroundDrawable(divider);
+		AbsListView.LayoutParams params = new AbsListView.LayoutParams(
+				AbsListView.LayoutParams.MATCH_PARENT, dividerHeight);
+		v.setLayoutParams(params);
+		return v;
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		return delegate.equals(o); 
+		return delegate.equals(o);
 	}
 
 	@Override
 	public View getDropDownView(int position, View convertView, ViewGroup parent) {
-		return ((BaseAdapter) delegate).getDropDownView(position, convertView, parent);
+		if (getItemViewType(position) == headerViewType) {
+			return null;
+		}
+		position = getRealPositionDisregardingHeadersAndDividers(position);
+		return ((BaseAdapter) delegate).getDropDownView(position, convertView,
+				parent);
 	}
 
 	@Override
@@ -211,12 +261,19 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements Stick
 
 	@Override
 	public View getHeaderView(int position, View convertView, ViewGroup parent) {
-		return delegate.getHeaderView(position, convertView, parent);
+		return delegate.getHeaderView(
+				getRealPositionDisregardingHeadersAndDividers(position),
+				convertView, parent);
 	}
 
 	@Override
 	public long getHeaderId(int position) {
-		return delegate.getHeaderId(position);
+		return delegate
+				.getHeaderId(getRealPositionDisregardingHeadersAndDividers(position));
+	}
+
+	StickyListHeadersAdapter getDelegate() {
+		return delegate;
 	}
 
 }

@@ -55,6 +55,8 @@ public class TestActivity extends Activity implements OnScrollListener,
 		stickyList.addFooterView(getLayoutInflater().inflate(R.layout.list_footer, null));
 		stickyList.setAdapter(new TestBaseAdapter(this));
 		stickyList.setSelection(firstVisible);
+		
+		stickyList.setDrawingListUnderStickyHeader(true);
 	}
 
 	@Override
