@@ -1,13 +1,13 @@
 Notice
 =================
 
-I am currently re-writing core parts of the library (Don't worry though, the api will stay exactly the same!)
-to make it easier to implement some long awaited features. This will take some time to get right
-so do not expect any issues or pull requests being answered during this time.
-I have wanted to do this for some time but have not until now felt that the library was 
-stable enough to stop commits for a couple of weeks. 
+I have now re-written a lot of the code for this library. 
 
-Feature requests and issues are more than welcome during this time but they just won't be fixed until a bit later.
+What does this mean for you? 
+This means that a lot of the current bugs have been fixed and i will fixed the ones that haven't asap.
+However as this is a almost full re-write new bugs have certainly been introduced as well. 
+I have tagged the old version as v1.0 if you feel that this new version is not up for the job yet.
+The quicker people start upgrading to the new version the quicker all the bugs will be fixed.
 
 
 StickyListHeaders
