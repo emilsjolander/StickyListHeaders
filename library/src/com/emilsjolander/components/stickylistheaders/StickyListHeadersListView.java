@@ -131,7 +131,9 @@ public class StickyListHeadersListView extends ListView implements
 	public void setDrawSelectorOnTop(boolean onTop) {
 		super.setDrawSelectorOnTop(onTop);
 		drawSelectorOnTop = onTop;
-		frame.setDrawSelectorOnTop(drawSelectorOnTop);
+		if(frame != null){
+			frame.setDrawSelectorOnTop(drawSelectorOnTop);
+		}
 	}
 
 	private void reset() {
