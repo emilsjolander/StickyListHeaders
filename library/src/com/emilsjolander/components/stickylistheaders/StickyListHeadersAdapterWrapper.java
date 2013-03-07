@@ -41,11 +41,21 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements
 	int headerViewType;
 	private int headerCount;
 	private int dividerCount;
+	private int cachedCount = -1;
+	private DataSetObserver datasetObserver = new DataSetObserver() {
+		public void onChanged() {
+			cachedCount = -1;
+		};
+		public void onInvalidated() {
+			cachedCount = -1;
+		};
+	};
 
 	StickyListHeadersAdapterWrapper(Context context,
 			StickyListHeadersAdapter delegate) {
 		this.context = context;
 		this.delegate = delegate;
+		registerDataSetObserver(datasetObserver );
 	}
 
 	void setDivider(Drawable divider) {
@@ -69,8 +79,6 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements
 	public boolean isEnabled(int position) {
 		int viewType = getItemViewType(position);
 		if (viewType == headerViewType) {
-			// TODO should change depending on if a onHeaderClickListener is
-			// specified
 			return true;
 		}else if(viewType == dividerViewType){
 			return false;
@@ -91,9 +99,13 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements
 
 	@Override
 	public int getCount() {
-		positionMapping.clear();
-		countHeadersAndUpdatePositionMapping();
-		return delegate.getCount() + headerCount + dividerCount;
+		//cache the count as it is expensive to count the headers
+		if(cachedCount<0){
+			positionMapping.clear();
+			countHeadersAndUpdatePositionMapping();
+			cachedCount = delegate.getCount() + headerCount + dividerCount;
+		}
+		return cachedCount;
 	}
 
 	private void countHeadersAndUpdatePositionMapping() {
