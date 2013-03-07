@@ -49,6 +49,7 @@ public class StickyListHeadersListView extends ListView implements
 		public void onChanged() {
 			adapterCount = adapter.getCount();
 			reset();
+			scrollChanged(getFirstVisiblePosition());
 		}
 
 		@Override
@@ -131,13 +132,15 @@ public class StickyListHeadersListView extends ListView implements
 	public void setDrawSelectorOnTop(boolean onTop) {
 		super.setDrawSelectorOnTop(onTop);
 		drawSelectorOnTop = onTop;
-		frame.setDrawSelectorOnTop(drawSelectorOnTop);
+		if(frame != null){
+			frame.setDrawSelectorOnTop(drawSelectorOnTop);
+		}
 	}
 
 	private void reset() {
 		if (frame != null) {
-			frame.setHeaderBottomPosition(-1);
 			frame.removeHeader();
+			frame.setHeaderBottomPosition(-1);
 		}
 		currentHeaderId = null;
 	}
