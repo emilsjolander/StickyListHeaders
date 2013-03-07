@@ -75,13 +75,15 @@ public class StickyListHeadersListViewWrapper extends FrameLayout {
 	public StickyListHeadersListViewWrapper(Context context,
 			AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		try {
-			mTop = View.class.getDeclaredField("mTop");
-			mBottom = View.class.getDeclaredField("mBottom");
-			mTop.setAccessible(true);
-			mBottom.setAccessible(true);
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
+		if(!HONEYCOMB_OR__ABOVE){
+			try {
+				mTop = View.class.getDeclaredField("mTop");
+				mBottom = View.class.getDeclaredField("mBottom");
+				mTop.setAccessible(true);
+				mBottom.setAccessible(true);
+			} catch (NoSuchFieldException e) {
+				e.printStackTrace();
+			}
 		}
 		viewConfig = ViewConfiguration.get(context);
 	}
@@ -183,11 +185,11 @@ public class StickyListHeadersListViewWrapper extends FrameLayout {
 
 	@Override
 	protected void dispatchDraw(Canvas canvas) {
-		if (showSelector && !drawSelectorOnTop) {
+		if (selector != null && showSelector && !drawSelectorOnTop) {
 			drawSelector(canvas);
 		}
 		super.dispatchDraw(canvas);
-		if (showSelector && drawSelectorOnTop) {
+		if (selector != null && showSelector && drawSelectorOnTop) {
 			drawSelector(canvas);
 		}
 	}
