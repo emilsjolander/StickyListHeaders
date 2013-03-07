@@ -97,25 +97,28 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements
 	}
 
 	private void countHeadersAndUpdatePositionMapping() {
-		int headerCount = 1;
+		int headerCount = 0;
 		int dividerCount = 0;
 		int itemCount = delegate.getCount();
-		long lastHeaderId = delegate.getHeaderId(0);
-		positionMapping.put(0, HEADER_POSITION);
-		positionMapping.put(1, 0);
-		for (int i = 1; i < itemCount; i++) {
-			long headerId = delegate.getHeaderId(i);
-			if (lastHeaderId != headerId) {
-				lastHeaderId = headerId;
-				positionMapping.put(i + headerCount + dividerCount,
-						HEADER_POSITION);
-				headerCount++;
-			} else {
-				positionMapping.put(i + headerCount + dividerCount,
-						DIVIDER_POSITION);
-				dividerCount++;
+		if(itemCount>0){
+			headerCount++;
+			long lastHeaderId = delegate.getHeaderId(0);
+			positionMapping.put(0, HEADER_POSITION);
+			positionMapping.put(1, 0);
+			for (int i = 1; i < itemCount; i++) {
+				long headerId = delegate.getHeaderId(i);
+				if (lastHeaderId != headerId) {
+					lastHeaderId = headerId;
+					positionMapping.put(i + headerCount + dividerCount,
+							HEADER_POSITION);
+					headerCount++;
+				} else {
+					positionMapping.put(i + headerCount + dividerCount,
+							DIVIDER_POSITION);
+					dividerCount++;
+				}
+				positionMapping.put(i + headerCount + dividerCount, i);
 			}
-			positionMapping.put(i + headerCount + dividerCount, i);
 		}
 		this.dividerCount = dividerCount;
 		this.headerCount = headerCount;

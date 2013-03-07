@@ -3,7 +3,6 @@ package com.emilsjolander.components.stickylistheaders.test;
 import static android.widget.Toast.LENGTH_SHORT;
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -60,15 +59,6 @@ public class TestActivity extends Activity implements OnScrollListener,
 		stickyList.setSelection(firstVisible);
 		
 		stickyList.setDrawingListUnderStickyHeader(true);
-		
-		new Handler().postDelayed(new Runnable() {
-			
-			@Override
-			public void run() {
-				adapter.notifyDataSetChanged();
-				Toast.makeText(TestActivity.this, "notifyDataSetChanged", Toast.LENGTH_SHORT).show();
-			}
-		}, 10000);
 	}
 
 	@Override
