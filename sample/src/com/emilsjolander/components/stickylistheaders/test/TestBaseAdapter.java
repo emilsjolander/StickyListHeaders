@@ -1,10 +1,13 @@
 package com.emilsjolander.components.stickylistheaders.test;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.emilsjolander.components.stickylistheaders.StickyListHeadersAdapter;
@@ -27,14 +30,21 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
  */
-public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAdapter {
+public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAdapter, SectionIndexer{
 
 	private String[] countries;
+	private ArrayList<String> sections;
 	private LayoutInflater inflater;
 
 	public TestBaseAdapter(Context context) {
 		inflater = LayoutInflater.from(context);
 		countries = context.getResources().getStringArray(R.array.countries);
+		sections = new ArrayList<String>();
+		for(String s : countries){
+			if(!sections.contains(""+s.charAt(0))){
+				sections.add(""+s.charAt(0));
+			}
+		}
 	}
 
 	@Override
@@ -80,16 +90,16 @@ public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAda
 			holder = (HeaderViewHolder) convertView.getTag();
 		}
 		//set header text as first char in name
-		String headerText = "" + countries[position].subSequence(0, 1).charAt(0);
+		String headerText = "" + countries[position].charAt(0);
 		holder.text.setText(headerText);
 		return convertView;
 	}
 
-	//remember that these have to be static, postion=1 should walys return the same Id that is.
+	//remember that these have to be static, postion=1 should always return the same Id that is.
 	@Override
 	public long getHeaderId(int position) {
 		//return the first character of the country as ID because this is what headers are based upon
-		return countries[position].subSequence(0, 1).charAt(0);
+		return countries[position].charAt(0);
 	}
 
 	class HeaderViewHolder {
@@ -98,5 +108,40 @@ public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAda
 
 	class ViewHolder {
 		TextView text;
+	}
+
+	@Override
+	public int getPositionForSection(int section) {
+		if(section >= sections.size()){
+			section = sections.size()-1;
+		}else if(section < 0){
+			section = 0;
+		}
+		
+		int position = 0;
+		char sectionChar = sections.get(section).charAt(0);
+		for(int i = 0 ; i<countries.length ; i++){
+			if(sectionChar == countries[i].charAt(0)){
+				position = i;
+				break;
+			}
+		}
+		return position;
+	}
+
+	@Override
+	public int getSectionForPosition(int position) {
+		if(position >= countries.length){
+			position = countries.length-1;
+		}else if(position < 0){
+			position = 0;
+		}
+		
+		return sections.indexOf(""+countries[position].charAt(0));
+	}
+
+	@Override
+	public Object[] getSections() {
+		return sections.toArray(new String[sections.size()]);
 	}
 }

@@ -16,6 +16,7 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SectionIndexer;
 
 /**
  * @author Emil Sjölander
@@ -48,13 +49,13 @@ public class StickyListHeadersListView extends ListView implements
 		@Override
 		public void onChanged() {
 			adapterCount = adapter.getCount();
-			reset();
-			scrollChanged(getFirstVisiblePosition());
+			currentHeaderId = null;
 		}
 
 		@Override
 		public void onInvalidated() {
-			reset();
+			currentHeaderId = null;
+			frame.removeHeader();
 		}
 	};
 	private boolean drawSelectorOnTop;
@@ -70,7 +71,6 @@ public class StickyListHeadersListView extends ListView implements
 	public StickyListHeadersListView(Context context, AttributeSet attrs,
 			int defStyle) {
 		super(context, attrs, defStyle);
-
 		super.setOnScrollListener(this);
 		// null out divider, dividers are handled by adapter so they look good
 		// with headers
@@ -137,14 +137,6 @@ public class StickyListHeadersListView extends ListView implements
 		}
 	}
 
-	private void reset() {
-		if (frame != null) {
-			frame.removeHeader();
-			frame.setHeaderBottomPosition(-1);
-		}
-		currentHeaderId = null;
-	}
-
 	@Override
 	public boolean performItemClick(View view, int position, long id) {
 		OnItemClickListener listener = getOnItemClickListener();
@@ -152,7 +144,7 @@ public class StickyListHeadersListView extends ListView implements
 		final int viewType = adapter.getItemViewType(position-headerViewsCount);
 		if (viewType == adapter.headerViewType) {
 			if (onHeaderClickListener != null) {
-				position = adapter.getRealPositionDisregardingHeadersAndDividers(position-headerViewsCount);
+				position = adapter.translateListViewPosition(position-headerViewsCount);
 				onHeaderClickListener.onHeaderClick(this, view, position, id, false);
 				return true;
 			}
@@ -164,7 +156,7 @@ public class StickyListHeadersListView extends ListView implements
 				if(position>=adapterCount){
 					position -= adapter.getHeaderCount();
 				}else if(!(position<headerViewsCount)){
-					position = adapter.getRealPositionDisregardingHeadersAndDividers(position-headerViewsCount) + headerViewsCount;
+					position = adapter.translateListViewPosition(position-headerViewsCount) + headerViewsCount;
 				}
 				listener.onItemClick(this, view, position, id);
 				return true;
@@ -247,15 +239,20 @@ public class StickyListHeadersListView extends ListView implements
 		}
 
 		if(adapter != null){
-			this.adapter = new StickyListHeadersAdapterWrapper(getContext(),
-					(StickyListHeadersAdapter) adapter);
+			if(adapter instanceof SectionIndexer){
+				this.adapter = new StickyListHeadersSectionIndexerAdapterWrapper(getContext(),
+						(StickyListHeadersAdapter) adapter);
+			}else{
+				this.adapter = new StickyListHeadersAdapterWrapper(getContext(),
+						(StickyListHeadersAdapter) adapter);
+			}
 			this.adapter.setDivider(divider);
 			this.adapter.setDividerHeight(dividerHeight);
 			this.adapter.registerDataSetObserver(dataSetChangedObserver);
 			adapterCount = this.adapter.getCount();
 		}
-		
-		reset();
+
+		currentHeaderId = null;
 		super.setAdapter(this.adapter);
 	}
 
@@ -317,7 +314,8 @@ public class StickyListHeadersListView extends ListView implements
 
 		if (firstVisibleItem < 0 || firstVisibleItem > adapterCount - 1) {
 			if(currentHeaderId != null){
-				reset();
+				currentHeaderId = null;
+				frame.removeHeader();
 				updateHeaderVisibilities();
 				invalidate();
 			}

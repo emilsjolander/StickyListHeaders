@@ -22,7 +22,7 @@ import android.widget.ListAdapter;
  * 
  * @author Jake Wharton (jakewharton@gmail.com)
  */
-final class StickyListHeadersAdapterWrapper extends BaseAdapter implements
+class StickyListHeadersAdapterWrapper extends BaseAdapter implements
 		StickyListHeadersAdapter {
 
 	static final int VIEW_TYPE_DIVIDER_OFFSET = 1;
@@ -42,6 +42,7 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements
 	private int headerCount;
 	private int dividerCount;
 	private int cachedCount = -1;
+	
 	private DataSetObserver datasetObserver = new DataSetObserver() {
 		public void onChanged() {
 			cachedCount = -1;
@@ -83,7 +84,7 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements
 		}else if(viewType == dividerViewType){
 			return false;
 		}
-		position = getRealPositionDisregardingHeadersAndDividers(position);
+		position = translateListViewPosition(position);
 		return delegate.areAllItemsEnabled() || delegate.isEnabled(position);
 	}
 
@@ -146,17 +147,17 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements
 		if (viewType == headerViewType || viewType == dividerViewType) {
 			return null;
 		}
-		position = getRealPositionDisregardingHeadersAndDividers(position);
+		position = translateListViewPosition(position);
 		return delegate.getItem(position);
 	}
 
 	@Override
 	public long getItemId(int position) {
 		if (getItemViewType(position) == headerViewType) {
-			position = getRealPositionDisregardingHeadersAndDividers(position);
+			position = translateListViewPosition(position);
 			return delegate.getHeaderId(position);
 		}
-		position = getRealPositionDisregardingHeadersAndDividers(position);
+		position = translateListViewPosition(position);
 		return delegate.getItemId(position);
 	}
 
@@ -164,8 +165,12 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements
 	public boolean hasStableIds() {
 		return delegate.hasStableIds();
 	}
+	
+	int translateAdapterPosition(int position){
+		return positionMapping.indexOfValue(position);
+	}
 
-	int getRealPositionDisregardingHeadersAndDividers(int position) {
+	int translateListViewPosition(int position) {
 		int viewType = getItemViewType(position);
 		if (viewType == headerViewType) {
 			return positionMapping.get(position + 1);
@@ -213,7 +218,7 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements
 			headers.remove(convertView);
 			convertView = delegate
 					.getHeaderView(
-							getRealPositionDisregardingHeadersAndDividers(position),
+							translateListViewPosition(position),
 							convertView, parent);
 			headers.put(convertView, null);
 		} else if (viewType == dividerViewType) {
@@ -223,7 +228,7 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements
 			return convertView;
 		} else {
 			convertView = delegate.getView(
-					getRealPositionDisregardingHeadersAndDividers(position),
+					translateListViewPosition(position),
 					convertView, parent);
 		}
 		return convertView;
@@ -249,7 +254,7 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements
 		if (getItemViewType(position) == headerViewType) {
 			return null;
 		}
-		position = getRealPositionDisregardingHeadersAndDividers(position);
+		position = translateListViewPosition(position);
 		return ((BaseAdapter) delegate).getDropDownView(position, convertView,
 				parent);
 	}
@@ -277,14 +282,14 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements
 	@Override
 	public View getHeaderView(int position, View convertView, ViewGroup parent) {
 		return delegate.getHeaderView(
-				getRealPositionDisregardingHeadersAndDividers(position),
+				translateListViewPosition(position),
 				convertView, parent);
 	}
 
 	@Override
 	public long getHeaderId(int position) {
 		return delegate
-				.getHeaderId(getRealPositionDisregardingHeadersAndDividers(position));
+				.getHeaderId(translateListViewPosition(position));
 	}
 
 	StickyListHeadersAdapter getDelegate() {

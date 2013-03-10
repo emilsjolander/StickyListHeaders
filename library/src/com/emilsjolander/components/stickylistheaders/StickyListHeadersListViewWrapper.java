@@ -14,6 +14,8 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.FrameLayout;
 
 public class StickyListHeadersListViewWrapper extends FrameLayout {
@@ -63,6 +65,26 @@ public class StickyListHeadersListViewWrapper extends FrameLayout {
 			return isScrolling;
 		}
 	};
+	
+	private OnGlobalLayoutListener onGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener()
+    {
+        @Override
+        public void onGlobalLayout()
+        {
+    		if(headerChangedDuringLayout){
+    			if(getChildCount() > 1){
+    				removeViewAt(1);
+    			}
+    			if(header != null){
+    				addView(header);
+    			}
+    		}
+    		headerChangedDuringLayout = false;
+        }
+    };
+    
+	private boolean inLayout;
+	private boolean headerChangedDuringLayout;
 
 	public StickyListHeadersListViewWrapper(Context context) {
 		this(context, null, 0);
@@ -86,6 +108,9 @@ public class StickyListHeadersListViewWrapper extends FrameLayout {
 			}
 		}
 		viewConfig = ViewConfiguration.get(context);
+		
+
+		getViewTreeObserver().addOnGlobalLayoutListener(onGlobalLayoutListener);
 	}
 
 	void setHeader(View header) {
@@ -108,20 +133,30 @@ public class StickyListHeadersListViewWrapper extends FrameLayout {
 
 			header.setOnTouchListener(onHeaderTouchListener);
 
-			addView(header);
+			if(inLayout){
+				headerChangedDuringLayout = true;
+			}else{
+				addView(header);
+			}
 		}
 	}
 
 	@Override
 	protected void onLayout(boolean changed, int left, int top, int right,
 			int bottom) {
+		inLayout = true;
 		super.onLayout(changed, left, top, right, bottom);
 		setHeaderBottomPosition(this.headerBottomPosition);
+		inLayout = false;
 	}
 
 	View removeHeader() {
 		if (this.header != null) {
-			removeView(this.header);
+			if(inLayout){
+				headerChangedDuringLayout = true;
+			}else{
+				removeView(this.header);
+			}
 			this.header.setOnTouchListener(null);
 		}
 		View header = this.header;
