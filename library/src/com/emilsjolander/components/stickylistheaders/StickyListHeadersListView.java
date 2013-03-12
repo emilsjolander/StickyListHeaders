@@ -41,14 +41,12 @@ public class StickyListHeadersListView extends ListView implements
 	private int headerPosition;
 	private ArrayList<View> footerViews;
 	private StickyListHeadersListViewWrapper frame;
-	private int adapterCount;
 	private boolean drawingListUnderStickyHeader = true;
 
 	private DataSetObserver dataSetChangedObserver = new DataSetObserver() {
 
 		@Override
 		public void onChanged() {
-			adapterCount = adapter.getCount();
 			currentHeaderId = null;
 		}
 
@@ -153,7 +151,7 @@ public class StickyListHeadersListView extends ListView implements
 			return false;
 		} else {
 			if (listener != null) {
-				if(position>=adapterCount){
+				if(position>=adapter.getCount()){
 					position -= adapter.getHeaderCount();
 				}else if(!(position<headerViewsCount)){
 					position = adapter.translateListViewPosition(position-headerViewsCount) + headerViewsCount;
@@ -249,7 +247,6 @@ public class StickyListHeadersListView extends ListView implements
 			this.adapter.setDivider(divider);
 			this.adapter.setDividerHeight(dividerHeight);
 			this.adapter.registerDataSetObserver(dataSetChangedObserver);
-			adapterCount = this.adapter.getCount();
 		}
 
 		currentHeaderId = null;
@@ -304,6 +301,7 @@ public class StickyListHeadersListView extends ListView implements
 			return;
 		}
 
+		int adapterCount = adapter.getCount();
 		if (adapterCount == 0 || !areHeadersSticky) {
 			return;
 		}
