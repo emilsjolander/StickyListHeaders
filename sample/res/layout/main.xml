@@ -12,6 +12,7 @@
         android:dividerHeight="5dp"
         android:scrollbarStyle="outsideOverlay"
         android:clipToPadding="false"
-        android:fastScrollEnabled="true"/>
+        android:fastScrollEnabled="true"
+        android:background="#ff444444"/>
 
 </LinearLayout>

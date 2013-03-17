@@ -2,6 +2,7 @@ package com.emilsjolander.components.stickylistheaders;
 
 import java.util.ArrayList;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.DataSetObserver;
@@ -118,11 +119,14 @@ public class StickyListHeadersListView extends ListView implements
 		}
 	}
 
+	@SuppressLint("NewApi")
 	@Override
 	@Deprecated
 	public void setBackgroundDrawable(Drawable background) {
 		if (frame != null) {
 			frame.setBackgroundDrawable(background);
+		}else{
+			super.setBackgroundDrawable(background);
 		}
 	}
 
