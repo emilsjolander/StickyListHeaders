@@ -144,4 +144,5 @@ public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAda
 	public Object[] getSections() {
 		return sections.toArray(new String[sections.size()]);
 	}
+	
 }

@@ -42,11 +42,13 @@ public class StickyListHeadersListView extends ListView implements
 	private ArrayList<View> footerViews;
 	private StickyListHeadersListViewWrapper frame;
 	private boolean drawingListUnderStickyHeader = true;
+	private boolean dataChanged = false;
 
 	private DataSetObserver dataSetChangedObserver = new DataSetObserver() {
 
 		@Override
 		public void onChanged() {
+			dataChanged  = true;
 			currentHeaderId = null;
 		}
 
@@ -323,11 +325,12 @@ public class StickyListHeadersListView extends ListView implements
 				- listViewHeaderCount;
 
 		if (firstVisibleItem < 0 || firstVisibleItem > adapterCount - 1) {
-			if(currentHeaderId != null){
+			if(currentHeaderId != null || dataChanged){
 				currentHeaderId = null;
 				frame.removeHeader();
 				updateHeaderVisibilities();
 				invalidate();
+				dataChanged = false;
 			}
 			return;
 		}
