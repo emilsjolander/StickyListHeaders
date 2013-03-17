@@ -2,6 +2,7 @@ package com.emilsjolander.components.stickylistheaders;
 
 import java.util.ArrayList;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.DataSetObserver;
@@ -9,6 +10,10 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.SparseBooleanArray;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -22,6 +27,7 @@ import android.widget.SectionIndexer;
 /**
  * @author Emil Sjölander
  */
+@SuppressLint("NewApi")
 public class StickyListHeadersListView extends ListView implements
 		OnScrollListener, OnClickListener {
 
@@ -46,6 +52,7 @@ public class StickyListHeadersListView extends ListView implements
 	private boolean dataChanged = false;
 	private boolean drawSelectorOnTop;
 	private OnItemLongClickListener onItemLongClickListenerDelegate;
+	private MultiChoiceModeListener multiChoiceModeListenerDelegate;
 
 	private DataSetObserver dataSetChangedObserver = new DataSetObserver() {
 
@@ -73,6 +80,52 @@ public class StickyListHeadersListView extends ListView implements
 			return false;
 		}
 
+	};
+	private MultiChoiceModeListener multiChoiceModeListenerWrapper = new MultiChoiceModeListener() {
+
+		@Override
+		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+			if (multiChoiceModeListenerDelegate != null) {
+				return multiChoiceModeListenerDelegate.onPrepareActionMode(
+						mode, menu);
+			}
+			return false;
+		}
+
+		@Override
+		public void onDestroyActionMode(ActionMode mode) {
+			if (multiChoiceModeListenerDelegate != null) {
+				multiChoiceModeListenerDelegate.onDestroyActionMode(mode);
+			}
+		}
+
+		@Override
+		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+			if (multiChoiceModeListenerDelegate != null) {
+				return multiChoiceModeListenerDelegate.onCreateActionMode(mode,
+						menu);
+			}
+			return false;
+		}
+
+		@Override
+		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+			if (multiChoiceModeListenerDelegate != null) {
+				return multiChoiceModeListenerDelegate.onActionItemClicked(
+						mode, item);
+			}
+			return false;
+		}
+
+		@Override
+		public void onItemCheckedStateChanged(ActionMode mode, int position,
+				long id, boolean checked) {
+			if (multiChoiceModeListenerDelegate != null) {
+				position = adapter.translateListViewPosition(position);
+				multiChoiceModeListenerDelegate.onItemCheckedStateChanged(mode,
+						position, id, checked);
+			}
+		}
 	};
 
 	public StickyListHeadersListView(Context context) {
@@ -203,8 +256,72 @@ public class StickyListHeadersListView extends ListView implements
 
 	@Override
 	public long getItemIdAtPosition(int position) {
-		return (adapter == null || position < 0) ? Long.MIN_VALUE
+		return (adapter == null || position < 0) ? ListView.INVALID_ROW_ID
 				: adapter.delegate.getItemId(position);
+	}
+
+	private boolean isCalledFromSuper() {
+		// i feel dirty...
+		// could not think if better way, need to translate positions when not
+		// called from super
+		StackTraceElement callingFrame = Thread.currentThread().getStackTrace()[5];
+		return callingFrame.getClassName().contains(
+				"android.widget.AbsListView");
+	}
+
+	@Override
+	public void setItemChecked(int position, boolean value) {
+		if (!isCalledFromSuper()) {
+			position = adapter.translateAdapterPosition(position);
+		}
+		// only real items are checkable
+		int viewtype = adapter.getItemViewType(position);
+		if (viewtype != adapter.dividerViewType
+				&& viewtype != adapter.headerViewType) {
+			super.setItemChecked(position, value);
+		}
+	}
+
+	@Override
+	public boolean isItemChecked(int position) {
+		if (!isCalledFromSuper()) {
+			position = adapter.translateAdapterPosition(position);
+		}
+		return super.isItemChecked(position);
+	}
+
+	@Override
+	public int getCheckedItemPosition() {
+		int position = super.getCheckedItemPosition();
+		if (!isCalledFromSuper() && position != ListView.INVALID_POSITION) {
+			position = adapter.translateAdapterPosition(position);
+		}
+		return position;
+	}
+
+	@Override
+	public SparseBooleanArray getCheckedItemPositions() {
+		SparseBooleanArray superCheckeditems = super.getCheckedItemPositions();
+		if (!isCalledFromSuper() && superCheckeditems != null) {
+			SparseBooleanArray checkeditems = new SparseBooleanArray(superCheckeditems.size());
+			for(int i = 0 ; i<superCheckeditems.size() ; i++){
+				int key = adapter.translateListViewPosition(superCheckeditems.keyAt(i));
+				boolean value = superCheckeditems.valueAt(i);
+				checkeditems.put(key, value);
+			}
+			return checkeditems;
+		}
+		return superCheckeditems;
+	}
+
+	@Override
+	public void setMultiChoiceModeListener(MultiChoiceModeListener listener) {
+		multiChoiceModeListenerDelegate = listener;
+		if (listener == null) {
+			super.setMultiChoiceModeListener(null);
+		} else {
+			super.setMultiChoiceModeListener(multiChoiceModeListenerWrapper);
+		}
 	}
 
 	/**

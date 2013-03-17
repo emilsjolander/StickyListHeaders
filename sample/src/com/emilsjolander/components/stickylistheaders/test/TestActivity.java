@@ -1,6 +1,7 @@
 package com.emilsjolander.components.stickylistheaders.test;
 
 import static android.widget.Toast.LENGTH_SHORT;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
@@ -40,6 +41,7 @@ public class TestActivity extends Activity implements OnScrollListener,
 	private int firstVisible;
 	private TestBaseAdapter adapter;
 
+	@SuppressLint("NewApi")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
