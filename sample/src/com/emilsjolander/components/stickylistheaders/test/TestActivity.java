@@ -88,7 +88,8 @@ public class TestActivity extends Activity implements OnScrollListener,
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 	}
 
-	@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+	@Override 
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Toast.makeText(this, "Item " + position + " clicked!", LENGTH_SHORT).show();
 	}
 

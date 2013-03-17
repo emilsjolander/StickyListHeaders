@@ -2,7 +2,6 @@ package com.emilsjolander.components.stickylistheaders;
 
 import java.util.ArrayList;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.DataSetObserver;
@@ -119,7 +118,6 @@ public class StickyListHeadersListView extends ListView implements
 		}
 	}
 
-	@SuppressLint("NewApi")
 	@Override
 	@Deprecated
 	public void setBackgroundDrawable(Drawable background) {
@@ -165,6 +163,16 @@ public class StickyListHeadersListView extends ListView implements
 			}
 			return false;
 		}
+	}
+	
+	@Override
+	public Object getItemAtPosition(int position) {
+		return (adapter == null || position < 0) ? null : adapter.delegate.getItem(position);
+	}
+	
+	@Override
+	public long getItemIdAtPosition(int position) {
+		return (adapter == null || position < 0) ? Long.MIN_VALUE : adapter.delegate.getItemId(position);
 	}
 
 	/**

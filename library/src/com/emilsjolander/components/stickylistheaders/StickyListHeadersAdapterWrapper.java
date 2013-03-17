@@ -32,7 +32,7 @@ class StickyListHeadersAdapterWrapper extends BaseAdapter implements
 	private static final int DIVIDER_POSITION = -2;
 
 	private final Context context;
-	private final StickyListHeadersAdapter delegate;
+	final StickyListHeadersAdapter delegate;
 	private Drawable divider;
 	private int dividerHeight;
 	private WeakHashMap<View, Void> headers = new WeakHashMap<View, Void>();
