@@ -81,52 +81,7 @@ public class StickyListHeadersListView extends ListView implements
 		}
 
 	};
-	private MultiChoiceModeListener multiChoiceModeListenerWrapper = new MultiChoiceModeListener() {
-
-		@Override
-		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-			if (multiChoiceModeListenerDelegate != null) {
-				return multiChoiceModeListenerDelegate.onPrepareActionMode(
-						mode, menu);
-			}
-			return false;
-		}
-
-		@Override
-		public void onDestroyActionMode(ActionMode mode) {
-			if (multiChoiceModeListenerDelegate != null) {
-				multiChoiceModeListenerDelegate.onDestroyActionMode(mode);
-			}
-		}
-
-		@Override
-		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-			if (multiChoiceModeListenerDelegate != null) {
-				return multiChoiceModeListenerDelegate.onCreateActionMode(mode,
-						menu);
-			}
-			return false;
-		}
-
-		@Override
-		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-			if (multiChoiceModeListenerDelegate != null) {
-				return multiChoiceModeListenerDelegate.onActionItemClicked(
-						mode, item);
-			}
-			return false;
-		}
-
-		@Override
-		public void onItemCheckedStateChanged(ActionMode mode, int position,
-				long id, boolean checked) {
-			if (multiChoiceModeListenerDelegate != null) {
-				position = adapter.translateListViewPosition(position);
-				multiChoiceModeListenerDelegate.onItemCheckedStateChanged(mode,
-						position, id, checked);
-			}
-		}
-	};
+	private MultiChoiceModeListener multiChoiceModeListenerWrapper;
 
 	public StickyListHeadersListView(Context context) {
 		this(context, null);
@@ -152,6 +107,59 @@ public class StickyListHeadersListView extends ListView implements
 				defStyle, 0);
 		drawSelectorOnTop = a.getBoolean(0, false);
 		a.recycle();
+		
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
+			setMultiChoiceModeListenerWrapper();
+		}
+	}
+
+	private void setMultiChoiceModeListenerWrapper() {
+		multiChoiceModeListenerWrapper = new MultiChoiceModeListener() {
+
+			@Override
+			public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+				if (multiChoiceModeListenerDelegate != null) {
+					return multiChoiceModeListenerDelegate.onPrepareActionMode(
+							mode, menu);
+				}
+				return false;
+			}
+	
+			@Override
+			public void onDestroyActionMode(ActionMode mode) {
+				if (multiChoiceModeListenerDelegate != null) {
+					multiChoiceModeListenerDelegate.onDestroyActionMode(mode);
+				}
+			}
+	
+			@Override
+			public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+				if (multiChoiceModeListenerDelegate != null) {
+					return multiChoiceModeListenerDelegate.onCreateActionMode(mode,
+							menu);
+				}
+				return false;
+			}
+	
+			@Override
+			public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+				if (multiChoiceModeListenerDelegate != null) {
+					return multiChoiceModeListenerDelegate.onActionItemClicked(
+							mode, item);
+				}
+				return false;
+			}
+	
+			@Override
+			public void onItemCheckedStateChanged(ActionMode mode, int position,
+					long id, boolean checked) {
+				if (multiChoiceModeListenerDelegate != null) {
+					position = adapter.translateListViewPosition(position);
+					multiChoiceModeListenerDelegate.onItemCheckedStateChanged(mode,
+							position, id, checked);
+				}
+			}
+		};
 	}
 
 	@SuppressWarnings("deprecation")
@@ -250,14 +258,22 @@ public class StickyListHeadersListView extends ListView implements
 
 	@Override
 	public Object getItemAtPosition(int position) {
-		return (adapter == null || position < 0) ? null : adapter.delegate
-				.getItem(position);
+		if(isCalledFromSuper()){
+			return super.getItemAtPosition(position);
+		}else{
+			return (adapter == null || position < 0) ? null : adapter.delegate
+					.getItem(position);
+		}
 	}
 
 	@Override
 	public long getItemIdAtPosition(int position) {
-		return (adapter == null || position < 0) ? ListView.INVALID_ROW_ID
-				: adapter.delegate.getItemId(position);
+		if(isCalledFromSuper()){
+			return super.getItemIdAtPosition(position);
+		}else{
+			return (adapter == null || position < 0) ? ListView.INVALID_ROW_ID
+					: adapter.delegate.getItemId(position);
+		}
 	}
 
 	private boolean isCalledFromSuper() {
