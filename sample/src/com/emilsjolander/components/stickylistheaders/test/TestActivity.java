@@ -68,7 +68,7 @@ public class TestActivity extends Activity implements OnScrollListener,
 			
 			@Override
 			public void run() {
-				adapter.notifyDataSetChanged();
+				adapter.clearAndNotify();
 				Toast.makeText(getApplicationContext(), "notifyDataSetChanged", Toast.LENGTH_SHORT).show();
 			}
 		}, 5000);
