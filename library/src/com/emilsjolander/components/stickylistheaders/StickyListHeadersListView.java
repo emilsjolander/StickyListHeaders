@@ -414,7 +414,7 @@ public class StickyListHeadersListView extends ListView implements
 		}
 
 		if (this.adapter != null) {
-			this.adapter.unregisterInternalDataSetObserver(dataSetChangedObserver);
+			this.adapter.unregisterDataSetObserver(dataSetChangedObserver);
 			this.adapter = null;
 		}
 
@@ -428,7 +428,7 @@ public class StickyListHeadersListView extends ListView implements
 			}
 			this.adapter.setDivider(divider);
 			this.adapter.setDividerHeight(dividerHeight);
-			this.adapter.registerInternalDataSetObserver(dataSetChangedObserver);
+			this.adapter.registerDataSetObserver(dataSetChangedObserver);
 		}
 
 		currentHeaderId = null;

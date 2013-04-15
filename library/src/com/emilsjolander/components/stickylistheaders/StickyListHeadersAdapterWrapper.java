@@ -4,7 +4,6 @@ import java.util.WeakHashMap;
 
 import android.content.Context;
 import android.database.DataSetObserver;
-import android.database.DataSetObservable;
 import android.graphics.drawable.Drawable;
 import android.util.SparseIntArray;
 import android.view.View;
@@ -20,7 +19,7 @@ import android.widget.ListAdapter;
  * and
  * {@link StickyListHeadersAdapter#getHeaderView(int, android.view.View, android.view.ViewGroup)}
  * appropriately.
- *
+ * 
  * @author Jake Wharton (jakewharton@gmail.com)
  */
 class StickyListHeadersAdapterWrapper extends BaseAdapter implements
@@ -43,20 +42,13 @@ class StickyListHeadersAdapterWrapper extends BaseAdapter implements
 	private int headerCount;
 	private int dividerCount;
 	private int cachedCount = -1;
-
-	private DataSetObservable internalObservable = new DataSetObservable();
-	private DataSetObservable regularObservable = new DataSetObservable();
-
+	
 	private DataSetObserver datasetObserver = new DataSetObserver() {
 		public void onChanged() {
 			cachedCount = -1;
-			internalObservable.notifyChanged();
-			regularObservable.notifyChanged();
 		};
 		public void onInvalidated() {
 			cachedCount = -1;
-			internalObservable.notifyInvalidated();
-			regularObservable.notifyInvalidated();
 		};
 	};
 
@@ -64,7 +56,7 @@ class StickyListHeadersAdapterWrapper extends BaseAdapter implements
 			StickyListHeadersAdapter delegate) {
 		this.context = context;
 		this.delegate = delegate;
-		delegate.registerDataSetObserver(datasetObserver);
+		registerDataSetObserver(datasetObserver );
 	}
 
 	void setDivider(Drawable divider) {
@@ -98,20 +90,12 @@ class StickyListHeadersAdapterWrapper extends BaseAdapter implements
 
 	@Override
 	public void registerDataSetObserver(DataSetObserver observer) {
-		regularObservable.registerObserver(observer);
+		delegate.registerDataSetObserver(observer);
 	}
 
 	@Override
 	public void unregisterDataSetObserver(DataSetObserver observer) {
-		regularObservable.unregisterObserver(observer);
-	}
-
-	void registerInternalDataSetObserver(DataSetObserver observer) {
-		internalObservable.registerObserver(observer);
-	}
-
-	void unregisterInternalDataSetObserver(DataSetObserver observer) {
-		internalObservable.unregisterObserver(observer);
+		delegate.unregisterDataSetObserver(observer);
 	}
 
 	@Override
@@ -181,7 +165,7 @@ class StickyListHeadersAdapterWrapper extends BaseAdapter implements
 	public boolean hasStableIds() {
 		return delegate.hasStableIds();
 	}
-
+	
 	int translateAdapterPosition(int position){
 		return positionMapping.indexOfValue(position);
 	}
