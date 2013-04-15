@@ -32,16 +32,7 @@ public class StickyListHeadersListViewWrapper extends FrameLayout {
 	private boolean drawSelectorOnTop = false;
 	private Rect selectorBounds = new Rect();
 
-	private GestureDetector gestureDetector = new GestureDetector(getContext(),
-			new GestureDetector.SimpleOnGestureListener() {
-
-				@Override
-				public void onShowPress(MotionEvent e) {
-					showSelector = true;
-					invalidate(getRefreshedSelectorBounds());
-				}
-
-			});
+	private final GestureDetector gestureDetector;
 
 	private OnTouchListener onHeaderTouchListener = new OnTouchListener() {
 
@@ -94,9 +85,13 @@ public class StickyListHeadersListViewWrapper extends FrameLayout {
 		this(context, attrs, 0);
 	}
 
-	public StickyListHeadersListViewWrapper(Context context,
-			AttributeSet attrs, int defStyle) {
+	public StickyListHeadersListViewWrapper(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
+		
+		this.gestureDetector = !this.isInEditMode()
+			? new GestureDetector(context, new GestureListener())
+			: null;
+		
 		if(!HONEYCOMB_OR__ABOVE){
 			try {
 				mTop = View.class.getDeclaredField("mTop");
@@ -249,4 +244,12 @@ public class StickyListHeadersListViewWrapper extends FrameLayout {
 		this.drawSelectorOnTop = onTop;
 	}
 
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public void onShowPress(final MotionEvent e) {
+            StickyListHeadersListViewWrapper.this.showSelector = true;
+            StickyListHeadersListViewWrapper.this.invalidate(StickyListHeadersListViewWrapper.this.getRefreshedSelectorBounds());
+        }
+    }
 }

@@ -400,6 +400,11 @@ public class StickyListHeadersListView extends ListView implements
 
 	@Override
 	public void setAdapter(ListAdapter adapter) {
+        if (this.isInEditMode()) {
+            super.setAdapter(adapter);
+            return;
+        }
+
 		if (!clipToPaddingHasBeenSet) {
 			clippingToPadding = true;
 		}
