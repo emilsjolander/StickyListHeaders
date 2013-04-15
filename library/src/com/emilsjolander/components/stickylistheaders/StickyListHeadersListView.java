@@ -486,6 +486,7 @@ public class StickyListHeadersListView extends ListView implements
 
 		int adapterCount = adapter.getCount();
 		if (adapterCount == 0 || !areHeadersSticky) {
+			frame.removeHeader();
 			return;
 		}
 
