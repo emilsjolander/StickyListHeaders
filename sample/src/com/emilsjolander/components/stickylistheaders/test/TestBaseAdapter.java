@@ -144,13 +144,12 @@ public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAda
 	public Object[] getSections() {
 		return sections.toArray(new String[sections.size()]);
 	}
-	
-	public void clearAndNotify()
-	{
-	    countries = new String[0];
-	    sections.clear();
 
-	    notifyDataSetChanged();
+	public void clearAll() {
+		countries = new String[0];
+	    sections.clear();
 	}
+	
+	
 	
 }

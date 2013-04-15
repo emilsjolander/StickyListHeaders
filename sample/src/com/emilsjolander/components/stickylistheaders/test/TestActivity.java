@@ -56,8 +56,9 @@ public class TestActivity extends Activity implements OnScrollListener,
 			firstVisible = savedInstanceState.getInt(KEY_LIST_POSITION);
 		}
 
-		stickyList.addHeaderView(getLayoutInflater().inflate(R.layout.list_header, null));
-		stickyList.addFooterView(getLayoutInflater().inflate(R.layout.list_footer, null));
+		//stickyList.addHeaderView(getLayoutInflater().inflate(R.layout.list_header, null));
+		//stickyList.addFooterView(getLayoutInflater().inflate(R.layout.list_footer, null));
+		stickyList.setEmptyView(findViewById(R.id.empty));
 		adapter = new TestBaseAdapter(this);
 		stickyList.setAdapter(adapter);
 		stickyList.setSelection(firstVisible);
@@ -68,7 +69,8 @@ public class TestActivity extends Activity implements OnScrollListener,
 			
 			@Override
 			public void run() {
-				adapter.clearAndNotify();
+//				adapter.clearAll();
+				adapter.notifyDataSetChanged();
 				Toast.makeText(getApplicationContext(), "notifyDataSetChanged", Toast.LENGTH_SHORT).show();
 			}
 		}, 5000);

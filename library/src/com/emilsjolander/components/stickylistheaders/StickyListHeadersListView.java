@@ -171,9 +171,13 @@ public class StickyListHeadersListView extends ListView implements
 			int listIndex = parent.indexOfChild(this);
 			parent.removeView(this);
 
+			int visibility = getVisibility();
+			setVisibility(View.VISIBLE);
+			
 			frame = new StickyListHeadersListViewWrapper(getContext());
 			frame.setSelector(getSelector());
 			frame.setDrawSelectorOnTop(drawSelectorOnTop);
+			frame.setVisibility(visibility);
 
 			ViewGroup.MarginLayoutParams p = (MarginLayoutParams) getLayoutParams();
 			if (clippingToPadding) {
@@ -182,9 +186,10 @@ public class StickyListHeadersListView extends ListView implements
 			}
 
 			ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
-					ViewGroup.LayoutParams.MATCH_PARENT,
-					ViewGroup.LayoutParams.MATCH_PARENT);
+					LayoutParams.MATCH_PARENT,
+					LayoutParams.MATCH_PARENT);
 			setLayoutParams(params);
+			
 			frame.addView(this);
 			frame.setBackgroundDrawable(getBackground());
 			super.setBackgroundDrawable(null);
@@ -433,6 +438,14 @@ public class StickyListHeadersListView extends ListView implements
 
 		currentHeaderId = null;
 		super.setAdapter(this.adapter);
+	}
+	
+	@Override
+	public void setVisibility(int visibility) {
+		if(frame != null){
+			frame.setVisibility(visibility);
+		}
+		super.setVisibility(visibility);
 	}
 
 	public StickyListHeadersAdapter getWrappedAdapter() {

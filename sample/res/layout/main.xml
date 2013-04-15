@@ -17,4 +17,13 @@
         android:scrollbarStyle="outsideOverlay"
         tools:listitem="@layout/test_list_item_layout" />
 
+    <TextView
+        android:id="@+id/empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Empty!"
+        android:textSize="30sp"
+        android:visibility="gone" />
+
 </LinearLayout>
