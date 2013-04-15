@@ -15,6 +15,7 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -279,6 +280,13 @@ public class StickyListHeadersListView extends ListView implements
 			return (adapter == null || position < 0) ? ListView.INVALID_ROW_ID
 					: adapter.delegate.getItemId(position);
 		}
+	}
+	
+	@Override
+	protected ContextMenuInfo getContextMenuInfo() {
+		AdapterContextMenuInfo info = (android.widget.AdapterView.AdapterContextMenuInfo) super.getContextMenuInfo();
+		info.position = adapter.translateListViewPosition(info.position - getHeaderViewsCount());
+		return info;
 	}
 
 	private boolean isCalledFromSuper() {
