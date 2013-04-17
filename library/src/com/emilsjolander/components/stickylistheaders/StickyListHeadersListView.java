@@ -445,6 +445,12 @@ public class StickyListHeadersListView extends ListView implements
 		}
 
 		currentHeaderId = null;
+		if(frame != null){
+			frame.removeHeader();
+		}
+		updateHeaderVisibilities();
+		invalidate();
+		
 		super.setAdapter(this.adapter);
 	}
 	
@@ -501,7 +507,7 @@ public class StickyListHeadersListView extends ListView implements
 	}
 
 	private void scrollChanged(int firstVisibleItem) {
-		if (adapter == null) {
+		if (adapter == null || frame == null) {
 			return;
 		}
 
