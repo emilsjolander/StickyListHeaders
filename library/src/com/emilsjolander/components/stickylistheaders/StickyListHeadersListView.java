@@ -114,55 +114,6 @@ public class StickyListHeadersListView extends ListView implements
 		}
 	}
 
-	private void setMultiChoiceModeListenerWrapper() {
-		multiChoiceModeListenerWrapper = new MultiChoiceModeListener() {
-
-			@Override
-			public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-				if (multiChoiceModeListenerDelegate != null) {
-					return multiChoiceModeListenerDelegate.onPrepareActionMode(
-							mode, menu);
-				}
-				return false;
-			}
-	
-			@Override
-			public void onDestroyActionMode(ActionMode mode) {
-				if (multiChoiceModeListenerDelegate != null) {
-					multiChoiceModeListenerDelegate.onDestroyActionMode(mode);
-				}
-			}
-	
-			@Override
-			public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-				if (multiChoiceModeListenerDelegate != null) {
-					return multiChoiceModeListenerDelegate.onCreateActionMode(mode,
-							menu);
-				}
-				return false;
-			}
-	
-			@Override
-			public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-				if (multiChoiceModeListenerDelegate != null) {
-					return multiChoiceModeListenerDelegate.onActionItemClicked(
-							mode, item);
-				}
-				return false;
-			}
-	
-			@Override
-			public void onItemCheckedStateChanged(ActionMode mode, int position,
-					long id, boolean checked) {
-				if (multiChoiceModeListenerDelegate != null) {
-					position = adapter.translateListViewPosition(position);
-					multiChoiceModeListenerDelegate.onItemCheckedStateChanged(mode,
-							position, id, checked);
-				}
-			}
-		};
-	}
-
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onAttachedToWindow() {
@@ -216,140 +167,6 @@ public class StickyListHeadersListView extends ListView implements
 		drawSelectorOnTop = onTop;
 		if (frame != null) {
 			frame.setDrawSelectorOnTop(drawSelectorOnTop);
-		}
-	}
-
-	@Override
-	public boolean performItemClick(View view, int position, long id) {
-		OnItemClickListener listener = getOnItemClickListener();
-		int headerViewsCount = getHeaderViewsCount();
-		final int viewType = adapter.getItemViewType(position
-				- headerViewsCount);
-		if (viewType == adapter.headerViewType) {
-			if (onHeaderClickListener != null) {
-				position = adapter.translateListViewPosition(position
-						- headerViewsCount);
-				onHeaderClickListener.onHeaderClick(this, view, position, id,
-						false);
-				return true;
-			}
-			return false;
-		} else if (viewType == adapter.dividerViewType) {
-			return false;
-		} else {
-			if (listener != null) {
-				if (position >= adapter.getCount()) {
-					position -= adapter.getHeaderCount();
-				} else if (!(position < headerViewsCount)) {
-					position = adapter.translateListViewPosition(position
-							- headerViewsCount)
-							+ headerViewsCount;
-				}
-				listener.onItemClick(this, view, position, id);
-				return true;
-			}
-			return false;
-		}
-	}
-
-	@Override
-	public void setOnItemLongClickListener(OnItemLongClickListener listener) {
-		onItemLongClickListenerDelegate = listener;
-		if (listener == null) {
-			super.setOnItemLongClickListener(null);
-		} else {
-			super.setOnItemLongClickListener(onItemLongClickListenerWrapper);
-		}
-	}
-
-	@Override
-	public Object getItemAtPosition(int position) {
-		if(isCalledFromSuper()){
-			return super.getItemAtPosition(position);
-		}else{
-			return (adapter == null || position < 0) ? null : adapter.delegate
-					.getItem(position);
-		}
-	}
-
-	@Override
-	public long getItemIdAtPosition(int position) {
-		if(isCalledFromSuper()){
-			return super.getItemIdAtPosition(position);
-		}else{
-			return (adapter == null || position < 0) ? ListView.INVALID_ROW_ID
-					: adapter.delegate.getItemId(position);
-		}
-	}
-	
-	@Override
-	protected ContextMenuInfo getContextMenuInfo() {
-		AdapterContextMenuInfo info = (android.widget.AdapterView.AdapterContextMenuInfo) super.getContextMenuInfo();
-		info.position = adapter.translateListViewPosition(info.position - getHeaderViewsCount());
-		return info;
-	}
-
-	private boolean isCalledFromSuper() {
-		// i feel dirty...
-		// could not think if better way, need to translate positions when not
-		// called from super
-		StackTraceElement callingFrame = Thread.currentThread().getStackTrace()[5];
-		return callingFrame.getClassName().contains(
-				"android.widget.AbsListView");
-	}
-
-	@Override
-	public void setItemChecked(int position, boolean value) {
-		if (!isCalledFromSuper()) {
-			position = adapter.translateAdapterPosition(position);
-		}
-		// only real items are checkable
-		int viewtype = adapter.getItemViewType(position);
-		if (viewtype != adapter.dividerViewType
-				&& viewtype != adapter.headerViewType) {
-			super.setItemChecked(position, value);
-		}
-	}
-
-	@Override
-	public boolean isItemChecked(int position) {
-		if (!isCalledFromSuper()) {
-			position = adapter.translateAdapterPosition(position);
-		}
-		return super.isItemChecked(position);
-	}
-
-	@Override
-	public int getCheckedItemPosition() {
-		int position = super.getCheckedItemPosition();
-		if (!isCalledFromSuper() && position != ListView.INVALID_POSITION) {
-			position = adapter.translateAdapterPosition(position);
-		}
-		return position;
-	}
-
-	@Override
-	public SparseBooleanArray getCheckedItemPositions() {
-		SparseBooleanArray superCheckeditems = super.getCheckedItemPositions();
-		if (!isCalledFromSuper() && superCheckeditems != null) {
-			SparseBooleanArray checkeditems = new SparseBooleanArray(superCheckeditems.size());
-			for(int i = 0 ; i<superCheckeditems.size() ; i++){
-				int key = adapter.translateListViewPosition(superCheckeditems.keyAt(i));
-				boolean value = superCheckeditems.valueAt(i);
-				checkeditems.put(key, value);
-			}
-			return checkeditems;
-		}
-		return superCheckeditems;
-	}
-
-	@Override
-	public void setMultiChoiceModeListener(MultiChoiceModeListener listener) {
-		multiChoiceModeListenerDelegate = listener;
-		if (listener == null) {
-			super.setMultiChoiceModeListener(null);
-		} else {
-			super.setMultiChoiceModeListener(multiChoiceModeListenerWrapper);
 		}
 	}
 
@@ -476,7 +293,7 @@ public class StickyListHeadersListView extends ListView implements
 
 				@Override
 				public void run() {
-					scrollChanged(getFirstVisiblePosition());
+					scrollChanged(StickyListHeadersListView.super.getFirstVisiblePosition());
 				}
 			});
 		}
@@ -689,16 +506,6 @@ public class StickyListHeadersListView extends ListView implements
 		}
 	}
 
-	@Override
-	public void setSelectionFromTop(int position, int y) {
-		if (areHeadersSticky) {
-			if (frame != null && frame.hasHeader()) {
-				y += frame.getHeaderHeight();
-			}
-		}
-		super.setSelectionFromTop(position, y);
-	}
-
 	public void setOnHeaderClickListener(
 			OnHeaderClickListener onHeaderClickListener) {
 		this.onHeaderClickListener = onHeaderClickListener;
@@ -722,5 +529,273 @@ public class StickyListHeadersListView extends ListView implements
 			boolean drawingListUnderStickyHeader) {
 		this.drawingListUnderStickyHeader = drawingListUnderStickyHeader;
 	}
+	
+	
+	/* METHODS THAT NEED POSITION TRANSLATING! */
+	
+
+
+	private void setMultiChoiceModeListenerWrapper() {
+		multiChoiceModeListenerWrapper = new MultiChoiceModeListener() {
+
+			@Override
+			public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+				if (multiChoiceModeListenerDelegate != null) {
+					return multiChoiceModeListenerDelegate.onPrepareActionMode(
+							mode, menu);
+				}
+				return false;
+			}
+	
+			@Override
+			public void onDestroyActionMode(ActionMode mode) {
+				if (multiChoiceModeListenerDelegate != null) {
+					multiChoiceModeListenerDelegate.onDestroyActionMode(mode);
+				}
+			}
+	
+			@Override
+			public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+				if (multiChoiceModeListenerDelegate != null) {
+					return multiChoiceModeListenerDelegate.onCreateActionMode(mode,
+							menu);
+				}
+				return false;
+			}
+	
+			@Override
+			public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+				if (multiChoiceModeListenerDelegate != null) {
+					return multiChoiceModeListenerDelegate.onActionItemClicked(
+							mode, item);
+				}
+				return false;
+			}
+	
+			@Override
+			public void onItemCheckedStateChanged(ActionMode mode, int position,
+					long id, boolean checked) {
+				if (multiChoiceModeListenerDelegate != null) {
+					position = adapter.translateListViewPosition(position);
+					multiChoiceModeListenerDelegate.onItemCheckedStateChanged(mode,
+							position, id, checked);
+				}
+			}
+		};
+	}
+	@Override
+	public boolean performItemClick(View view, int position, long id) {
+		OnItemClickListener listener = getOnItemClickListener();
+		int headerViewsCount = getHeaderViewsCount();
+		final int viewType = adapter.getItemViewType(position
+				- headerViewsCount);
+		if (viewType == adapter.headerViewType) {
+			if (onHeaderClickListener != null) {
+				position = adapter.translateListViewPosition(position
+						- headerViewsCount);
+				onHeaderClickListener.onHeaderClick(this, view, position, id,
+						false);
+				return true;
+			}
+			return false;
+		} else if (viewType == adapter.dividerViewType) {
+			return false;
+		} else {
+			if (listener != null) {
+				if (position >= adapter.getCount()) {
+					position -= adapter.getHeaderCount();
+				} else if (!(position < headerViewsCount)) {
+					position = adapter.translateListViewPosition(position
+							- headerViewsCount)
+							+ headerViewsCount;
+				}
+				listener.onItemClick(this, view, position, id);
+				return true;
+			}
+			return false;
+		}
+	}
+
+	@Override
+	public void setOnItemLongClickListener(OnItemLongClickListener listener) {
+		onItemLongClickListenerDelegate = listener;
+		if (listener == null) {
+			super.setOnItemLongClickListener(null);
+		} else {
+			super.setOnItemLongClickListener(onItemLongClickListenerWrapper);
+		}
+	}
+
+	@Override
+	public Object getItemAtPosition(int position) {
+		if(isCalledFromSuper()){
+			return super.getItemAtPosition(position);
+		}else{
+			return (adapter == null || position < 0) ? null : adapter.delegate
+					.getItem(position);
+		}
+	}
+
+	@Override
+	public long getItemIdAtPosition(int position) {
+		if(isCalledFromSuper()){
+			return super.getItemIdAtPosition(position);
+		}else{
+			return (adapter == null || position < 0) ? ListView.INVALID_ROW_ID
+					: adapter.delegate.getItemId(position);
+		}
+	}
+	
+	@Override
+	protected ContextMenuInfo getContextMenuInfo() {
+		AdapterContextMenuInfo info = (android.widget.AdapterView.AdapterContextMenuInfo) super.getContextMenuInfo();
+		info.position = adapter.translateListViewPosition(info.position - getHeaderViewsCount());
+		return info;
+	}
+
+	private boolean isCalledFromSuper() {
+		// i feel dirty...
+		// could not think if better way, need to translate positions when not
+		// called from super
+		StackTraceElement callingFrame = Thread.currentThread().getStackTrace()[5];
+		return callingFrame.getClassName().contains(
+				"android.widget.AbsListView");
+	}
+
+	@Override
+	public void setItemChecked(int position, boolean value) {
+		if (!isCalledFromSuper()) {
+			position = adapter.translateAdapterPosition(position);
+		}
+		// only real items are checkable
+		int viewtype = adapter.getItemViewType(position);
+		if (viewtype != adapter.dividerViewType
+				&& viewtype != adapter.headerViewType) {
+			super.setItemChecked(position, value);
+		}
+	}
+
+	@Override
+	public boolean isItemChecked(int position) {
+		if (!isCalledFromSuper()) {
+			position = adapter.translateAdapterPosition(position);
+		}
+		return super.isItemChecked(position);
+	}
+
+	@Override
+	public void setSelectionFromTop(int position, int y) {
+		if (!isCalledFromSuper()) {
+			if (areHeadersSticky) {
+				if (frame != null && frame.hasHeader()) {
+					y += frame.getHeaderHeight();
+				}
+			}
+			position = adapter.translateAdapterPosition(position);
+		}
+		super.setSelectionFromTop(position, y);
+	}
+	
+	@Override
+	public void setSelection(int position) {
+		if (!isCalledFromSuper()) {
+			position = adapter.translateAdapterPosition(position);
+		}
+		super.setSelection(position);
+	}
+	
+	@Override
+	public void smoothScrollToPosition(int position) {
+		if (!isCalledFromSuper()) {
+			position = adapter.translateAdapterPosition(position);
+		}
+		super.smoothScrollToPosition(position);
+	}
+	
+	@Override
+	public void smoothScrollToPosition(int position, int boundPosition) {
+		if (!isCalledFromSuper()) {
+			position = adapter.translateAdapterPosition(position);
+		}
+		super.smoothScrollToPosition(position, boundPosition);
+	}
+	
+	@Override
+	public void smoothScrollToPositionFromTop(int position, int offset) {
+		if (!isCalledFromSuper()) {
+			if (areHeadersSticky) {
+				if (frame != null && frame.hasHeader()) {
+					offset += frame.getHeaderHeight();
+				}
+			}
+			position = adapter.translateAdapterPosition(position);
+		}
+		super.smoothScrollToPositionFromTop(position, offset);
+	}
+	
+	@Override
+	public void smoothScrollToPositionFromTop(int position, int offset,
+			int duration) {
+		if (!isCalledFromSuper()) {
+			if (areHeadersSticky) {
+				if (frame != null && frame.hasHeader()) {
+					offset += frame.getHeaderHeight();
+				}
+			}
+			position = adapter.translateAdapterPosition(position);
+		}
+		super.smoothScrollToPositionFromTop(position, offset, duration);
+	}
+	
+	@Override
+	public int getFirstVisiblePosition() {
+		if (!isCalledFromSuper()) {
+			return adapter.translateAdapterPosition(super.getFirstVisiblePosition());
+		}
+		return super.getFirstVisiblePosition();
+	}
+	
+	@Override
+	public int getLastVisiblePosition() {
+		if (!isCalledFromSuper()) {
+			return adapter.translateAdapterPosition(super.getLastVisiblePosition());
+		}
+		return super.getLastVisiblePosition();
+	}
+
+	@Override
+	public int getCheckedItemPosition() {
+		int position = super.getCheckedItemPosition();
+		if (!isCalledFromSuper() && position != ListView.INVALID_POSITION) {
+			position = adapter.translateAdapterPosition(position);
+		}
+		return position;
+	}
+
+	@Override
+	public SparseBooleanArray getCheckedItemPositions() {
+		SparseBooleanArray superCheckeditems = super.getCheckedItemPositions();
+		if (!isCalledFromSuper() && superCheckeditems != null) {
+			SparseBooleanArray checkeditems = new SparseBooleanArray(superCheckeditems.size());
+			for(int i = 0 ; i<superCheckeditems.size() ; i++){
+				int key = adapter.translateListViewPosition(superCheckeditems.keyAt(i));
+				boolean value = superCheckeditems.valueAt(i);
+				checkeditems.put(key, value);
+			}
+			return checkeditems;
+		}
+		return superCheckeditems;
+	}
+
+	@Override
+	public void setMultiChoiceModeListener(MultiChoiceModeListener listener) {
+		multiChoiceModeListenerDelegate = listener;
+		if (listener == null) {
+			super.setMultiChoiceModeListener(null);
+		} else {
+			super.setMultiChoiceModeListener(multiChoiceModeListenerWrapper);
+		}
+	}
+	
 
 }
