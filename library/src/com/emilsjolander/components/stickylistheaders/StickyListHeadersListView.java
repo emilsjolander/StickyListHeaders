@@ -650,6 +650,7 @@ public class StickyListHeadersListView extends ListView implements
 	protected ContextMenuInfo getContextMenuInfo() {
 		AdapterContextMenuInfo info = (android.widget.AdapterView.AdapterContextMenuInfo) super.getContextMenuInfo();
 		info.position = adapter.translateListViewPosition(info.position - getHeaderViewsCount());
+		info.position += getHeaderViewsCount();
 		return info;
 	}
 
