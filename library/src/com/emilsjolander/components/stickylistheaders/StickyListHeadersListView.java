@@ -717,6 +717,7 @@ public class StickyListHeadersListView extends ListView implements
 	public void smoothScrollToPosition(int position, int boundPosition) {
 		if (!isCalledFromSuper()) {
 			position = adapter.translateAdapterPosition(position);
+			boundPosition = adapter.translateAdapterPosition(boundPosition);
 		}
 		super.smoothScrollToPosition(position, boundPosition);
 	}
@@ -737,7 +738,7 @@ public class StickyListHeadersListView extends ListView implements
 	@Override
 	public void smoothScrollToPositionFromTop(int position, int offset,
 			int duration) {
-		if (!isCalledFromSuper()) {
+		if (adapter != null && !isCalledFromSuper()) {
 			if (areHeadersSticky) {
 				if (frame != null && frame.hasHeader()) {
 					offset += frame.getHeaderHeight();
@@ -750,7 +751,7 @@ public class StickyListHeadersListView extends ListView implements
 	
 	@Override
 	public int getFirstVisiblePosition() {
-		if (!isCalledFromSuper()) {
+		if (adapter != null && !isCalledFromSuper()) {
 			return adapter.translateAdapterPosition(super.getFirstVisiblePosition());
 		}
 		return super.getFirstVisiblePosition();
@@ -758,7 +759,7 @@ public class StickyListHeadersListView extends ListView implements
 	
 	@Override
 	public int getLastVisiblePosition() {
-		if (!isCalledFromSuper()) {
+		if (adapter != null && !isCalledFromSuper()) {
 			return adapter.translateAdapterPosition(super.getLastVisiblePosition());
 		}
 		return super.getLastVisiblePosition();
@@ -767,7 +768,7 @@ public class StickyListHeadersListView extends ListView implements
 	@Override
 	public int getCheckedItemPosition() {
 		int position = super.getCheckedItemPosition();
-		if (!isCalledFromSuper() && position != ListView.INVALID_POSITION) {
+		if (adapter != null && !isCalledFromSuper() && position != ListView.INVALID_POSITION) {
 			position = adapter.translateAdapterPosition(position);
 		}
 		return position;
@@ -776,7 +777,7 @@ public class StickyListHeadersListView extends ListView implements
 	@Override
 	public SparseBooleanArray getCheckedItemPositions() {
 		SparseBooleanArray superCheckeditems = super.getCheckedItemPositions();
-		if (!isCalledFromSuper() && superCheckeditems != null) {
+		if (adapter != null && !isCalledFromSuper() && superCheckeditems != null) {
 			SparseBooleanArray checkeditems = new SparseBooleanArray(superCheckeditems.size());
 			for(int i = 0 ; i<superCheckeditems.size() ; i++){
 				int key = adapter.translateListViewPosition(superCheckeditems.keyAt(i));
