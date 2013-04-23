@@ -1,13 +1,9 @@
 Notice
 =================
 
-I have now re-written a lot of the code for this library. 
+I have recently come to the understanding that the latest re-write of the library will not hold in the long run (mostly because of the need for translating positions). While the new version comes with a bunch of new features it makes it harder for me to keep bug free. So i will be trying to figure out a way to mix the benifits of v1 and the current state of the library to get the best of both worlds.
 
-What does this mean for you? 
-This means that a lot of the current bugs have been fixed and i will fixed the ones that haven't asap.
-However as this is a almost full re-write new bugs have certainly been introduced as well. 
-I have tagged the old version as v1.0 if you feel that this new version is not up for the job yet.
-The quicker people start upgrading to the new version the quicker all the bugs will be fixed.
+So i apologize in advance for any inconvenience this may cause (I will not be fixing any bugs for the uppcoming week/weeks when working on this)
 
 
 StickyListHeaders

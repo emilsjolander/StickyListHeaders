@@ -12,10 +12,10 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -54,6 +54,8 @@ public class StickyListHeadersListView extends ListView implements
 	private boolean drawSelectorOnTop;
 	private OnItemLongClickListener onItemLongClickListenerDelegate;
 	private MultiChoiceModeListener multiChoiceModeListenerDelegate;
+	private int positionToSetWhenAdapterIsReady = 0;
+	private int offsetToSetWhenAdapterIsReady = 0;
 
 	private DataSetObserver dataSetChangedObserver = new DataSetObserver() {
 
@@ -259,6 +261,8 @@ public class StickyListHeadersListView extends ListView implements
 			this.adapter.setDivider(divider);
 			this.adapter.setDividerHeight(dividerHeight);
 			this.adapter.registerInternalDataSetObserver(dataSetChangedObserver);
+			
+			setSelectionFromTop(positionToSetWhenAdapterIsReady,offsetToSetWhenAdapterIsReady);
 		}
 
 		currentHeaderId = null;
@@ -656,11 +660,12 @@ public class StickyListHeadersListView extends ListView implements
 
 	private boolean isCalledFromSuper() {
 		// i feel dirty...
-		// could not think if better way, need to translate positions when not
-		// called from super
-		StackTraceElement callingFrame = Thread.currentThread().getStackTrace()[5];
-		return callingFrame.getClassName().contains(
-				"android.widget.AbsListView");
+	    // could not think if better way, need to translate positions when not
+	    // called from super
+	    StackTraceElement callingFrame = Thread.currentThread().getStackTrace()[5];
+	    return callingFrame.getClassName().contains("android.widget.AbsListView") || 
+	           callingFrame.getClassName().contains("android.widget.ListView") ||
+	           callingFrame.getClassName().contains("android.widget.FastScroller");
 	}
 
 	@Override
@@ -685,46 +690,13 @@ public class StickyListHeadersListView extends ListView implements
 	}
 
 	@Override
-	public void setSelectionFromTop(int position, int y) {
+	public void setSelectionFromTop(int position, int offset) {
 		if (!isCalledFromSuper()) {
-			if (areHeadersSticky) {
-				if (frame != null && frame.hasHeader()) {
-					y += frame.getHeaderHeight();
-				}
+			if(adapter == null){
+				positionToSetWhenAdapterIsReady = position;
+				offsetToSetWhenAdapterIsReady = offset;
+				return;
 			}
-			position = adapter.translateAdapterPosition(position);
-		}
-		super.setSelectionFromTop(position, y);
-	}
-	
-	@Override
-	public void setSelection(int position) {
-		if (!isCalledFromSuper()) {
-			position = adapter.translateAdapterPosition(position);
-		}
-		super.setSelection(position);
-	}
-	
-	@Override
-	public void smoothScrollToPosition(int position) {
-		if (!isCalledFromSuper()) {
-			position = adapter.translateAdapterPosition(position);
-		}
-		super.smoothScrollToPosition(position);
-	}
-	
-	@Override
-	public void smoothScrollToPosition(int position, int boundPosition) {
-		if (!isCalledFromSuper()) {
-			position = adapter.translateAdapterPosition(position);
-			boundPosition = adapter.translateAdapterPosition(boundPosition);
-		}
-		super.smoothScrollToPosition(position, boundPosition);
-	}
-	
-	@Override
-	public void smoothScrollToPositionFromTop(int position, int offset) {
-		if (!isCalledFromSuper()) {
 			if (areHeadersSticky) {
 				if (frame != null && frame.hasHeader()) {
 					offset += frame.getHeaderHeight();
@@ -732,13 +704,39 @@ public class StickyListHeadersListView extends ListView implements
 			}
 			position = adapter.translateAdapterPosition(position);
 		}
-		super.smoothScrollToPositionFromTop(position, offset);
+		super.setSelectionFromTop(position, offset);
+	}
+	
+	@Override
+	public void setSelection(int position) {
+		setSelectionFromTop(position, 0);
+	}
+	
+	@Override
+	public void smoothScrollToPosition(int position) {
+		smoothScrollToPositionFromTop(position, 0);
+	}
+	
+	@Override
+	public void smoothScrollToPosition(int position, int boundPosition) {
+		//skipping bound position for now as is does not allow an offset
+		smoothScrollToPositionFromTop(position, 0);
+	}
+	
+	@Override
+	public void smoothScrollToPositionFromTop(int position, int offset) {
+		smoothScrollToPositionFromTop(position, offset, 500);
 	}
 	
 	@Override
 	public void smoothScrollToPositionFromTop(int position, int offset,
 			int duration) {
-		if (adapter != null && !isCalledFromSuper()) {
+		if (!isCalledFromSuper()) {
+			if(adapter == null){
+				positionToSetWhenAdapterIsReady = position;
+				offsetToSetWhenAdapterIsReady = offset;
+				return;
+			}
 			if (areHeadersSticky) {
 				if (frame != null && frame.hasHeader()) {
 					offset += frame.getHeaderHeight();
