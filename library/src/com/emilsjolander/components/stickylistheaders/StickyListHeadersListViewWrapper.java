@@ -118,7 +118,7 @@ public class StickyListHeadersListViewWrapper extends FrameLayout {
 			View list = getChildAt(0);
 			LayoutParams params = new LayoutParams(list.getMeasuredWidth()
 					- list.getPaddingLeft() - list.getPaddingRight(),
-					LayoutParams.WRAP_CONTENT);
+					header.getLayoutParams() != null ? header.getLayoutParams().height : LayoutParams.WRAP_CONTENT);
 			params.leftMargin = list.getPaddingLeft();
 			params.rightMargin = list.getPaddingRight();
 			params.gravity = Gravity.TOP;
