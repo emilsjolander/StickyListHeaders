@@ -30,97 +30,98 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements Stick
 		public void onHeaderClick(View header, int itemPosition, long headerId);
 	}
 
-	private final List<View> headerCache = new ArrayList<View>();
-	private final Context context;
-	private final StickyListHeadersAdapter delegate;
-	private Drawable divider;
-	private int dividerHeight;
-	private DataSetObserver dataSetObserver = new DataSetObserver() {
+	final StickyListHeadersAdapter mDelegate;
+	
+	private final List<View> mHeaderCache = new ArrayList<View>();
+	private final Context mContext;
+	private Drawable mDivider;
+	private int mDividerHeight;
+	private DataSetObserver mDataSetObserver = new DataSetObserver() {
 
 		@Override
 		public void onInvalidated() {
-			headerCache.clear();
+			mHeaderCache.clear();
 		}
 	};
 	private OnHeaderClickListener onHeaderClickListener;
 
 	StickyListHeadersAdapterWrapper(Context context,
 			StickyListHeadersAdapter delegate) {
-		this.context = context;
-		this.delegate = delegate;
-		delegate.registerDataSetObserver(dataSetObserver);
+		this.mContext = context;
+		this.mDelegate = delegate;
+		delegate.registerDataSetObserver(mDataSetObserver);
 	}
 
 	void setDivider(Drawable divider) {
-		this.divider = divider;
+		this.mDivider = divider;
 	}
 
 	void setDividerHeight(int dividerHeight) {
-		this.dividerHeight = dividerHeight;
+		this.mDividerHeight = dividerHeight;
 	}
 
 	@Override
 	public boolean areAllItemsEnabled() {
-		return delegate.areAllItemsEnabled();
+		return mDelegate.areAllItemsEnabled();
 	}
 
 	@Override
 	public boolean isEnabled(int position) {
-		return delegate.isEnabled(position);
+		return mDelegate.isEnabled(position);
 	}
 
 	@Override
 	public void registerDataSetObserver(DataSetObserver observer) {
-		delegate.registerDataSetObserver(observer);
+		mDelegate.registerDataSetObserver(observer);
 	}
 
 	@Override
 	public void unregisterDataSetObserver(DataSetObserver observer) {
-		delegate.unregisterDataSetObserver(observer);
+		mDelegate.unregisterDataSetObserver(observer);
 	}
 
 	@Override
 	public int getCount() {
-		return delegate.getCount();
+		return mDelegate.getCount();
 	}
 
 	@Override
 	public Object getItem(int position) {
-		return delegate.getItem(position);
+		return mDelegate.getItem(position);
 	}
 
 	@Override
 	public long getItemId(int position) {
-		return delegate.getItemId(position);
+		return mDelegate.getItemId(position);
 	}
 
 	@Override
 	public boolean hasStableIds() {
-		return delegate.hasStableIds();
+		return mDelegate.hasStableIds();
 	}
 
 	@Override
 	public int getItemViewType(int position) {
-		return delegate.getItemViewType(position);
+		return mDelegate.getItemViewType(position);
 	}
 
 	@Override
 	public int getViewTypeCount() {
-		return delegate.getViewTypeCount();
+		return mDelegate.getViewTypeCount();
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return delegate.isEmpty();
+		return mDelegate.isEmpty();
 	}
 
 	/**
 	 * Will recycle header from {@link WrapperView} if it exists
 	 */
 	private void recycleHeaderIfExists(WrapperView wv) {
-		View header = wv.header;
+		View header = wv.mHeader;
 		if (header != null) {
-			headerCache.add(header);
+			mHeaderCache.add(header);
 		}
 	}
 
@@ -129,8 +130,8 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements Stick
 	 * {@link WrapperView} and will also recycle the divider if it exists.
 	 */
 	private View configureHeader(WrapperView wv, final int position) {
-		View header = wv.header;
-		header = delegate.getHeaderView(position, header, wv);
+		View header = wv.mHeader;
+		header = mDelegate.getHeaderView(position, header, wv);
 		if (header == null) {
 			throw new NullPointerException("Header view must not be null.");
 		}
@@ -141,7 +142,7 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements Stick
 			@Override
 			public void onClick(View v) {
 				if(onHeaderClickListener != null){
-					long headerId = delegate.getHeaderId(position);
+					long headerId = mDelegate.getHeaderId(position);
 					onHeaderClickListener.onHeaderClick(v, position, headerId);
 				}
 			}
@@ -152,14 +153,14 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements Stick
 	/** Returns {@code true} if the previous position has the same header ID. */
 	private boolean previousPositionHasSameHeader(int position) {
 		return position != 0
-				&& delegate.getHeaderId(position) == delegate
+				&& mDelegate.getHeaderId(position) == mDelegate
 						.getHeaderId(position - 1);
 	}
 
 	@Override
 	public WrapperView getView(int position, View convertView, ViewGroup parent) {
-		WrapperView wv = (convertView == null) ? new WrapperView(context) : (WrapperView) convertView;
-		View item = delegate.getView(position, wv.item, wv);
+		WrapperView wv = (convertView == null) ? new WrapperView(mContext) : (WrapperView) convertView;
+		View item = mDelegate.getView(position, wv.mItem, wv);
 		View header = null;
 		if (previousPositionHasSameHeader(position)) {
 			recycleHeaderIfExists(wv);
@@ -168,11 +169,11 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements Stick
 		}
 		if((item instanceof Checkable) && !(wv instanceof CheckableWrapperView)) {
 			// Need to create Checkable subclass of WrapperView for ListView to work correctly
-			wv = new CheckableWrapperView(context);
+			wv = new CheckableWrapperView(mContext);
 		} else if(!(item instanceof Checkable) && (wv instanceof CheckableWrapperView)) {
-			wv = new WrapperView(context);
+			wv = new WrapperView(mContext);
 		}
-		wv.update(item, header, divider, dividerHeight);
+		wv.update(item, header, mDivider, mDividerHeight);
 		return wv;
 	}
 
@@ -182,42 +183,42 @@ final class StickyListHeadersAdapterWrapper extends BaseAdapter implements Stick
 
 	@Override
 	public boolean equals(Object o) {
-		return delegate.equals(o); 
+		return mDelegate.equals(o); 
 	}
 
 	@Override
 	public View getDropDownView(int position, View convertView, ViewGroup parent) {
-		return ((BaseAdapter) delegate).getDropDownView(position, convertView, parent);
+		return ((BaseAdapter) mDelegate).getDropDownView(position, convertView, parent);
 	}
 
 	@Override
 	public int hashCode() {
-		return delegate.hashCode();
+		return mDelegate.hashCode();
 	}
 
 	@Override
 	public void notifyDataSetChanged() {
-		((BaseAdapter) delegate).notifyDataSetChanged();
+		((BaseAdapter) mDelegate).notifyDataSetChanged();
 	}
 
 	@Override
 	public void notifyDataSetInvalidated() {
-		((BaseAdapter) delegate).notifyDataSetInvalidated();
+		((BaseAdapter) mDelegate).notifyDataSetInvalidated();
 	}
 
 	@Override
 	public String toString() {
-		return delegate.toString();
+		return mDelegate.toString();
 	}
 
 	@Override
 	public View getHeaderView(int position, View convertView, ViewGroup parent) {
-		return delegate.getHeaderView(position, convertView, parent);
+		return mDelegate.getHeaderView(position, convertView, parent);
 	}
 
 	@Override
 	public long getHeaderId(int position) {
-		return delegate.getHeaderId(position);
+		return mDelegate.getHeaderId(position);
 	}
 
 }
