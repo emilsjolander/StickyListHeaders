@@ -1,40 +1,58 @@
 package com.emilsjolander.components.stickylistheaders.test;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 import com.emilsjolander.components.stickylistheaders.StickyListHeadersAdapter;
 
 
 /**
- * @author Emil Sj�lander
- *
-Copyright 2012 Emil Sj�lander
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+ * @author Emil Sjölander
  */
-public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAdapter {
+public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAdapter, SectionIndexer {
 
 	private String[] countries;
+	private int[] sectionIndices;
+	private Character[] sectionsLetters;
 	private LayoutInflater inflater;
 
 	public TestBaseAdapter(Context context) {
 		inflater = LayoutInflater.from(context);
 		countries = context.getResources().getStringArray(R.array.countries);
+		sectionIndices = getSectionIndices();
+		sectionsLetters = getStartingLetters();
+	}
+
+	private Character[] getStartingLetters() {
+		Character[] letters = new Character[sectionIndices.length];
+		for (int i = 0; i < sectionIndices.length; i++) {
+			letters[i] = countries[sectionIndices[i]].charAt(0);
+		}
+		return letters;
+	}
+
+	private int[] getSectionIndices() {
+		ArrayList<Integer> sectionIndices = new ArrayList<Integer>();
+		char lastFirstChar = countries[0].charAt(0);
+		sectionIndices.add(0);
+		for (int i = 1; i < countries.length; i++) {
+			if(countries[i].charAt(0) != lastFirstChar) {
+				lastFirstChar = countries[i].charAt(0);
+				sectionIndices.add(i);
+			}
+		}
+		int[] sections = new int[sectionIndices.size()];
+		for (int i = 0; i < sectionIndices.size(); i++) {
+			sections[i] = sectionIndices.get(i);
+		}
+		return sections;
 	}
 
 	@Override
@@ -108,4 +126,25 @@ public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAda
 	class ViewHolder {
 		TextView text;
 	}
+
+	@Override
+	public int getPositionForSection(int section) {
+		return sectionIndices[section];
+	}
+
+	@Override
+	public int getSectionForPosition(int position) {
+		for (int i = 0; i < sectionIndices.length; i++) {
+			if(position < sectionIndices[i]) {
+				return i-1;
+			}
+		}
+		return sectionIndices.length-1;
+	}
+
+	@Override
+	public Object[] getSections() {
+		return sectionsLetters;
+	}
+	
 }
