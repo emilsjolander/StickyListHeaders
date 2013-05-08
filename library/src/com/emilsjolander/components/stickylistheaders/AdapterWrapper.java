@@ -23,7 +23,7 @@ import android.widget.ListAdapter;
  *
  * @author Jake Wharton (jakewharton@gmail.com)
  */
-class StickyListHeadersAdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
+class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 
 
 	public interface OnHeaderClickListener{
@@ -45,7 +45,7 @@ class StickyListHeadersAdapterWrapper extends BaseAdapter implements StickyListH
 	};
 	private OnHeaderClickListener onHeaderClickListener;
 
-	StickyListHeadersAdapterWrapper(Context context,
+	AdapterWrapper(Context context,
 			StickyListHeadersAdapter delegate) {
 		this.mContext = context;
 		this.mDelegate = delegate;

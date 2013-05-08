@@ -3,12 +3,12 @@ package com.emilsjolander.components.stickylistheaders;
 import android.content.Context;
 import android.widget.SectionIndexer;
 
-class StickyListHeadersSectionIndexerAdapterWrapper extends
-		StickyListHeadersAdapterWrapper implements SectionIndexer {
+class SectionIndexerAdapterWrapper extends
+		AdapterWrapper implements SectionIndexer {
 	
 	final SectionIndexer mSectionIndexerDelegate;
 
-	StickyListHeadersSectionIndexerAdapterWrapper(Context context,
+	SectionIndexerAdapterWrapper(Context context,
 			StickyListHeadersAdapter delegate) {
 		super(context, delegate);
 		mSectionIndexerDelegate = (SectionIndexer) delegate;

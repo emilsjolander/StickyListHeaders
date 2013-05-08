@@ -39,7 +39,7 @@ public class StickyListHeadersListView extends ListView {
 	private Boolean mClippingToPadding;
 	private final Rect mClippingRect = new Rect();
 	private Long mCurrentHeaderId = null;
-	private StickyListHeadersAdapterWrapper mAdapter;
+	private AdapterWrapper mAdapter;
 	private float mHeaderDownY = -1;
 	private boolean mHeaderBeingPressed = false;
 	private OnHeaderClickListener mOnHeaderClickListener;
@@ -50,7 +50,7 @@ public class StickyListHeadersListView extends ListView {
 	private Rect mSelectorRect = new Rect();// for if reflection fails
 	private Field mSelectorPositionField;
 
-	private StickyListHeadersAdapterWrapper.OnHeaderClickListener mAdapterHeaderClickListener = new StickyListHeadersAdapterWrapper.OnHeaderClickListener() {
+	private AdapterWrapper.OnHeaderClickListener mAdapterHeaderClickListener = new AdapterWrapper.OnHeaderClickListener() {
 
 		@Override
 		public void onHeaderClick(View header, int itemPosition, long headerId) {
@@ -212,13 +212,13 @@ public class StickyListHeadersListView extends ListView {
 		super.setAdapter(this.mAdapter);
 	}
 
-	private StickyListHeadersAdapterWrapper wrapAdapter(ListAdapter adapter) {
-		StickyListHeadersAdapterWrapper wrapper;
+	private AdapterWrapper wrapAdapter(ListAdapter adapter) {
+		AdapterWrapper wrapper;
 		if (adapter instanceof SectionIndexer) {
-			wrapper = new StickyListHeadersSectionIndexerAdapterWrapper(
+			wrapper = new SectionIndexerAdapterWrapper(
 					getContext(), (StickyListHeadersAdapter) adapter);
 		} else {
-			wrapper = new StickyListHeadersAdapterWrapper(getContext(),
+			wrapper = new AdapterWrapper(getContext(),
 					(StickyListHeadersAdapter) adapter);
 		}
 		wrapper.setDivider(mDivider);
