@@ -20,6 +20,7 @@ class WrapperView extends ViewGroup {
 	Drawable mDivider;
 	int mDividerHeight;
 	View mHeader;
+	int mItemTop;
 
 	public WrapperView(Context c) {
 		super(c);
@@ -112,12 +113,16 @@ class WrapperView extends ViewGroup {
 		b = getHeight();
 
 		if (mHeader != null) {
-			mHeader.layout(l, t, r, mHeader.getMeasuredHeight());
-			mItem.layout(l, mHeader.getMeasuredHeight(), r, b);
+			int headerHeight = mHeader.getMeasuredHeight();
+			mHeader.layout(l, t, r, headerHeight);
+			mItemTop = headerHeight;
+			mItem.layout(l, headerHeight, r, b);
 		} else if (mDivider != null) {
 			mDivider.setBounds(l, t, r, mDividerHeight);
+			mItemTop = mDividerHeight;
 			mItem.layout(l, mDividerHeight, r, b);
 		} else {
+			mItemTop = t;
 			mItem.layout(l, t, r, b);
 		}
 	}

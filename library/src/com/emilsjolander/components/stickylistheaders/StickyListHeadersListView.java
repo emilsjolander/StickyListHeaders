@@ -1,5 +1,6 @@
 package com.emilsjolander.components.stickylistheaders;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
@@ -35,8 +36,7 @@ public class StickyListHeadersListView extends ListView {
 	private View mHeader;
 	private int mDividerHeight;
 	private Drawable mDivider;
-	private boolean mClippingToPadding;
-	private boolean mClipToPaddingHasBeenSet;
+	private Boolean mClippingToPadding;
 	private final Rect mClippingRect = new Rect();
 	private Long mCurrentHeaderId = null;
 	private StickyListHeadersAdapterWrapper mAdapter;
@@ -47,6 +47,8 @@ public class StickyListHeadersListView extends ListView {
 	private ViewConfiguration mViewConfig;
 	private ArrayList<View> mFooterViews;
 	private boolean mDrawingListUnderStickyHeader = false;
+	private Rect mSelectorRect = new Rect();// for if reflection fails
+	private Field mSelectorPositionField;
 
 	private StickyListHeadersAdapterWrapper.OnHeaderClickListener mAdapterHeaderClickListener = new StickyListHeadersAdapterWrapper.OnHeaderClickListener() {
 
@@ -113,6 +115,26 @@ public class StickyListHeadersListView extends ListView {
 		super.setDivider(null);
 		super.setDividerHeight(0);
 		mViewConfig = ViewConfiguration.get(context);
+		if (mClippingToPadding == null) {
+			mClippingToPadding = true;
+		}
+
+		try {
+			Field selectorRectField = AbsListView.class
+					.getDeclaredField("mSelectorRect");
+			selectorRectField.setAccessible(true);
+			mSelectorRect = (Rect) selectorRectField.get(this);
+
+			mSelectorPositionField = AbsListView.class
+					.getDeclaredField("mSelectorPosition");
+			mSelectorPositionField.setAccessible(true);
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -181,9 +203,6 @@ public class StickyListHeadersListView extends ListView {
 
 	@Override
 	public void setAdapter(ListAdapter adapter) {
-		if (!mClipToPaddingHasBeenSet) {
-			mClippingToPadding = true;
-		}
 		if (!(adapter instanceof StickyListHeadersAdapter)) {
 			throw new IllegalArgumentException(
 					"Adapter must implement StickyListHeadersAdapter");
@@ -195,12 +214,12 @@ public class StickyListHeadersListView extends ListView {
 
 	private StickyListHeadersAdapterWrapper wrapAdapter(ListAdapter adapter) {
 		StickyListHeadersAdapterWrapper wrapper;
-		if(adapter instanceof SectionIndexer) {
-			 wrapper = new StickyListHeadersSectionIndexerAdapterWrapper(
-						getContext(), (StickyListHeadersAdapter) adapter);
-		}else{
-			 wrapper = new StickyListHeadersAdapterWrapper(
-						getContext(), (StickyListHeadersAdapter) adapter);
+		if (adapter instanceof SectionIndexer) {
+			wrapper = new StickyListHeadersSectionIndexerAdapterWrapper(
+					getContext(), (StickyListHeadersAdapter) adapter);
+		} else {
+			wrapper = new StickyListHeadersAdapterWrapper(getContext(),
+					(StickyListHeadersAdapter) adapter);
 		}
 		wrapper.setDivider(mDivider);
 		wrapper.setDividerHeight(mDividerHeight);
@@ -230,6 +249,7 @@ public class StickyListHeadersListView extends ListView {
 			canvas.clipRect(mClippingRect);
 		}
 
+		positionSelectorRect();
 		super.dispatchDraw(canvas);
 
 		if (!mDrawingListUnderStickyHeader) {
@@ -237,6 +257,33 @@ public class StickyListHeadersListView extends ListView {
 		}
 
 		drawStickyHeader(canvas);
+	}
+
+	private void positionSelectorRect() {
+		if (!mSelectorRect.isEmpty()) {
+			int selectorPosition = getSelectorPosition();
+			if (selectorPosition >= 0) {
+				int firstVisibleItem = fixedFirstVisibleItem(getFirstVisiblePosition());
+				View v = getChildAt(selectorPosition - firstVisibleItem);
+				if (v instanceof WrapperView) {
+					WrapperView wrapper = ((WrapperView) v);
+					mSelectorRect.top = wrapper.getTop() + wrapper.mItemTop;
+				}
+			}
+		}
+	}
+
+	private int getSelectorPosition() {
+		try {
+			return mSelectorPositionField.getInt(this);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
 	}
 
 	private void drawStickyHeader(Canvas canvas) {
@@ -281,7 +328,6 @@ public class StickyListHeadersListView extends ListView {
 	public void setClipToPadding(boolean clipToPadding) {
 		super.setClipToPadding(clipToPadding);
 		mClippingToPadding = clipToPadding;
-		mClipToPaddingHasBeenSet = true;
 	}
 
 	private void scrollChanged(int reportedFirstVisibleItem) {
@@ -292,7 +338,7 @@ public class StickyListHeadersListView extends ListView {
 		}
 
 		final int listViewHeaderCount = getHeaderViewsCount();
-		final int firstVisibleItem = getFixedFirstVisibleItem(reportedFirstVisibleItem)
+		final int firstVisibleItem = fixedFirstVisibleItem(reportedFirstVisibleItem)
 				- listViewHeaderCount;
 
 		if (firstVisibleItem < 0 || firstVisibleItem > adapterCount - 1) {
@@ -400,7 +446,7 @@ public class StickyListHeadersListView extends ListView {
 		}
 	}
 
-	private int getFixedFirstVisibleItem(int firstVisibleItem) {
+	private int fixedFirstVisibleItem(int firstVisibleItem) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			return firstVisibleItem;
 		}

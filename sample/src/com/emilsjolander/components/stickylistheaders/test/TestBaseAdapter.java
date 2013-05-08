@@ -129,6 +129,11 @@ public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAda
 
 	@Override
 	public int getPositionForSection(int section) {
+		if(section >= sectionIndices.length) {
+			section = sectionIndices.length-1;
+		}else if(section < 0){
+			section = 0;
+		}
 		return sectionIndices[section];
 	}
 
