@@ -1,26 +1,21 @@
 package com.emilsjolander.components.stickylistheaders;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.SparseBooleanArray;
-import android.view.ActionMode;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
-import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
@@ -28,63 +23,79 @@ import android.widget.SectionIndexer;
 /**
  * @author Emil Sjölander
  */
-@SuppressLint("NewApi")
-public class StickyListHeadersListView extends ListView implements
-		OnScrollListener, OnClickListener {
+public class StickyListHeadersListView extends ListView {
 
 	public interface OnHeaderClickListener {
 		public void onHeaderClick(StickyListHeadersListView l, View header,
 				int itemPosition, long headerId, boolean currentlySticky);
 	}
 
-	private OnScrollListener scrollListener;
-	private boolean areHeadersSticky = true;
-	private int dividerHeight;
-	private Drawable divider;
-	private boolean clippingToPadding;
-	private boolean clipToPaddingHasBeenSet;
-	private Long currentHeaderId = null;
-	private StickyListHeadersAdapterWrapper adapter;
-	private OnHeaderClickListener onHeaderClickListener;
-	private int headerPosition;
-	private ArrayList<View> footerViews;
-	private StickyListHeadersListViewWrapper frame;
-	private boolean drawingListUnderStickyHeader = true;
-	private boolean dataChanged = false;
-	private boolean drawSelectorOnTop;
-	private OnItemLongClickListener onItemLongClickListenerDelegate;
-	private MultiChoiceModeListener multiChoiceModeListenerDelegate;
-	private int positionToSetWhenAdapterIsReady = 0;
-	private int offsetToSetWhenAdapterIsReady = 0;
+	private OnScrollListener mOnScrollListenerDelegate;
+	private boolean mAreHeadersSticky = true;
+	private int mHeaderBottomPosition;
+	private View mHeader;
+	private int mDividerHeight;
+	private Drawable mDivider;
+	private Boolean mClippingToPadding;
+	private final Rect mClippingRect = new Rect();
+	private Long mCurrentHeaderId = null;
+	private AdapterWrapper mAdapter;
+	private float mHeaderDownY = -1;
+	private boolean mHeaderBeingPressed = false;
+	private OnHeaderClickListener mOnHeaderClickListener;
+	private int mHeaderPosition;
+	private ViewConfiguration mViewConfig;
+	private ArrayList<View> mFooterViews;
+	private boolean mDrawingListUnderStickyHeader = false;
+	private Rect mSelectorRect = new Rect();// for if reflection fails
+	private Field mSelectorPositionField;
 
-	private DataSetObserver dataSetChangedObserver = new DataSetObserver() {
+	private AdapterWrapper.OnHeaderClickListener mAdapterHeaderClickListener = new AdapterWrapper.OnHeaderClickListener() {
 
 		@Override
+		public void onHeaderClick(View header, int itemPosition, long headerId) {
+			if (mOnHeaderClickListener != null) {
+				mOnHeaderClickListener.onHeaderClick(
+						StickyListHeadersListView.this, header, itemPosition,
+						headerId, false);
+			}
+		}
+	};
+
+	private DataSetObserver mDataSetChangedObserver = new DataSetObserver() {
+		@Override
 		public void onChanged() {
-			dataChanged = true;
-			currentHeaderId = null;
+			reset();
 		}
 
 		@Override
 		public void onInvalidated() {
-			currentHeaderId = null;
-			frame.removeHeader();
+			reset();
 		}
 	};
-	private OnItemLongClickListener onItemLongClickListenerWrapper = new OnItemLongClickListener() {
+
+	private OnScrollListener mOnScrollListener = new OnScrollListener() {
 
 		@Override
-		public boolean onItemLongClick(AdapterView<?> l, View v, int position,
-				long id) {
-			if (onItemLongClickListenerDelegate != null) {
-				return onItemLongClickListenerDelegate.onItemLongClick(l, v,
-						adapter.translateListViewPosition(position), id);
+		public void onScrollStateChanged(AbsListView view, int scrollState) {
+			if (mOnScrollListenerDelegate != null) {
+				mOnScrollListenerDelegate.onScrollStateChanged(view,
+						scrollState);
 			}
-			return false;
 		}
 
+		@Override
+		public void onScroll(AbsListView view, int firstVisibleItem,
+				int visibleItemCount, int totalItemCount) {
+			if (mOnScrollListenerDelegate != null) {
+				mOnScrollListenerDelegate.onScroll(view, firstVisibleItem,
+						visibleItemCount, totalItemCount);
+			}
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+				scrollChanged(firstVisibleItem);
+			}
+		}
 	};
-	private MultiChoiceModeListener multiChoiceModeListenerWrapper;
 
 	public StickyListHeadersListView(Context context) {
 		this(context, null);
@@ -97,105 +108,69 @@ public class StickyListHeadersListView extends ListView implements
 	public StickyListHeadersListView(Context context, AttributeSet attrs,
 			int defStyle) {
 		super(context, attrs, defStyle);
-		super.setOnScrollListener(this);
+
+		super.setOnScrollListener(mOnScrollListener);
 		// null out divider, dividers are handled by adapter so they look good
 		// with headers
 		super.setDivider(null);
 		super.setDividerHeight(0);
-		setVerticalFadingEdgeEnabled(false);
-
-		int[] attrsArray = new int[] { android.R.attr.drawSelectorOnTop };
-
-		TypedArray a = context.obtainStyledAttributes(attrs, attrsArray,
-				defStyle, 0);
-		drawSelectorOnTop = a.getBoolean(0, false);
-		a.recycle();
-		
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
-			setMultiChoiceModeListenerWrapper();
+		mViewConfig = ViewConfiguration.get(context);
+		if (mClippingToPadding == null) {
+			mClippingToPadding = true;
 		}
-	}
 
-	@SuppressWarnings("deprecation")
-	@Override
-	protected void onAttachedToWindow() {
-		super.onAttachedToWindow();
-		if (frame == null) {
-			ViewGroup parent = ((ViewGroup) getParent());
-			int listIndex = parent.indexOfChild(this);
-			parent.removeView(this);
+		try {
+			Field selectorRectField = AbsListView.class
+					.getDeclaredField("mSelectorRect");
+			selectorRectField.setAccessible(true);
+			mSelectorRect = (Rect) selectorRectField.get(this);
 
-			int visibility = getVisibility();
-			setVisibility(View.VISIBLE);
-			
-			frame = new StickyListHeadersListViewWrapper(getContext());
-			frame.setSelector(getSelector());
-			frame.setDrawSelectorOnTop(drawSelectorOnTop);
-			frame.setVisibility(visibility);
-
-			ViewGroup.MarginLayoutParams p = (MarginLayoutParams) getLayoutParams();
-			if (clippingToPadding) {
-				frame.setPadding(0, getPaddingTop(), 0, getPaddingBottom());
-				setPadding(getPaddingLeft(), 0, getPaddingRight(), 0);
-			}
-
-			ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
-					LayoutParams.MATCH_PARENT,
-					LayoutParams.MATCH_PARENT);
-			setLayoutParams(params);
-			
-			frame.addView(this);
-			frame.setBackgroundDrawable(getBackground());
-			super.setBackgroundDrawable(null);
-
-			frame.setLayoutParams(p);
-			parent.addView(frame, listIndex);
+			mSelectorPositionField = AbsListView.class
+					.getDeclaredField("mSelectorPosition");
+			mSelectorPositionField.setAccessible(true);
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
 		}
 	}
 
 	@Override
-	@Deprecated
-	public void setBackgroundDrawable(Drawable background) {
-		if (frame != null) {
-			frame.setBackgroundDrawable(background);
-		} else {
-			super.setBackgroundDrawable(background);
+	protected void onLayout(boolean changed, int l, int t, int r, int b) {
+		super.onLayout(changed, l, t, r, b);
+		if (changed) {
+			reset();
+			scrollChanged(getFirstVisiblePosition());
 		}
 	}
 
-	@Override
-	public void setDrawSelectorOnTop(boolean onTop) {
-		super.setDrawSelectorOnTop(onTop);
-		drawSelectorOnTop = onTop;
-		if (frame != null) {
-			frame.setDrawSelectorOnTop(drawSelectorOnTop);
-		}
+	private void reset() {
+		mHeader = null;
+		mCurrentHeaderId = null;
+		mHeaderBottomPosition = -1;
 	}
 
-	/**
-	 * can only be set to false if headers are sticky, not compatible with
-	 * fading edges
-	 */
 	@Override
-	public void setVerticalFadingEdgeEnabled(boolean verticalFadingEdgeEnabled) {
-		if (areHeadersSticky) {
-			super.setVerticalFadingEdgeEnabled(false);
-		} else {
-			super.setVerticalFadingEdgeEnabled(verticalFadingEdgeEnabled);
+	public boolean performItemClick(View view, int position, long id) {
+		if (view instanceof WrapperView) {
+			view = ((WrapperView) view).mItem;
 		}
+		return super.performItemClick(view, position, id);
 	}
 
 	@Override
 	public void setDivider(Drawable divider) {
-		this.divider = divider;
+		this.mDivider = divider;
 		if (divider != null) {
 			int dividerDrawableHeight = divider.getIntrinsicHeight();
 			if (dividerDrawableHeight >= 0) {
 				setDividerHeight(dividerDrawableHeight);
 			}
 		}
-		if (adapter != null) {
-			adapter.setDivider(divider);
+		if (mAdapter != null) {
+			mAdapter.setDivider(divider);
 			requestLayout();
 			invalidate();
 		}
@@ -203,9 +178,9 @@ public class StickyListHeadersListView extends ListView implements
 
 	@Override
 	public void setDividerHeight(int height) {
-		dividerHeight = height;
-		if (adapter != null) {
-			adapter.setDividerHeight(height);
+		mDividerHeight = height;
+		if (mAdapter != null) {
+			mAdapter.setDividerHeight(height);
 			requestLayout();
 			invalidate();
 		}
@@ -213,273 +188,276 @@ public class StickyListHeadersListView extends ListView implements
 
 	@Override
 	public void setOnScrollListener(OnScrollListener l) {
-		scrollListener = l;
+		mOnScrollListenerDelegate = l;
 	}
 
 	public void setAreHeadersSticky(boolean areHeadersSticky) {
-		if (this.areHeadersSticky != areHeadersSticky) {
-			if (areHeadersSticky) {
-				super.setVerticalFadingEdgeEnabled(false);
-			}
+		if (this.mAreHeadersSticky != areHeadersSticky) {
+			this.mAreHeadersSticky = areHeadersSticky;
 			requestLayout();
-			this.areHeadersSticky = areHeadersSticky;
 		}
 	}
 
 	public boolean getAreHeadersSticky() {
-		return areHeadersSticky;
+		return mAreHeadersSticky;
 	}
 
 	@Override
 	public void setAdapter(ListAdapter adapter) {
-        if (this.isInEditMode()) {
-            super.setAdapter(adapter);
-            return;
-        }
-
-		if (!clipToPaddingHasBeenSet) {
-			clippingToPadding = true;
+		if (this.isInEditMode()) {
+			super.setAdapter(adapter);
+			return;
 		}
-		if (adapter != null && !(adapter instanceof StickyListHeadersAdapter)) {
+		if(adapter == null){
+			mAdapter = null;
+			reset();
+			super.setAdapter(null);
+			return;
+		}
+		if (!(adapter instanceof StickyListHeadersAdapter)) {
 			throw new IllegalArgumentException(
 					"Adapter must implement StickyListHeadersAdapter");
 		}
-
-		if (this.adapter != null) {
-			this.adapter.unregisterInternalDataSetObserver(dataSetChangedObserver);
-			this.adapter = null;
-		}
-
-		if (adapter != null) {
-			if (adapter instanceof SectionIndexer) {
-				this.adapter = new StickyListHeadersSectionIndexerAdapterWrapper(
-						getContext(), (StickyListHeadersAdapter) adapter);
-			} else {
-				this.adapter = new StickyListHeadersAdapterWrapper(
-						getContext(), (StickyListHeadersAdapter) adapter);
-			}
-			this.adapter.setDivider(divider);
-			this.adapter.setDividerHeight(dividerHeight);
-			this.adapter.registerInternalDataSetObserver(dataSetChangedObserver);
-			
-			setSelectionFromTop(positionToSetWhenAdapterIsReady,offsetToSetWhenAdapterIsReady);
-		}
-
-		currentHeaderId = null;
-		if(frame != null){
-			frame.removeHeader();
-		}
-		updateHeaderVisibilities();
-		invalidate();
-		
-		super.setAdapter(this.adapter);
+		mAdapter = wrapAdapter(adapter);
+		reset();
+		super.setAdapter(this.mAdapter);
 	}
-	
-	@Override
-	public void setVisibility(int visibility) {
-		if(frame != null){
-			frame.setVisibility(visibility);
+
+	private AdapterWrapper wrapAdapter(ListAdapter adapter) {
+		AdapterWrapper wrapper;
+		if (adapter instanceof SectionIndexer) {
+			wrapper = new SectionIndexerAdapterWrapper(
+					getContext(), (StickyListHeadersAdapter) adapter);
+		} else {
+			wrapper = new AdapterWrapper(getContext(),
+					(StickyListHeadersAdapter) adapter);
 		}
-		super.setVisibility(visibility);
+		wrapper.setDivider(mDivider);
+		wrapper.setDividerHeight(mDividerHeight);
+		wrapper.registerDataSetObserver(mDataSetChangedObserver);
+		wrapper.setOnHeaderClickListener(mAdapterHeaderClickListener);
+		return wrapper;
 	}
 
 	public StickyListHeadersAdapter getWrappedAdapter() {
-		if (adapter != null) {
-			return adapter.getDelegate();
-		}
-		return null;
+		return mAdapter == null ? null : mAdapter.mDelegate;
 	}
 
 	@Override
 	protected void dispatchDraw(Canvas canvas) {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
-			post(new Runnable() {
+			scrollChanged(getFirstVisiblePosition());
+		}
+		if (!mAreHeadersSticky || mHeader == null) {
+			super.dispatchDraw(canvas);
+			return;
+		}
 
-				@Override
-				public void run() {
-					scrollChanged(StickyListHeadersListView.super.getFirstVisiblePosition());
-				}
-			});
+		if (!mDrawingListUnderStickyHeader) {
+			mClippingRect
+					.set(0, mHeaderBottomPosition, getWidth(), getHeight());
+			canvas.save();
+			canvas.clipRect(mClippingRect);
 		}
-		if (!drawingListUnderStickyHeader) {
-			canvas.clipRect(0, Math.max(frame.getHeaderBottomPosition(), 0),
-					canvas.getWidth(), canvas.getHeight());
-		}
+
+		positionSelectorRect();
 		super.dispatchDraw(canvas);
+
+		if (!mDrawingListUnderStickyHeader) {
+			canvas.restore();
+		}
+
+		drawStickyHeader(canvas);
+	}
+
+	private void positionSelectorRect() {
+		if (!mSelectorRect.isEmpty()) {
+			int selectorPosition = getSelectorPosition();
+			if (selectorPosition >= 0) {
+				int firstVisibleItem = fixedFirstVisibleItem(getFirstVisiblePosition());
+				View v = getChildAt(selectorPosition - firstVisibleItem);
+				if (v instanceof WrapperView) {
+					WrapperView wrapper = ((WrapperView) v);
+					mSelectorRect.top = wrapper.getTop() + wrapper.mItemTop;
+				}
+			}
+		}
+	}
+
+	private int getSelectorPosition() {
+		try {
+			return mSelectorPositionField.getInt(this);
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return -1;
+	}
+
+	private void drawStickyHeader(Canvas canvas) {
+		int headerHeight = getHeaderHeight();
+		int top = mHeaderBottomPosition - headerHeight;
+		// clip the headers drawing region
+		mClippingRect.left = getPaddingLeft();
+		mClippingRect.right = getWidth() - getPaddingRight();
+		mClippingRect.bottom = top + headerHeight;
+		mClippingRect.top = mClippingToPadding ? getPaddingTop() : 0;
+
+		canvas.save();
+		canvas.clipRect(mClippingRect);
+		canvas.translate(getPaddingLeft(), top);
+		mHeader.draw(canvas);
+		canvas.restore();
+	}
+
+	private void measureHeader() {
+		int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth(),
+				MeasureSpec.EXACTLY);
+		int heightMeasureSpec = 0;
+
+		ViewGroup.LayoutParams params = mHeader.getLayoutParams();
+		if (params != null && params.height > 0) {
+			heightMeasureSpec = MeasureSpec.makeMeasureSpec(params.height,
+					MeasureSpec.EXACTLY);
+		} else {
+			heightMeasureSpec = MeasureSpec.makeMeasureSpec(0,
+					MeasureSpec.UNSPECIFIED);
+		}
+		mHeader.measure(widthMeasureSpec, heightMeasureSpec);
+		mHeader.layout(getLeft() + getPaddingLeft(), 0, getRight()
+				- getPaddingRight(), mHeader.getMeasuredHeight());
+	}
+
+	private int getHeaderHeight() {
+		return mHeader == null ? 0 : mHeader.getMeasuredHeight();
 	}
 
 	@Override
 	public void setClipToPadding(boolean clipToPadding) {
 		super.setClipToPadding(clipToPadding);
-		clippingToPadding = clipToPadding;
-		clipToPaddingHasBeenSet = true;
+		mClippingToPadding = clipToPadding;
 	}
 
-	@Override
-	public void onScroll(AbsListView view, int firstVisibleItem,
-			int visibleItemCount, int totalItemCount) {
-		if (scrollListener != null) {
-			scrollListener.onScroll(view, firstVisibleItem, visibleItemCount,
-					totalItemCount);
-		}
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
-			scrollChanged(firstVisibleItem);
-		}
-	}
+	private void scrollChanged(int reportedFirstVisibleItem) {
 
-	private void scrollChanged(int firstVisibleItem) {
-		if (adapter == null || frame == null) {
-			return;
-		}
-
-		int adapterCount = adapter.getCount();
-		if (adapterCount == 0 || !areHeadersSticky) {
-			frame.removeHeader();
+		int adapterCount = mAdapter == null ? 0 : mAdapter.getCount();
+		if (adapterCount == 0 || !mAreHeadersSticky) {
 			return;
 		}
 
 		final int listViewHeaderCount = getHeaderViewsCount();
-		firstVisibleItem = getFixedFirstVisibleItem(firstVisibleItem)
+		final int firstVisibleItem = fixedFirstVisibleItem(reportedFirstVisibleItem)
 				- listViewHeaderCount;
 
 		if (firstVisibleItem < 0 || firstVisibleItem > adapterCount - 1) {
-			if (currentHeaderId != null || dataChanged) {
-				currentHeaderId = null;
-				frame.removeHeader();
-				updateHeaderVisibilities();
-				invalidate();
-				dataChanged = false;
-			}
+			reset();
+			updateHeaderVisibilities();
+			invalidate();
 			return;
 		}
 
-		boolean headerHasChanged = false;
-		long newHeaderId = adapter.getHeaderId(firstVisibleItem);
-		if (currentHeaderId == null || currentHeaderId != newHeaderId) {
-			headerPosition = firstVisibleItem;
-			View header = adapter.getHeaderView(headerPosition,
-					frame.removeHeader(), frame);
-			header.setOnClickListener(this);
-			frame.setHeader(header);
-			headerHasChanged = true;
+		long newHeaderId = mAdapter.getHeaderId(firstVisibleItem);
+		if (mCurrentHeaderId == null || mCurrentHeaderId != newHeaderId) {
+			mHeaderPosition = firstVisibleItem;
+			mCurrentHeaderId = newHeaderId;
+			mHeader = mAdapter.getHeaderView(mHeaderPosition, mHeader, this);
+			measureHeader();
 		}
-		currentHeaderId = newHeaderId;
 
 		int childCount = getChildCount();
-
-		if (childCount > 0) {
+		if (childCount != 0) {
 			View viewToWatch = null;
 			int watchingChildDistance = Integer.MAX_VALUE;
 			boolean viewToWatchIsFooter = false;
 
 			for (int i = 0; i < childCount; i++) {
-				View child = getChildAt(i);
-				boolean childIsFooter = footerViews != null
-						&& footerViews.contains(child);
+				final View child = super.getChildAt(i);
+				final boolean childIsFooter = mFooterViews != null
+						&& mFooterViews.contains(child);
 
-				int childDistance;
-				if (clippingToPadding) {
-					childDistance = child.getTop() - getPaddingTop();
-				} else {
-					childDistance = child.getTop();
-				}
-
+				final int childDistance = child.getTop()
+						- (mClippingToPadding ? getPaddingTop() : 0);
 				if (childDistance < 0) {
 					continue;
 				}
 
 				if (viewToWatch == null
-						|| (!viewToWatchIsFooter && !adapter
-								.isHeader(viewToWatch))
-						|| ((childIsFooter || adapter.isHeader(child)) && childDistance < watchingChildDistance)) {
+						|| (!viewToWatchIsFooter && !((WrapperView) viewToWatch)
+								.hasHeader())
+						|| ((childIsFooter || ((WrapperView) child).hasHeader()) && childDistance < watchingChildDistance)) {
 					viewToWatch = child;
 					viewToWatchIsFooter = childIsFooter;
 					watchingChildDistance = childDistance;
 				}
 			}
 
-			int headerHeight = frame.getHeaderHeight();
-			int headerBottomPosition = 0;
+			final int headerHeight = getHeaderHeight();
 			if (viewToWatch != null
-					&& (viewToWatchIsFooter || adapter.isHeader(viewToWatch))) {
-
+					&& (viewToWatchIsFooter || ((WrapperView) viewToWatch)
+							.hasHeader())) {
 				if (firstVisibleItem == listViewHeaderCount
-						&& getChildAt(0).getTop() > 0 && !clippingToPadding) {
-					headerBottomPosition = 0;
+						&& super.getChildAt(0).getTop() > 0
+						&& !mClippingToPadding) {
+					mHeaderBottomPosition = 0;
 				} else {
-					if (clippingToPadding) {
-						headerBottomPosition = Math.min(viewToWatch.getTop(),
-								headerHeight + getPaddingTop());
-						headerBottomPosition = headerBottomPosition < getPaddingTop() ? headerHeight
-								+ getPaddingTop()
-								: headerBottomPosition;
-					} else {
-						headerBottomPosition = Math.min(viewToWatch.getTop(),
-								headerHeight);
-						headerBottomPosition = headerBottomPosition < 0 ? headerHeight
-								: headerBottomPosition;
-					}
+					final int paddingTop = mClippingToPadding ? getPaddingTop()
+							: 0;
+					mHeaderBottomPosition = Math.min(viewToWatch.getTop(),
+							headerHeight + paddingTop);
+					mHeaderBottomPosition = mHeaderBottomPosition < paddingTop ? headerHeight
+							+ paddingTop
+							: mHeaderBottomPosition;
 				}
 			} else {
-				headerBottomPosition = headerHeight;
-				if (clippingToPadding) {
-					headerBottomPosition += getPaddingTop();
-				}
+				mHeaderBottomPosition = headerHeight
+						+ (mClippingToPadding ? getPaddingTop() : 0);
 			}
-			if (frame.getHeaderBottomPosition() != headerBottomPosition
-					|| headerHasChanged) {
-				frame.setHeaderBottomPosition(headerBottomPosition);
-			}
-			updateHeaderVisibilities();
 		}
-	}
-
-	@Override
-	public void setSelector(Drawable sel) {
-		super.setSelector(sel);
-		if (frame != null) {
-			frame.setSelector(sel);
-		}
+		updateHeaderVisibilities();
+		invalidate();
 	}
 
 	@Override
 	public void addFooterView(View v) {
 		super.addFooterView(v);
-		if (footerViews == null) {
-			footerViews = new ArrayList<View>();
+		if (mFooterViews == null) {
+			mFooterViews = new ArrayList<View>();
 		}
-		footerViews.add(v);
+		mFooterViews.add(v);
 	}
 
 	@Override
 	public boolean removeFooterView(View v) {
-		boolean removed = super.removeFooterView(v);
-		if (removed) {
-			footerViews.remove(v);
+		if (super.removeFooterView(v)) {
+			mFooterViews.remove(v);
+			return true;
 		}
-		return removed;
+		return false;
 	}
 
 	private void updateHeaderVisibilities() {
-		int top = clippingToPadding ? getPaddingTop() : 0;
+		int top = mClippingToPadding ? getPaddingTop() : 0;
 		int childCount = getChildCount();
 		for (int i = 0; i < childCount; i++) {
-			View child = getChildAt(i);
-			if (adapter.isHeader(child)) {
-				if (child.getTop() < top) {
-					if (child.getVisibility() != View.INVISIBLE) {
-						child.setVisibility(View.INVISIBLE);
-					}
-				} else {
-					if (child.getVisibility() != View.VISIBLE) {
-						child.setVisibility(View.VISIBLE);
+			View child = super.getChildAt(i);
+			if (child instanceof WrapperView) {
+				WrapperView wrapperViewChild = (WrapperView) child;
+				if (wrapperViewChild.hasHeader()) {
+					View childHeader = wrapperViewChild.mHeader;
+					if (wrapperViewChild.getTop() < top) {
+						childHeader.setVisibility(View.INVISIBLE);
+					} else {
+						childHeader.setVisibility(View.VISIBLE);
 					}
 				}
 			}
 		}
 	}
 
-	private int getFixedFirstVisibleItem(int firstVisibleItem) {
+	private int fixedFirstVisibleItem(int firstVisibleItem) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			return firstVisibleItem;
 		}
@@ -493,7 +471,7 @@ public class StickyListHeadersListView extends ListView implements
 
 		// work around to fix bug with firstVisibleItem being to high because
 		// listview does not take clipToPadding=false into account
-		if (!clippingToPadding && getPaddingTop() > 0) {
+		if (!mClippingToPadding && getPaddingTop() > 0) {
 			if (super.getChildAt(0).getTop() > 0) {
 				if (firstVisibleItem > 0) {
 					firstVisibleItem -= 1;
@@ -504,298 +482,84 @@ public class StickyListHeadersListView extends ListView implements
 	}
 
 	@Override
-	public void onScrollStateChanged(AbsListView view, int scrollState) {
-		if (scrollListener != null) {
-			scrollListener.onScrollStateChanged(view, scrollState);
+	public void setSelectionFromTop(int position, int y) {
+		if (mAreHeadersSticky) {
+			y += getHeaderHeight();
 		}
+		super.setSelectionFromTop(position, y);
+	}
+
+	@SuppressLint("NewApi")
+	@Override
+	public void smoothScrollToPositionFromTop(int position, int offset) {
+		if (mAreHeadersSticky) {
+			offset += getHeaderHeight();
+		}
+		super.smoothScrollToPositionFromTop(position, offset);
+	}
+
+	@SuppressLint("NewApi")
+	@Override
+	public void smoothScrollToPositionFromTop(int position, int offset,
+			int duration) {
+		if (mAreHeadersSticky) {
+			offset += getHeaderHeight();
+		}
+		super.smoothScrollToPositionFromTop(position, offset, duration);
 	}
 
 	public void setOnHeaderClickListener(
 			OnHeaderClickListener onHeaderClickListener) {
-		this.onHeaderClickListener = onHeaderClickListener;
-	}
-
-	@Override
-	public void onClick(View v) {
-		if (frame.isHeader(v)) {
-			if (onHeaderClickListener != null) {
-				onHeaderClickListener.onHeaderClick(this, v, headerPosition,
-						currentHeaderId, true);
-			}
-		}
-	}
-
-	public boolean isDrawingListUnderStickyHeader() {
-		return drawingListUnderStickyHeader;
+		this.mOnHeaderClickListener = onHeaderClickListener;
 	}
 
 	public void setDrawingListUnderStickyHeader(
 			boolean drawingListUnderStickyHeader) {
-		this.drawingListUnderStickyHeader = drawingListUnderStickyHeader;
+		mDrawingListUnderStickyHeader = drawingListUnderStickyHeader;
 	}
-	
-	
-	/* METHODS THAT NEED POSITION TRANSLATING! */
-	
 
-
-	private void setMultiChoiceModeListenerWrapper() {
-		multiChoiceModeListenerWrapper = new MultiChoiceModeListener() {
-
-			@Override
-			public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-				if (multiChoiceModeListenerDelegate != null) {
-					return multiChoiceModeListenerDelegate.onPrepareActionMode(
-							mode, menu);
-				}
-				return false;
-			}
-	
-			@Override
-			public void onDestroyActionMode(ActionMode mode) {
-				if (multiChoiceModeListenerDelegate != null) {
-					multiChoiceModeListenerDelegate.onDestroyActionMode(mode);
-				}
-			}
-	
-			@Override
-			public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-				if (multiChoiceModeListenerDelegate != null) {
-					return multiChoiceModeListenerDelegate.onCreateActionMode(mode,
-							menu);
-				}
-				return false;
-			}
-	
-			@Override
-			public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-				if (multiChoiceModeListenerDelegate != null) {
-					return multiChoiceModeListenerDelegate.onActionItemClicked(
-							mode, item);
-				}
-				return false;
-			}
-	
-			@Override
-			public void onItemCheckedStateChanged(ActionMode mode, int position,
-					long id, boolean checked) {
-				if (multiChoiceModeListenerDelegate != null) {
-					position = adapter.translateListViewPosition(position);
-					multiChoiceModeListenerDelegate.onItemCheckedStateChanged(mode,
-							position, id, checked);
-				}
-			}
-		};
+	public boolean isDrawingListUnderStickyHeader() {
+		return mDrawingListUnderStickyHeader;
 	}
+
+	// TODO handle touches better, multitouch etc.
 	@Override
-	public boolean performItemClick(View view, int position, long id) {
-		OnItemClickListener listener = getOnItemClickListener();
-		int headerViewsCount = getHeaderViewsCount();
-		final int viewType = adapter.getItemViewType(position
-				- headerViewsCount);
-		if (viewType == adapter.headerViewType) {
-			if (onHeaderClickListener != null) {
-				position = adapter.translateListViewPosition(position
-						- headerViewsCount);
-				onHeaderClickListener.onHeaderClick(this, view, position, id,
-						false);
+	public boolean onTouchEvent(MotionEvent ev) {
+		int action = ev.getAction();
+		if (action == MotionEvent.ACTION_DOWN
+				&& ev.getY() <= mHeaderBottomPosition) {
+			mHeaderDownY = ev.getY();
+			mHeaderBeingPressed = true;
+			mHeader.setPressed(true);
+			mHeader.invalidate();
+			invalidate(0, 0, getWidth(), mHeaderBottomPosition);
+			return true;
+		}
+		if (mHeaderBeingPressed) {
+			if (Math.abs(ev.getY() - mHeaderDownY) < mViewConfig
+					.getScaledTouchSlop()) {
+				if (action == MotionEvent.ACTION_UP
+						|| action == MotionEvent.ACTION_CANCEL) {
+					mHeaderDownY = -1;
+					mHeaderBeingPressed = false;
+					mHeader.setPressed(false);
+					mHeader.invalidate();
+					invalidate(0, 0, getWidth(), mHeaderBottomPosition);
+					if (mOnHeaderClickListener != null) {
+						mOnHeaderClickListener.onHeaderClick(this, mHeader,
+								mHeaderPosition, mCurrentHeaderId, true);
+					}
+				}
 				return true;
+			} else {
+				mHeaderDownY = -1;
+				mHeaderBeingPressed = false;
+				mHeader.setPressed(false);
+				mHeader.invalidate();
+				invalidate(0, 0, getWidth(), mHeaderBottomPosition);
 			}
-			return false;
-		} else if (viewType == adapter.dividerViewType) {
-			return false;
-		} else {
-			if (listener != null) {
-				if (position >= adapter.getCount()) {
-					position -= adapter.getHeaderCount();
-				} else if (!(position < headerViewsCount)) {
-					position = adapter.translateListViewPosition(position
-							- headerViewsCount)
-							+ headerViewsCount;
-				}
-				listener.onItemClick(this, view, position, id);
-				return true;
-			}
-			return false;
 		}
+		return super.onTouchEvent(ev);
 	}
-
-	@Override
-	public void setOnItemLongClickListener(OnItemLongClickListener listener) {
-		onItemLongClickListenerDelegate = listener;
-		if (listener == null) {
-			super.setOnItemLongClickListener(null);
-		} else {
-			super.setOnItemLongClickListener(onItemLongClickListenerWrapper);
-		}
-	}
-
-	@Override
-	public Object getItemAtPosition(int position) {
-		if(isCalledFromSuper()){
-			return super.getItemAtPosition(position);
-		}else{
-			return (adapter == null || position < 0) ? null : adapter.delegate
-					.getItem(position);
-		}
-	}
-
-	@Override
-	public long getItemIdAtPosition(int position) {
-		if(isCalledFromSuper()){
-			return super.getItemIdAtPosition(position);
-		}else{
-			return (adapter == null || position < 0) ? ListView.INVALID_ROW_ID
-					: adapter.delegate.getItemId(position);
-		}
-	}
-	
-	@Override
-	protected ContextMenuInfo getContextMenuInfo() {
-		AdapterContextMenuInfo info = (android.widget.AdapterView.AdapterContextMenuInfo) super.getContextMenuInfo();
-		info.position = adapter.translateListViewPosition(info.position - getHeaderViewsCount());
-		info.position += getHeaderViewsCount();
-		return info;
-	}
-
-	private boolean isCalledFromSuper() {
-		// i feel dirty...
-	    // could not think if better way, need to translate positions when not
-	    // called from super
-	    StackTraceElement callingFrame = Thread.currentThread().getStackTrace()[5];
-	    return callingFrame.getClassName().contains("android.widget.AbsListView") || 
-	           callingFrame.getClassName().contains("android.widget.ListView") ||
-	           callingFrame.getClassName().contains("android.widget.FastScroller");
-	}
-
-	@Override
-	public void setItemChecked(int position, boolean value) {
-		if (!isCalledFromSuper()) {
-			position = adapter.translateAdapterPosition(position);
-		}
-		// only real items are checkable
-		int viewtype = adapter.getItemViewType(position);
-		if (viewtype != adapter.dividerViewType
-				&& viewtype != adapter.headerViewType) {
-			super.setItemChecked(position, value);
-		}
-	}
-
-	@Override
-	public boolean isItemChecked(int position) {
-		if (!isCalledFromSuper()) {
-			position = adapter.translateAdapterPosition(position);
-		}
-		return super.isItemChecked(position);
-	}
-
-	@Override
-	public void setSelectionFromTop(int position, int offset) {
-		if (!isCalledFromSuper()) {
-			if(adapter == null){
-				positionToSetWhenAdapterIsReady = position;
-				offsetToSetWhenAdapterIsReady = offset;
-				return;
-			}
-			if (areHeadersSticky) {
-				if (frame != null && frame.hasHeader()) {
-					offset += frame.getHeaderHeight();
-				}
-			}
-			position = adapter.translateAdapterPosition(position);
-		}
-		super.setSelectionFromTop(position, offset);
-	}
-	
-	@Override
-	public void setSelection(int position) {
-		setSelectionFromTop(position, 0);
-	}
-	
-	@Override
-	public void smoothScrollToPosition(int position) {
-		smoothScrollToPositionFromTop(position, 0);
-	}
-	
-	@Override
-	public void smoothScrollToPosition(int position, int boundPosition) {
-		//skipping bound position for now as is does not allow an offset
-		smoothScrollToPositionFromTop(position, 0);
-	}
-	
-	@Override
-	public void smoothScrollToPositionFromTop(int position, int offset) {
-		smoothScrollToPositionFromTop(position, offset, 500);
-	}
-	
-	@Override
-	public void smoothScrollToPositionFromTop(int position, int offset,
-			int duration) {
-		if (!isCalledFromSuper()) {
-			if(adapter == null){
-				positionToSetWhenAdapterIsReady = position;
-				offsetToSetWhenAdapterIsReady = offset;
-				return;
-			}
-			if (areHeadersSticky) {
-				if (frame != null && frame.hasHeader()) {
-					offset += frame.getHeaderHeight();
-				}
-			}
-			position = adapter.translateAdapterPosition(position);
-		}
-		super.smoothScrollToPositionFromTop(position, offset, duration);
-	}
-	
-	@Override
-	public int getFirstVisiblePosition() {
-		if (adapter != null && !isCalledFromSuper()) {
-			return adapter.translateAdapterPosition(super.getFirstVisiblePosition());
-		}
-		return super.getFirstVisiblePosition();
-	}
-	
-	@Override
-	public int getLastVisiblePosition() {
-		if (adapter != null && !isCalledFromSuper()) {
-			return adapter.translateAdapterPosition(super.getLastVisiblePosition());
-		}
-		return super.getLastVisiblePosition();
-	}
-
-	@Override
-	public int getCheckedItemPosition() {
-		int position = super.getCheckedItemPosition();
-		if (adapter != null && !isCalledFromSuper() && position != ListView.INVALID_POSITION) {
-			position = adapter.translateAdapterPosition(position);
-		}
-		return position;
-	}
-
-	@Override
-	public SparseBooleanArray getCheckedItemPositions() {
-		SparseBooleanArray superCheckeditems = super.getCheckedItemPositions();
-		if (adapter != null && !isCalledFromSuper() && superCheckeditems != null) {
-			SparseBooleanArray checkeditems = new SparseBooleanArray(superCheckeditems.size());
-			for(int i = 0 ; i<superCheckeditems.size() ; i++){
-				int key = adapter.translateListViewPosition(superCheckeditems.keyAt(i));
-				boolean value = superCheckeditems.valueAt(i);
-				checkeditems.put(key, value);
-			}
-			return checkeditems;
-		}
-		return superCheckeditems;
-	}
-
-	@Override
-	public void setMultiChoiceModeListener(MultiChoiceModeListener listener) {
-		multiChoiceModeListenerDelegate = listener;
-		if (listener == null) {
-			super.setMultiChoiceModeListener(null);
-		} else {
-			super.setMultiChoiceModeListener(multiChoiceModeListenerWrapper);
-		}
-	}
-	
 
 }

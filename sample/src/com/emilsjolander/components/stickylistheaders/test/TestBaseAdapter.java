@@ -14,37 +14,47 @@ import com.emilsjolander.components.stickylistheaders.StickyListHeadersAdapter;
 
 
 /**
- * @author Emil Sj�lander
- *
-Copyright 2012 Emil Sj�lander
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+ * @author Emil Sjölander
  */
-public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAdapter, SectionIndexer{
+public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAdapter, SectionIndexer {
 
 	private String[] countries;
-	private ArrayList<String> sections;
+	private int[] sectionIndices;
+	private Character[] sectionsLetters;
 	private LayoutInflater inflater;
+	private Context context;
 
 	public TestBaseAdapter(Context context) {
+		this.context = context;
 		inflater = LayoutInflater.from(context);
 		countries = context.getResources().getStringArray(R.array.countries);
-		sections = new ArrayList<String>();
-		for(String s : countries){
-			if(!sections.contains(""+s.charAt(0))){
-				sections.add(""+s.charAt(0));
+		sectionIndices = getSectionIndices();
+		sectionsLetters = getStartingLetters();
+	}
+
+	private Character[] getStartingLetters() {
+		Character[] letters = new Character[sectionIndices.length];
+		for (int i = 0; i < sectionIndices.length; i++) {
+			letters[i] = countries[sectionIndices[i]].charAt(0);
+		}
+		return letters;
+	}
+
+	private int[] getSectionIndices() {
+		ArrayList<Integer> sectionIndices = new ArrayList<Integer>();
+		char lastFirstChar = countries[0].charAt(0);
+		sectionIndices.add(0);
+		for (int i = 1; i < countries.length; i++) {
+			if(countries[i].charAt(0) != lastFirstChar) {
+				lastFirstChar = countries[i].charAt(0);
+				sectionIndices.add(i);
 			}
 		}
+		int[] sections = new int[sectionIndices.size()];
+		for (int i = 0; i < sectionIndices.size(); i++) {
+			sections[i] = sectionIndices.get(i);
+		}
+		return sections;
 	}
 
 	@Override
@@ -84,26 +94,35 @@ public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAda
 		if (convertView == null) {
 			holder = new HeaderViewHolder();
 			convertView = inflater.inflate(R.layout.header, parent, false);
-			holder.text = (TextView) convertView.findViewById(R.id.text);
+			holder.text1 = (TextView) convertView.findViewById(R.id.text1);
+			holder.text2 = (TextView) convertView.findViewById(R.id.text2);
 			convertView.setTag(holder);
 		} else {
 			holder = (HeaderViewHolder) convertView.getTag();
 		}
 		//set header text as first char in name
-		String headerText = "" + countries[position].charAt(0);
-		holder.text.setText(headerText);
+		char headerChar = countries[position].subSequence(0, 1).charAt(0);
+		String headerText;
+		if(headerChar%2 == 0){
+			headerText = headerChar + "\n" + headerChar + "\n" + headerChar;
+		}else{
+			headerText = headerChar + "\n" + headerChar;
+		}
+		holder.text1.setText(headerText);
+		holder.text2.setText(headerText);
 		return convertView;
 	}
 
-	//remember that these have to be static, postion=1 should always return the same Id that is.
+	//remember that these have to be static, postion=1 should walys return the same Id that is.
 	@Override
 	public long getHeaderId(int position) {
 		//return the first character of the country as ID because this is what headers are based upon
-		return countries[position].charAt(0);
+		return countries[position].subSequence(0, 1).charAt(0);
 	}
 
 	class HeaderViewHolder {
-		TextView text;
+		TextView text1;
+		TextView text2;
 	}
 
 	class ViewHolder {
@@ -112,44 +131,41 @@ public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAda
 
 	@Override
 	public int getPositionForSection(int section) {
-		if(section >= sections.size()){
-			section = sections.size()-1;
+		if(section >= sectionIndices.length) {
+			section = sectionIndices.length-1;
 		}else if(section < 0){
 			section = 0;
 		}
-		
-		int position = 0;
-		char sectionChar = sections.get(section).charAt(0);
-		for(int i = 0 ; i<countries.length ; i++){
-			if(sectionChar == countries[i].charAt(0)){
-				position = i;
-				break;
-			}
-		}
-		return position;
+		return sectionIndices[section];
 	}
 
 	@Override
 	public int getSectionForPosition(int position) {
-		if(position >= countries.length){
-			position = countries.length-1;
-		}else if(position < 0){
-			position = 0;
+		for (int i = 0; i < sectionIndices.length; i++) {
+			if(position < sectionIndices[i]) {
+				return i-1;
+			}
 		}
-		
-		return sections.indexOf(""+countries[position].charAt(0));
+		return sectionIndices.length-1;
 	}
 
 	@Override
 	public Object[] getSections() {
-		return sections.toArray(new String[sections.size()]);
+		return sectionsLetters;
 	}
-
-	public void clearAll() {
+	
+	public void clear(){
+		sectionIndices = new int[0];
+		sectionsLetters = new Character[0];
 		countries = new String[0];
-	    sections.clear();
+		notifyDataSetChanged();
 	}
 	
-	
+	public void restore(){
+		countries = context.getResources().getStringArray(R.array.countries);
+		sectionIndices = getSectionIndices();
+		sectionsLetters = getStartingLetters();
+		notifyDataSetChanged();
+	}
 	
 }

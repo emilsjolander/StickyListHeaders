@@ -1,29 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pager"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
-
-    <com.emilsjolander.components.stickylistheaders.StickyListHeadersListView
-        android:id="@+id/list"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#ff444444"
-        android:clipToPadding="false"
-        android:dividerHeight="5dp"
-        android:fastScrollEnabled="true"
-        android:padding="16dip"
-        android:scrollbarStyle="outsideOverlay"
-        tools:listitem="@layout/test_list_item_layout" />
-
-    <TextView
-        android:id="@+id/empty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="Empty!"
-        android:textSize="30sp"
-        android:visibility="gone" />
-
-</LinearLayout>
+    android:layout_height="match_parent" />

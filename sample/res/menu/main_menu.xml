@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <item android:id="@+id/update"
+        android:title="update"
+        android:showAsAction="never"/>
+    
+    <item android:id="@+id/clear"
+        android:title="clear"
+        android:showAsAction="never"/>
+    
+    <item android:id="@+id/restore"
+        android:title="restore"
+        android:showAsAction="never"/>
+
+</menu>
