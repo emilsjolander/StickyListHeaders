@@ -32,6 +32,7 @@ AdapterView.OnItemClickListener, OnHeaderClickListener {
 				R.layout.list_footer, null));
 		mAdapter = new TestBaseAdapter(getActivity());
 		stickyList.setEmptyView(v.findViewById(R.id.empty));
+		
 		stickyList.setAdapter(mAdapter);
 		return v;
 	}
