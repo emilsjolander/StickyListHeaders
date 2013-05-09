@@ -3,7 +3,8 @@ package com.emilsjolander.components.stickylistheaders.test;
 import static android.widget.Toast.LENGTH_SHORT;
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.Handler;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -21,6 +22,7 @@ public class TestActivity extends Activity implements OnScrollListener,
 
 	private static final String KEY_LIST_POSITION = "KEY_LIST_POSITION";
 	private int firstVisible;
+	private TestBaseAdapter mAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -37,27 +39,33 @@ public class TestActivity extends Activity implements OnScrollListener,
 
 		stickyList.addHeaderView(getLayoutInflater().inflate(R.layout.list_header, null));
 		stickyList.addFooterView(getLayoutInflater().inflate(R.layout.list_footer, null));
-		final TestBaseAdapter adapter = new TestBaseAdapter(this);
+		mAdapter = new TestBaseAdapter(this);
 		stickyList.setEmptyView(findViewById(R.id.empty));
-		stickyList.setAdapter(adapter);
+		stickyList.setAdapter(mAdapter);
 		stickyList.setSelection(firstVisible);
 		
-		final Handler handler = new Handler();
-		handler.postDelayed(new Runnable() {
-			
-			@Override
-			public void run() {
-				adapter.notifyDataSetChanged();
-				Toast.makeText(getBaseContext(), "DatasetChanged", Toast.LENGTH_SHORT).show();
-				handler.postDelayed(new Runnable() {
-					
-					@Override
-					public void run() {
-						adapter.clear();
-					}
-				}, 5000);
-			}
-		}, 5000);
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.main_menu, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.update:
+			mAdapter.notifyDataSetChanged();
+			break;
+		case R.id.clear:
+			mAdapter.clear();
+			break;
+		case R.id.restore:
+			mAdapter.restore();
+			break;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override

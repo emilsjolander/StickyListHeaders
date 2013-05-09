@@ -22,8 +22,10 @@ public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAda
 	private int[] sectionIndices;
 	private Character[] sectionsLetters;
 	private LayoutInflater inflater;
+	private Context context;
 
 	public TestBaseAdapter(Context context) {
+		this.context = context;
 		inflater = LayoutInflater.from(context);
 		countries = context.getResources().getStringArray(R.array.countries);
 		sectionIndices = getSectionIndices();
@@ -156,6 +158,13 @@ public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAda
 		sectionIndices = new int[0];
 		sectionsLetters = new Character[0];
 		countries = new String[0];
+		notifyDataSetChanged();
+	}
+	
+	public void restore(){
+		countries = context.getResources().getStringArray(R.array.countries);
+		sectionIndices = getSectionIndices();
+		sectionsLetters = getStartingLetters();
 		notifyDataSetChanged();
 	}
 	

@@ -41,12 +41,12 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 		@Override
 		public void onInvalidated() {
 			mHeaderCache.clear();
-			notifyDataSetInvalidated();
+			AdapterWrapper.super.notifyDataSetInvalidated();
 		}
 		
 		@Override
 		public void onChanged() {
-			notifyDataSetChanged();
+			AdapterWrapper.super.notifyDataSetChanged();
 		}
 	};
 
@@ -125,7 +125,7 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 	 * {@link WrapperView} and will also recycle the divider if it exists.
 	 */
 	private View configureHeader(WrapperView wv, final int position) {
-		View header = wv.mHeader == null ? mHeaderCache.remove(0) : wv.mHeader;
+		View header = wv.mHeader == null ? popHeader() : wv.mHeader;
 		header = mDelegate.getHeaderView(position, header, wv);
 		if (header == null) {
 			throw new NullPointerException("Header view must not be null.");
@@ -143,6 +143,13 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 			}
 		});
 		return header;
+	}
+
+	private View popHeader() {
+		if(mHeaderCache.size() > 0) {
+			return mHeaderCache.remove(0);
+		}
+		return null;
 	}
 
 	/** Returns {@code true} if the previous position has the same header ID. */
