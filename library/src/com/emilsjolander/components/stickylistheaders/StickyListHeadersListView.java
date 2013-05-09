@@ -203,6 +203,10 @@ public class StickyListHeadersListView extends ListView {
 
 	@Override
 	public void setAdapter(ListAdapter adapter) {
+		if (this.isInEditMode()) {
+			super.setAdapter(adapter);
+			return;
+		}
 		if(adapter == null){
 			mAdapter = null;
 			reset();
