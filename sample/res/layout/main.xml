@@ -13,5 +13,14 @@
         android:scrollbarStyle="outsideOverlay"
         android:fastScrollEnabled="true"
         android:drawSelectorOnTop="true" />
+    
+    <TextView 
+        android:id="@+id/empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="30sp"
+        android:text="empty"
+        android:gravity="center"
+        android:visibility="gone"/>
 
 </LinearLayout>

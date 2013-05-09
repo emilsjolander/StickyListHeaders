@@ -152,4 +152,11 @@ public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAda
 		return sectionsLetters;
 	}
 	
+	public void clear(){
+		sectionIndices = new int[0];
+		sectionsLetters = new Character[0];
+		countries = new String[0];
+		notifyDataSetChanged();
+	}
+	
 }
