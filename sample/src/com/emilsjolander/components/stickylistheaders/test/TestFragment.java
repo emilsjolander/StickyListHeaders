@@ -4,7 +4,6 @@ import static android.widget.Toast.LENGTH_SHORT;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -48,22 +47,6 @@ AdapterView.OnItemClickListener, OnHeaderClickListener {
 	public void onHeaderClick(StickyListHeadersListView l, View header,
 			int itemPosition, long headerId, boolean currentlySticky) {
 		Toast.makeText(getActivity(), "header " + headerId, Toast.LENGTH_SHORT).show();
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.update:
-			mAdapter.notifyDataSetChanged();
-			break;
-		case R.id.clear:
-			mAdapter.clear();
-			break;
-		case R.id.restore:
-			mAdapter.restore();
-			break;
-		}
-		return super.onOptionsItemSelected(item);
 	}
 
 }

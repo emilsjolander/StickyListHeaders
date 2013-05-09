@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.view.Menu;
 
 /**
  * @author Emil Sjölander
@@ -35,12 +34,6 @@ public class TestActivity extends FragmentActivity implements TabListener, OnPag
 	    actionBar.addTab(getActionBar().newTab().setText("2").setTabListener(this));
 	    actionBar.addTab(getActionBar().newTab().setText("3").setTabListener(this));
 	    actionBar.addTab(getActionBar().newTab().setText("4").setTabListener(this));
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.main_menu, menu);
-		return true;
 	}
 
 	@Override
