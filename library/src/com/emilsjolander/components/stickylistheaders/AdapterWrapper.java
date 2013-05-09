@@ -1,6 +1,6 @@
 package com.emilsjolander.components.stickylistheaders;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import android.content.Context;
@@ -31,19 +31,24 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 	}
 
 	final StickyListHeadersAdapter mDelegate;
-	
-	private final List<View> mHeaderCache = new ArrayList<View>();
+	private final List<View> mHeaderCache = new LinkedList<View>();
 	private final Context mContext;
 	private Drawable mDivider;
 	private int mDividerHeight;
+	private OnHeaderClickListener mOnHeaderClickListener;
 	private DataSetObserver mDataSetObserver = new DataSetObserver() {
 
 		@Override
 		public void onInvalidated() {
 			mHeaderCache.clear();
+			notifyDataSetInvalidated();
+		}
+		
+		@Override
+		public void onChanged() {
+			notifyDataSetChanged();
 		}
 	};
-	private OnHeaderClickListener onHeaderClickListener;
 
 	AdapterWrapper(Context context,
 			StickyListHeadersAdapter delegate) {
@@ -68,16 +73,6 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 	@Override
 	public boolean isEnabled(int position) {
 		return mDelegate.isEnabled(position);
-	}
-
-	@Override
-	public void registerDataSetObserver(DataSetObserver observer) {
-		mDelegate.registerDataSetObserver(observer);
-	}
-
-	@Override
-	public void unregisterDataSetObserver(DataSetObserver observer) {
-		mDelegate.unregisterDataSetObserver(observer);
 	}
 
 	@Override
@@ -130,7 +125,7 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 	 * {@link WrapperView} and will also recycle the divider if it exists.
 	 */
 	private View configureHeader(WrapperView wv, final int position) {
-		View header = wv.mHeader;
+		View header = wv.mHeader == null ? mHeaderCache.remove(0) : wv.mHeader;
 		header = mDelegate.getHeaderView(position, header, wv);
 		if (header == null) {
 			throw new NullPointerException("Header view must not be null.");
@@ -141,9 +136,9 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 
 			@Override
 			public void onClick(View v) {
-				if(onHeaderClickListener != null){
+				if(mOnHeaderClickListener != null){
 					long headerId = mDelegate.getHeaderId(position);
-					onHeaderClickListener.onHeaderClick(v, position, headerId);
+					mOnHeaderClickListener.onHeaderClick(v, position, headerId);
 				}
 			}
 		});
@@ -178,7 +173,7 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 	}
 
 	public void setOnHeaderClickListener(OnHeaderClickListener onHeaderClickListener){
-		this.onHeaderClickListener = onHeaderClickListener;
+		this.mOnHeaderClickListener = onHeaderClickListener;
 	}
 
 	@Override
