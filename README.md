@@ -6,6 +6,7 @@ StickyListHeaders actively supports android versions 2.3 (gingerbread) and above
 That said, it should be compatible with much older versions of android as well but these are not actively tested.
 
 Here is a short gif showing the functionality you get with this library:
+
 ![alt text](https://github.com/emilsjolander/StickyListHeaders/raw/dev_old_tactic/demo.gif "Demo gif")
 
 
