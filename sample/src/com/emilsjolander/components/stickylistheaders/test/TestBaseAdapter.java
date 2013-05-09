@@ -102,12 +102,12 @@ public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAda
 		}
 		//set header text as first char in name
 		char headerChar = countries[position].subSequence(0, 1).charAt(0);
-		String headerText;
-		if(headerChar%2 == 0){
-			headerText = headerChar + "\n" + headerChar + "\n" + headerChar;
-		}else{
-			headerText = headerChar + "\n" + headerChar;
-		}
+		String headerText = headerChar + "";
+//		if(headerChar%2 == 0){
+//			headerText = headerChar + "\n" + headerChar + "\n" + headerChar;
+//		}else{
+//			headerText = headerChar + "\n" + headerChar;
+//		}
 		holder.text1.setText(headerText);
 		holder.text2.setText(headerText);
 		return convertView;
