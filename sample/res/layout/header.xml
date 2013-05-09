@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#ffff0000" >
+    android:background="@drawable/header_selector" >
 
     <TextView
         android:id="@+id/text1"
@@ -23,7 +23,6 @@
         android:textColor="#ff33b5e5"
         android:textSize="15sp"
         android:textStyle="bold"/>
-    
     
     <View android:layout_gravity="bottom"
         android:layout_width="match_parent"
