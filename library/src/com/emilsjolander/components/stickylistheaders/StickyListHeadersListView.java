@@ -203,11 +203,17 @@ public class StickyListHeadersListView extends ListView {
 
 	@Override
 	public void setAdapter(ListAdapter adapter) {
+		if(adapter == null){
+			mAdapter = null;
+			reset();
+			super.setAdapter(null);
+			return;
+		}
 		if (!(adapter instanceof StickyListHeadersAdapter)) {
 			throw new IllegalArgumentException(
 					"Adapter must implement StickyListHeadersAdapter");
 		}
-		this.mAdapter = wrapAdapter(adapter);
+		mAdapter = wrapAdapter(adapter);
 		reset();
 		super.setAdapter(this.mAdapter);
 	}

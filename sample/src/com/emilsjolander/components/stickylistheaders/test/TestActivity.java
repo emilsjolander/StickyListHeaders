@@ -43,7 +43,6 @@ public class TestActivity extends Activity implements OnScrollListener,
 		stickyList.setEmptyView(findViewById(R.id.empty));
 		stickyList.setAdapter(mAdapter);
 		stickyList.setSelection(firstVisible);
-		
 	}
 	
 	@Override
