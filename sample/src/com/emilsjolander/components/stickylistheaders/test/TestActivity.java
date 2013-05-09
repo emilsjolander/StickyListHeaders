@@ -1,96 +1,68 @@
 package com.emilsjolander.components.stickylistheaders.test;
 
-import static android.widget.Toast.LENGTH_SHORT;
-import android.app.Activity;
+import android.annotation.TargetApi;
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
+import android.app.ActionBar.TabListener;
+import android.app.FragmentTransaction;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
-import android.widget.AdapterView;
-import android.widget.Toast;
-
-import com.emilsjolander.components.stickylistheaders.StickyListHeadersListView;
-import com.emilsjolander.components.stickylistheaders.StickyListHeadersListView.OnHeaderClickListener;
 
 /**
  * @author Emil Sjölander
  */
-public class TestActivity extends Activity implements OnScrollListener,
-		AdapterView.OnItemClickListener, OnHeaderClickListener {
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+public class TestActivity extends FragmentActivity implements TabListener, OnPageChangeListener {
 
-	private static final String KEY_LIST_POSITION = "KEY_LIST_POSITION";
-	private int firstVisible;
-	private TestBaseAdapter mAdapter;
+	private ViewPager mPager;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		StickyListHeadersListView stickyList = (StickyListHeadersListView) findViewById(R.id.list);
-		stickyList.setOnScrollListener(this);
-		stickyList.setOnItemClickListener(this);
-		stickyList.setOnHeaderClickListener(this);
 
-		if (savedInstanceState != null) {
-			firstVisible = savedInstanceState.getInt(KEY_LIST_POSITION);
-		}
+		mPager = (ViewPager) findViewById(R.id.pager);
+		mPager.setOnPageChangeListener(this);
+		mPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
 
-		stickyList.addHeaderView(getLayoutInflater().inflate(R.layout.list_header, null));
-		stickyList.addFooterView(getLayoutInflater().inflate(R.layout.list_footer, null));
-		mAdapter = new TestBaseAdapter(this);
-		stickyList.setEmptyView(findViewById(R.id.empty));
-		stickyList.setAdapter(mAdapter);
-		stickyList.setSelection(firstVisible);
+	    ActionBar actionBar = getActionBar();
+	    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+	    actionBar.addTab(getActionBar().newTab().setText("1").setTabListener(this));
+	    actionBar.addTab(getActionBar().newTab().setText("2").setTabListener(this));
+	    actionBar.addTab(getActionBar().newTab().setText("3").setTabListener(this));
+	    actionBar.addTab(getActionBar().newTab().setText("4").setTabListener(this));
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main_menu, menu);
 		return true;
 	}
-	
+
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.update:
-			mAdapter.notifyDataSetChanged();
-			break;
-		case R.id.clear:
-			mAdapter.clear();
-			break;
-		case R.id.restore:
-			mAdapter.restore();
-			break;
-		}
-		return super.onOptionsItemSelected(item);
+	public void onPageScrollStateChanged(int arg0) {}
+
+	@Override
+	public void onPageScrolled(int arg0, float arg1, int arg2) {}
+
+	@Override
+	public void onPageSelected(int position) {
+		getActionBar().setSelectedNavigationItem(position);
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putInt(KEY_LIST_POSITION, firstVisible);
+	public void onTabReselected(Tab tab, FragmentTransaction ft) {}
+
+	@Override
+	public void onTabSelected(Tab tab, FragmentTransaction ft) {
+		mPager.setCurrentItem(tab.getPosition(), true);
 	}
 
 	@Override
-	public void onScroll(AbsListView view, int firstVisibleItem,
-			int visibleItemCount, int totalItemCount) {
-		this.firstVisible = firstVisibleItem;
-	}
-
-	@Override
-	public void onScrollStateChanged(AbsListView view, int scrollState) {
-	}
-
-	@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		Toast.makeText(this, "Item " + position + " clicked!", LENGTH_SHORT).show();
-	}
-
-	@Override
-	public void onHeaderClick(StickyListHeadersListView l, View header,
-			int itemPosition, long headerId, boolean currentlySticky) {
-		Toast.makeText(this, "header "+headerId, Toast.LENGTH_SHORT).show();
-	}
+	public void onTabUnselected(Tab tab, FragmentTransaction ft) {}
 
 }

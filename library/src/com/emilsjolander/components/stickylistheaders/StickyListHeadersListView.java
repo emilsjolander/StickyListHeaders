@@ -142,6 +142,7 @@ public class StickyListHeadersListView extends ListView {
 		super.onLayout(changed, l, t, r, b);
 		if (changed) {
 			reset();
+			scrollChanged(getFirstVisiblePosition());
 		}
 	}
 
