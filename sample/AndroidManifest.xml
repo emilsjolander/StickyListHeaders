@@ -4,11 +4,9 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
-
     <uses-sdk
-        android:minSdkVersion="7"
-        android:targetSdkVersion="15" />
+        android:minSdkVersion="9"
+        android:targetSdkVersion="16" />
 
     <application
         android:icon="@drawable/ic_launcher"

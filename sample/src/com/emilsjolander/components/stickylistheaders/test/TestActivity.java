@@ -15,9 +15,10 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
  * @author Emil Sjölander
  */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class TestActivity extends FragmentActivity implements TabListener, OnPageChangeListener {
+public class TestActivity extends FragmentActivity implements OnPageChangeListener {
 
 	private ViewPager mPager;
+	private TabListener tabChangeListener;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -28,12 +29,29 @@ public class TestActivity extends FragmentActivity implements TabListener, OnPag
 		mPager.setOnPageChangeListener(this);
 		mPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
 
-	    ActionBar actionBar = getActionBar();
-	    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-	    actionBar.addTab(getActionBar().newTab().setText("1").setTabListener(this));
-	    actionBar.addTab(getActionBar().newTab().setText("2").setTabListener(this));
-	    actionBar.addTab(getActionBar().newTab().setText("3").setTabListener(this));
-	    actionBar.addTab(getActionBar().newTab().setText("4").setTabListener(this));
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			
+			tabChangeListener = new TabListener() {
+
+				@Override
+				public void onTabReselected(Tab tab, FragmentTransaction ft) {}
+
+				@Override
+				public void onTabSelected(Tab tab, FragmentTransaction ft) {
+					mPager.setCurrentItem(tab.getPosition(), true);
+				}
+
+				@Override
+				public void onTabUnselected(Tab tab, FragmentTransaction ft) {}
+			};
+			
+		    ActionBar actionBar = getActionBar();
+		    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		    actionBar.addTab(getActionBar().newTab().setText("1").setTabListener(tabChangeListener));
+		    actionBar.addTab(getActionBar().newTab().setText("2").setTabListener(tabChangeListener));
+		    actionBar.addTab(getActionBar().newTab().setText("3").setTabListener(tabChangeListener));
+		    actionBar.addTab(getActionBar().newTab().setText("4").setTabListener(tabChangeListener));
+		}
 	}
 
 	@Override
@@ -44,18 +62,9 @@ public class TestActivity extends FragmentActivity implements TabListener, OnPag
 
 	@Override
 	public void onPageSelected(int position) {
-		getActionBar().setSelectedNavigationItem(position);
+		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			getActionBar().setSelectedNavigationItem(position);
+		}
 	}
-
-	@Override
-	public void onTabReselected(Tab tab, FragmentTransaction ft) {}
-
-	@Override
-	public void onTabSelected(Tab tab, FragmentTransaction ft) {
-		mPager.setCurrentItem(tab.getPosition(), true);
-	}
-
-	@Override
-	public void onTabUnselected(Tab tab, FragmentTransaction ft) {}
 
 }

@@ -208,7 +208,7 @@ public class StickyListHeadersListView extends ListView {
 			super.setAdapter(adapter);
 			return;
 		}
-		if(adapter == null){
+		if (adapter == null) {
 			mAdapter = null;
 			reset();
 			super.setAdapter(null);
@@ -226,8 +226,8 @@ public class StickyListHeadersListView extends ListView {
 	private AdapterWrapper wrapAdapter(ListAdapter adapter) {
 		AdapterWrapper wrapper;
 		if (adapter instanceof SectionIndexer) {
-			wrapper = new SectionIndexerAdapterWrapper(
-					getContext(), (StickyListHeadersAdapter) adapter);
+			wrapper = new SectionIndexerAdapterWrapper(getContext(),
+					(StickyListHeadersAdapter) adapter);
 		} else {
 			wrapper = new AdapterWrapper(getContext(),
 					(StickyListHeadersAdapter) adapter);
@@ -248,6 +248,7 @@ public class StickyListHeadersListView extends ListView {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
 			scrollChanged(getFirstVisiblePosition());
 		}
+		positionSelectorRect();
 		if (!mAreHeadersSticky || mHeader == null) {
 			super.dispatchDraw(canvas);
 			return;
@@ -260,7 +261,6 @@ public class StickyListHeadersListView extends ListView {
 			canvas.clipRect(mClippingRect);
 		}
 
-		positionSelectorRect();
 		super.dispatchDraw(canvas);
 
 		if (!mDrawingListUnderStickyHeader) {
@@ -285,14 +285,20 @@ public class StickyListHeadersListView extends ListView {
 	}
 
 	private int getSelectorPosition() {
-		try {
-			return mSelectorPositionField.getInt(this);
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (mSelectorPositionField == null) { //not all supported andorid version have this variable
+			for (int i = 0; i < getChildCount(); i++) {
+				if (getChildAt(i).getBottom() == mSelectorRect.bottom) {
+					return i + fixedFirstVisibleItem(getFirstVisiblePosition());
+				}
+			}
+		} else {
+			try {
+				return mSelectorPositionField.getInt(this);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
 		}
 		return -1;
 	}
