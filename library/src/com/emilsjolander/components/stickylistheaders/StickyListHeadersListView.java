@@ -278,7 +278,7 @@ public class StickyListHeadersListView extends ListView {
 	 */
 	public View getItemView(View wrapperView) {
 		if (!(wrapperView instanceof WrapperView))
-			return null;
+			throw new ClassCastException("View is not an instance of WrapperView");
 
 		return ((WrapperView) wrapperView).mItem;
 
