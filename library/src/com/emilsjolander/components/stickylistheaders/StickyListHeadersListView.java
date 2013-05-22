@@ -243,6 +243,12 @@ public class StickyListHeadersListView extends ListView {
 		return mAdapter == null ? null : mAdapter.mDelegate;
 	}
 
+	public View getWrappedView(int position) {
+		View view = getChildAt(position);
+		if ((view instanceof WrapperView)) return ((WrapperView) view).mItem;
+		return view;
+	}
+	
 	@Override
 	protected void dispatchDraw(Canvas canvas) {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
