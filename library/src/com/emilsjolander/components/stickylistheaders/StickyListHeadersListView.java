@@ -276,21 +276,6 @@ public class StickyListHeadersListView extends ListView {
 		drawStickyHeader(canvas);
 	}
 	
-	
-	/*
-	 * Returns the item for for the wrapperView.
-	 * Useful for things like when you need to animate a list item, but don't want
-	 * to animate the Header view as well
-	 */
-	public View getItemView(View wrapperView) {
-		if (!(wrapperView instanceof WrapperView))
-			throw new ClassCastException("View is not an instance of WrapperView");
-
-		return ((WrapperView) wrapperView).mItem;
-
-	}
-	
-
 	private void positionSelectorRect() {
 		if (!mSelectorRect.isEmpty()) {
 			int selectorPosition = getSelectorPosition();
