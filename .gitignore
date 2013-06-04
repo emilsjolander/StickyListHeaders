@@ -31,3 +31,6 @@ proguard.cfg
 #Other
 .DS_Store
 tmp
+
+#gradle
+build
