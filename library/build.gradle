@@ -1,0 +1,15 @@
+apply plugin: 'android-library'
+
+android {
+    compileSdkVersion 17
+    buildToolsVersion "17.0.0"
+
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java {
+                srcDir 'src/'
+            }
+        }
+    }
+}
