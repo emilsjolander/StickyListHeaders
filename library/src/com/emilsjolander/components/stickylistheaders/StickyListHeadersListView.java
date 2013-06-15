@@ -10,6 +10,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -245,10 +246,11 @@ public class StickyListHeadersListView extends ListView {
 
 	public View getWrappedView(int position) {
 		View view = getChildAt(position);
-		if ((view instanceof WrapperView)) return ((WrapperView) view).mItem;
+		if ((view instanceof WrapperView))
+			return ((WrapperView) view).mItem;
 		return view;
 	}
-	
+
 	@Override
 	protected void dispatchDraw(Canvas canvas) {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
@@ -275,7 +277,7 @@ public class StickyListHeadersListView extends ListView {
 
 		drawStickyHeader(canvas);
 	}
-	
+
 	private void positionSelectorRect() {
 		if (!mSelectorRect.isEmpty()) {
 			int selectorPosition = getSelectorPosition();
@@ -291,7 +293,8 @@ public class StickyListHeadersListView extends ListView {
 	}
 
 	private int getSelectorPosition() {
-		if (mSelectorPositionField == null) { //not all supported andorid version have this variable
+		if (mSelectorPositionField == null) { // not all supported andorid
+												// version have this variable
 			for (int i = 0; i < getChildCount(); i++) {
 				if (getChildAt(i).getBottom() == mSelectorRect.bottom) {
 					return i + fixedFirstVisibleItem(getFirstVisiblePosition());
@@ -326,8 +329,10 @@ public class StickyListHeadersListView extends ListView {
 	}
 
 	private void measureHeader() {
-		int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth(),
-				MeasureSpec.EXACTLY);
+		
+		int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth()
+				- getPaddingLeft() - getPaddingRight()
+				- (isScrollBarOverlay() ? 0 : getVerticalScrollbarWidth()), MeasureSpec.EXACTLY);
 		int heightMeasureSpec = 0;
 
 		ViewGroup.LayoutParams params = mHeader.getLayoutParams();
@@ -339,8 +344,15 @@ public class StickyListHeadersListView extends ListView {
 					MeasureSpec.UNSPECIFIED);
 		}
 		mHeader.measure(widthMeasureSpec, heightMeasureSpec);
-		mHeader.layout(getLeft() + getPaddingLeft(), 0, getRight()
+		
+		
+		mHeader.layout(getPaddingLeft(), 0, getWidth()
 				- getPaddingRight(), mHeader.getMeasuredHeight());
+	}
+
+	private boolean isScrollBarOverlay() {
+		int scrollBarStyle = getScrollBarStyle();
+		return scrollBarStyle == SCROLLBARS_INSIDE_OVERLAY || scrollBarStyle == SCROLLBARS_OUTSIDE_OVERLAY;
 	}
 
 	private int getHeaderHeight() {
@@ -370,7 +382,7 @@ public class StickyListHeadersListView extends ListView {
 			invalidate();
 			return;
 		}
- 
+
 		if (mHeaderPosition == null || mHeaderPosition != firstVisibleItem) {
 			mHeaderPosition = firstVisibleItem;
 			mCurrentHeaderId = mAdapter.getHeaderId(firstVisibleItem);
