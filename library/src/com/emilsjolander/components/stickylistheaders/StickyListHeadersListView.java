@@ -43,7 +43,7 @@ public class StickyListHeadersListView extends ListView {
 	private float mHeaderDownY = -1;
 	private boolean mHeaderBeingPressed = false;
 	private OnHeaderClickListener mOnHeaderClickListener;
-	private int mHeaderPosition;
+	private Integer mHeaderPosition;
 	private ViewConfiguration mViewConfig;
 	private ArrayList<View> mFooterViews;
 	private boolean mDrawingListUnderStickyHeader = false;
@@ -149,6 +149,7 @@ public class StickyListHeadersListView extends ListView {
 	private void reset() {
 		mHeader = null;
 		mCurrentHeaderId = null;
+		mHeaderPosition = null;
 		mHeaderBottomPosition = -1;
 	}
 
@@ -370,11 +371,10 @@ public class StickyListHeadersListView extends ListView {
 			invalidate();
 			return;
 		}
-
-		long newHeaderId = mAdapter.getHeaderId(firstVisibleItem);
-		if (mCurrentHeaderId == null || mCurrentHeaderId != newHeaderId) {
+ 
+		if (mHeaderPosition == null || mHeaderPosition != firstVisibleItem) {
 			mHeaderPosition = firstVisibleItem;
-			mCurrentHeaderId = newHeaderId;
+			mCurrentHeaderId = mAdapter.getHeaderId(firstVisibleItem);
 			mHeader = mAdapter.getHeaderView(mHeaderPosition, mHeader, this);
 			measureHeader();
 		}
