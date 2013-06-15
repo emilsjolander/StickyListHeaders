@@ -16,23 +16,24 @@ public class TestFragment extends Fragment implements
 AdapterView.OnItemClickListener, OnHeaderClickListener {
 
 	private TestBaseAdapter mAdapter;
+	private StickyListHeadersListView mStickyList;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_test, container, false);
-		StickyListHeadersListView stickyList = (StickyListHeadersListView) v.findViewById(R.id.list);
-		stickyList.setOnItemClickListener(this);
-		stickyList.setOnHeaderClickListener(this);
+		mStickyList = (StickyListHeadersListView) v.findViewById(R.id.list);
+		mStickyList.setOnItemClickListener(this);
+		mStickyList.setOnHeaderClickListener(this);
 
-		stickyList.addHeaderView(inflater.inflate(
+		mStickyList.addHeaderView(inflater.inflate(
 				R.layout.list_header, null));
-		stickyList.addFooterView(inflater.inflate(
+		mStickyList.addFooterView(inflater.inflate(
 				R.layout.list_footer, null));
 		mAdapter = new TestBaseAdapter(getActivity());
-		stickyList.setEmptyView(v.findViewById(R.id.empty));
+		mStickyList.setEmptyView(v.findViewById(R.id.empty));
 		
-		stickyList.setAdapter(mAdapter);
+		mStickyList.setAdapter(mAdapter);
 		return v;
 	}
 
@@ -47,6 +48,7 @@ AdapterView.OnItemClickListener, OnHeaderClickListener {
 	public void onHeaderClick(StickyListHeadersListView l, View header,
 			int itemPosition, long headerId, boolean currentlySticky) {
 		Toast.makeText(getActivity(), "header " + headerId, Toast.LENGTH_SHORT).show();
+		mStickyList.smoothScrollToPosition(mAdapter.getSectionStart(itemPosition)+mStickyList.getHeaderViewsCount());
 	}
 
 }

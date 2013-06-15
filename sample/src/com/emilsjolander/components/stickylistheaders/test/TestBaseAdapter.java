@@ -3,7 +3,6 @@ package com.emilsjolander.components.stickylistheaders.test;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -117,7 +116,6 @@ public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAda
 	//remember that these have to be static, postion=1 should walys return the same Id that is.
 	@Override
 	public long getHeaderId(int position) {
-		Log.d("debug", "getHeaderId");
 		//return the first character of the country as ID because this is what headers are based upon
 		return countries[position].subSequence(0, 1).charAt(0);
 	}
@@ -168,6 +166,10 @@ public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAda
 		sectionIndices = getSectionIndices();
 		sectionsLetters = getStartingLetters();
 		notifyDataSetChanged();
+	}
+
+	public int getSectionStart(int itemPosition) {
+		return getPositionForSection(getSectionForPosition(itemPosition));
 	}
 	
 }

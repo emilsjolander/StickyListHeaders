@@ -3,7 +3,6 @@ package com.emilsjolander.components.stickylistheaders;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
@@ -491,33 +490,6 @@ public class StickyListHeadersListView extends ListView {
 			}
 		}
 		return firstVisibleItem;
-	}
-
-	@Override
-	public void setSelectionFromTop(int position, int y) {
-		if (mAreHeadersSticky) {
-			y += getHeaderHeight();
-		}
-		super.setSelectionFromTop(position, y);
-	}
-
-	@SuppressLint("NewApi")
-	@Override
-	public void smoothScrollToPositionFromTop(int position, int offset) {
-		if (mAreHeadersSticky) {
-			offset += getHeaderHeight();
-		}
-		super.smoothScrollToPositionFromTop(position, offset);
-	}
-
-	@SuppressLint("NewApi")
-	@Override
-	public void smoothScrollToPositionFromTop(int position, int offset,
-			int duration) {
-		if (mAreHeadersSticky) {
-			offset += getHeaderHeight();
-		}
-		super.smoothScrollToPositionFromTop(position, offset, duration);
 	}
 
 	public void setOnHeaderClickListener(
