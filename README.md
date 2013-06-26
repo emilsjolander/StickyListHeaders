@@ -124,7 +124,7 @@ public class MyAdapter extends BaseAdapter implements StickyListHeadersAdapter {
     }
 
     class HeaderViewHolder {
-        TextView text1;
+        TextView text;
     }
 
     class ViewHolder {
