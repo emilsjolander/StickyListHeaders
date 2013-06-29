@@ -37,7 +37,7 @@ file -> new -> project -> android project from existing source
 In the following dialog navigate to StickyListHeaders which you cloned to your computer in the previous steps.
 Press finish and you should have the library in your workspace.
 
-Now right click the project you want to use StickyListHeaders in and click on `properties`. In the dialog that apears you should navigate to `android` in the side menu. Now press the ass button on the bottom right of the dialog and choose StickyListHeaders. Press ok and you are good to go!
+Now right click the project you want to use StickyListHeaders in and click on `properties`. In the dialog that appears you should navigate to `android` in the side menu. Now press the add button on the bottom right of the dialog and choose StickyListHeaders. Press ok and you are good to go!
 
 
 ###Code
@@ -124,7 +124,7 @@ public class MyAdapter extends BaseAdapter implements StickyListHeadersAdapter {
     }
 
     class HeaderViewHolder {
-        TextView text1;
+        TextView text;
     }
 
     class ViewHolder {
