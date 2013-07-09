@@ -19,8 +19,8 @@
 	<url>https://github.com/emilsjolander/StickyListHeaders</url>
 
 	<modules>
-		<module>library</module>
-		<module>sample</module>
+		<module>stickylistheaders</module>
+		<module>stickylistheaders-sample</module>
 	</modules>
 
 	<scm>
