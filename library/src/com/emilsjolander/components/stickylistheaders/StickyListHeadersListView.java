@@ -38,7 +38,7 @@ public class StickyListHeadersListView extends ListView {
 	private Drawable mDivider;
 	private Boolean mClippingToPadding;
 	private final Rect mClippingRect = new Rect();
-	private Long mCurrentHeaderId = null;
+	private Integer mCurrentHeaderId = null;
 	private AdapterWrapper mAdapter;
 	private float mHeaderDownY = -1;
 	private boolean mHeaderBeingPressed = false;
@@ -53,7 +53,7 @@ public class StickyListHeadersListView extends ListView {
 	private AdapterWrapper.OnHeaderClickListener mAdapterHeaderClickListener = new AdapterWrapper.OnHeaderClickListener() {
 
 		@Override
-		public void onHeaderClick(View header, int itemPosition, long headerId) {
+		public void onHeaderClick(View header, int itemPosition, int headerId) {
 			if (mOnHeaderClickListener != null) {
 				mOnHeaderClickListener.onHeaderClick(
 						StickyListHeadersListView.this, header, itemPosition,
