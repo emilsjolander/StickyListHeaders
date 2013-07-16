@@ -4,7 +4,6 @@ gen
 lint.xml
 
 #Eclipse
-.classpath
 .settings
 .checkstyle
 

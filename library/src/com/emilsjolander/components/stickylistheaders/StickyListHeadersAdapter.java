@@ -34,5 +34,5 @@ public interface StickyListHeadersAdapter extends ListAdapter {
 	 * @return
 	 * The id of the header at the specified position.
 	 */
-	long getHeaderId(int position);
+	int getHeaderId(int position);
 }

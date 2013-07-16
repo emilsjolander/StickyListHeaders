@@ -1,5 +1,6 @@
 package com.emilsjolander.components.stickylistheaders;
 
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
@@ -8,9 +9,7 @@ import android.database.DataSetObserver;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -38,7 +37,7 @@ public class StickyListHeadersListView extends ListView {
 	private Drawable mDivider;
 	private Boolean mClippingToPadding;
 	private final Rect mClippingRect = new Rect();
-	private Long mCurrentHeaderId = null;
+	private Integer mCurrentHeaderId = null;
 	private AdapterWrapper mAdapter;
 	private float mHeaderDownY = -1;
 	private boolean mHeaderBeingPressed = false;
@@ -53,7 +52,7 @@ public class StickyListHeadersListView extends ListView {
 	private AdapterWrapper.OnHeaderClickListener mAdapterHeaderClickListener = new AdapterWrapper.OnHeaderClickListener() {
 
 		@Override
-		public void onHeaderClick(View header, int itemPosition, long headerId) {
+		public void onHeaderClick(View header, int itemPosition, int headerId) {
 			if (mOnHeaderClickListener != null) {
 				mOnHeaderClickListener.onHeaderClick(
 						StickyListHeadersListView.this, header, itemPosition,
@@ -91,7 +90,7 @@ public class StickyListHeadersListView extends ListView {
 				mOnScrollListenerDelegate.onScroll(view, firstVisibleItem,
 						visibleItemCount, totalItemCount);
 			}
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+			if (Ver.froyo()) {
 				scrollChanged(firstVisibleItem);
 			}
 		}
@@ -156,7 +155,7 @@ public class StickyListHeadersListView extends ListView {
 	@Override
 	public boolean performItemClick(View view, int position, long id) {
 		if (view instanceof WrapperView) {
-			view = ((WrapperView) view).mItem;
+			view = ((WrapperView) view).mWrapped;
 		}
 		return super.performItemClick(view, position, id);
 	}
@@ -247,13 +246,13 @@ public class StickyListHeadersListView extends ListView {
 	public View getWrappedView(int position) {
 		View view = getChildAt(position);
 		if ((view instanceof WrapperView))
-			return ((WrapperView) view).mItem;
+			return ((WrapperView) view).mWrapped;
 		return view;
 	}
 
 	@Override
 	protected void dispatchDraw(Canvas canvas) {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
+		if (!Ver.froyo()) {
 			scrollChanged(getFirstVisiblePosition());
 		}
 		positionSelectorRect();
@@ -392,7 +391,7 @@ public class StickyListHeadersListView extends ListView {
 
 		int childCount = getChildCount();
 		if (childCount != 0) {
-			View viewToWatch = null;
+			WrapperView viewToWatch = null;
 			int watchingChildDistance = Integer.MAX_VALUE;
 			boolean viewToWatchIsFooter = false;
 
@@ -400,27 +399,27 @@ public class StickyListHeadersListView extends ListView {
 				final View child = super.getChildAt(i);
 				final boolean childIsFooter = mFooterViews != null
 						&& mFooterViews.contains(child);
-
+				
 				final int childDistance = child.getTop()
 						- (mClippingToPadding ? getPaddingTop() : 0);
 				if (childDistance < 0) {
 					continue;
 				}
-
-				if (viewToWatch == null
-						|| (!viewToWatchIsFooter && !((WrapperView) viewToWatch)
-								.hasHeader())
-						|| ((childIsFooter || ((WrapperView) child).hasHeader()) && childDistance < watchingChildDistance)) {
-					viewToWatch = child;
-					viewToWatchIsFooter = childIsFooter;
-					watchingChildDistance = childDistance;
+				if (child instanceof WrapperView) {
+					if (viewToWatch == null
+							|| (!viewToWatchIsFooter && !viewToWatch.hasHeader())
+							|| ((childIsFooter || ((WrapperView) child)
+									.hasHeader()) && childDistance < watchingChildDistance)) {
+						viewToWatch = (WrapperView) child;
+						viewToWatchIsFooter = childIsFooter;
+						watchingChildDistance = childDistance;
+					}
 				}
 			}
 
 			final int headerHeight = getHeaderHeight();
 			if (viewToWatch != null
-					&& (viewToWatchIsFooter || ((WrapperView) viewToWatch)
-							.hasHeader())) {
+					&& (viewToWatchIsFooter || viewToWatch.hasHeader())) {
 				if (firstVisibleItem == listViewHeaderCount
 						&& super.getChildAt(0).getTop() > 0
 						&& !mClippingToPadding) {
@@ -481,7 +480,7 @@ public class StickyListHeadersListView extends ListView {
 	}
 
 	private int fixedFirstVisibleItem(int firstVisibleItem) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+		if (Ver.honeycomb()) {
 			return firstVisibleItem;
 		}
 

@@ -115,7 +115,7 @@ public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAda
 
 	//remember that these have to be static, postion=1 should walys return the same Id that is.
 	@Override
-	public long getHeaderId(int position) {
+	public int getHeaderId(int position) {
 		//return the first character of the country as ID because this is what headers are based upon
 		return countries[position].subSequence(0, 1).charAt(0);
 	}

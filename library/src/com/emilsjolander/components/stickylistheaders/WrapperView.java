@@ -3,7 +3,6 @@ package com.emilsjolander.components.stickylistheaders;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -16,7 +15,7 @@ import android.view.ViewParent;
  */
 class WrapperView extends ViewGroup {
 
-	View mItem;
+	View mWrapped;
 	Drawable mDivider;
 	int mDividerHeight;
 	View mHeader;
@@ -26,46 +25,44 @@ class WrapperView extends ViewGroup {
 		super(c);
 	}
 
-	void update(View item, View header, Drawable divider, int dividerHeight) {
+	void update(View wrapped, View header, Drawable divider, int dividerHeight) {
 		
 		//every wrapperview must have a list item
-		if (item == null) {
-			throw new NullPointerException("List view item must not be null.");
+		if (wrapped == null) {
+			throw new IllegalArgumentException("Wrapped view must be non-null.");
 		}
-
+		
 		//only remove the current item if it is not the same as the new item. this can happen if wrapping a recycled view
-		if (this.mItem != item) {
-			removeView(this.mItem);
-			this.mItem = item;
-			final ViewParent parent = item.getParent();
-			if(parent != null && parent != this) {
-				if(parent instanceof ViewGroup) {
-					((ViewGroup) parent).removeView(item);
-				}
+		if (mWrapped != wrapped) {
+			removeView(mWrapped);
+			mWrapped = wrapped;
+			ViewParent parent = wrapped.getParent();
+			if(parent != this && parent instanceof ViewGroup) {
+				((ViewGroup) parent).removeView(wrapped);
 			}
-			addView(item);
+			addView(wrapped);
 		}
 
-		//same logik as above but for the header
-		if (this.mHeader != header) {
-			if (this.mHeader != null) {
-				removeView(this.mHeader);
+		//same logic as above but for the header
+		if (mHeader != header) {
+			if (mHeader != null) {
+				removeView(mHeader);
 			}
-			this.mHeader = header;
+			mHeader = header;
 			if (header != null) {
 				addView(header);
 			}
 		}
 
-		if (this.mDivider != divider) {
-			this.mDivider = divider;
-			this.mDividerHeight = dividerHeight;
+		if (mDivider != divider) {
+			mDivider = divider;
+			mDividerHeight = dividerHeight;
 			invalidate();
 		}
 	}
 
 	boolean hasHeader() {
-		return mHeader != null;
+		return (mHeader != null);
 	}
 
 	@Override
@@ -91,15 +88,15 @@ class WrapperView extends ViewGroup {
 		}
 		
 		//measure item
-		ViewGroup.LayoutParams params = mItem.getLayoutParams();
+		ViewGroup.LayoutParams params = mWrapped.getLayoutParams();
 		if (params != null && params.height > 0) {
-			mItem.measure(childWidthMeasureSpec,
+			mWrapped.measure(childWidthMeasureSpec,
 					MeasureSpec.makeMeasureSpec(params.height, MeasureSpec.EXACTLY));
 		} else {
-			mItem.measure(childWidthMeasureSpec,
+			mWrapped.measure(childWidthMeasureSpec,
 					MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
 		}
-		measuredHeight += mItem.getMeasuredHeight();
+		measuredHeight += mWrapped.getMeasuredHeight();
 
 		setMeasuredDimension(measuredWidth, measuredHeight);
 	}
@@ -116,14 +113,14 @@ class WrapperView extends ViewGroup {
 			int headerHeight = mHeader.getMeasuredHeight();
 			mHeader.layout(l, t, r, headerHeight);
 			mItemTop = headerHeight;
-			mItem.layout(l, headerHeight, r, b);
+			mWrapped.layout(l, headerHeight, r, b);
 		} else if (mDivider != null) {
 			mDivider.setBounds(l, t, r, mDividerHeight);
 			mItemTop = mDividerHeight;
-			mItem.layout(l, mDividerHeight, r, b);
+			mWrapped.layout(l, mDividerHeight, r, b);
 		} else {
 			mItemTop = t;
-			mItem.layout(l, t, r, b);
+			mWrapped.layout(l, t, r, b);
 		}
 	}
 
@@ -133,7 +130,7 @@ class WrapperView extends ViewGroup {
 		if (mHeader == null && mDivider != null) {
 			// Drawable.setBounds() does not seem to work pre-honeycomb. So have
 			// to do this instead
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			if (!Ver.honeycomb()) {
 				canvas.clipRect(0, 0, getWidth(), mDividerHeight);
 			}
 			mDivider.draw(canvas);
