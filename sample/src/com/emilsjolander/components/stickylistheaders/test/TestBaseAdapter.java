@@ -167,5 +167,9 @@ public class TestBaseAdapter extends BaseAdapter implements StickyListHeadersAda
 		sectionsLetters = getStartingLetters();
 		notifyDataSetChanged();
 	}
+
+	public int getSectionStart(int itemPosition) {
+		return getPositionForSection(getSectionForPosition(itemPosition));
+	}
 	
 }

@@ -3,7 +3,6 @@ package com.emilsjolander.components.stickylistheaders;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
@@ -11,6 +10,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -43,7 +43,7 @@ public class StickyListHeadersListView extends ListView {
 	private float mHeaderDownY = -1;
 	private boolean mHeaderBeingPressed = false;
 	private OnHeaderClickListener mOnHeaderClickListener;
-	private int mHeaderPosition;
+	private Integer mHeaderPosition;
 	private ViewConfiguration mViewConfig;
 	private ArrayList<View> mFooterViews;
 	private boolean mDrawingListUnderStickyHeader = false;
@@ -149,6 +149,7 @@ public class StickyListHeadersListView extends ListView {
 	private void reset() {
 		mHeader = null;
 		mCurrentHeaderId = null;
+		mHeaderPosition = null;
 		mHeaderBottomPosition = -1;
 	}
 
@@ -243,6 +244,13 @@ public class StickyListHeadersListView extends ListView {
 		return mAdapter == null ? null : mAdapter.mDelegate;
 	}
 
+	public View getWrappedView(int position) {
+		View view = getChildAt(position);
+		if ((view instanceof WrapperView))
+			return ((WrapperView) view).mItem;
+		return view;
+	}
+
 	@Override
 	protected void dispatchDraw(Canvas canvas) {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
@@ -285,7 +293,8 @@ public class StickyListHeadersListView extends ListView {
 	}
 
 	private int getSelectorPosition() {
-		if (mSelectorPositionField == null) { //not all supported andorid version have this variable
+		if (mSelectorPositionField == null) { // not all supported andorid
+												// version have this variable
 			for (int i = 0; i < getChildCount(); i++) {
 				if (getChildAt(i).getBottom() == mSelectorRect.bottom) {
 					return i + fixedFirstVisibleItem(getFirstVisiblePosition());
@@ -320,8 +329,10 @@ public class StickyListHeadersListView extends ListView {
 	}
 
 	private void measureHeader() {
-		int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth(),
-				MeasureSpec.EXACTLY);
+		
+		int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth()
+				- getPaddingLeft() - getPaddingRight()
+				- (isScrollBarOverlay() ? 0 : getVerticalScrollbarWidth()), MeasureSpec.EXACTLY);
 		int heightMeasureSpec = 0;
 
 		ViewGroup.LayoutParams params = mHeader.getLayoutParams();
@@ -333,8 +344,15 @@ public class StickyListHeadersListView extends ListView {
 					MeasureSpec.UNSPECIFIED);
 		}
 		mHeader.measure(widthMeasureSpec, heightMeasureSpec);
-		mHeader.layout(getLeft() + getPaddingLeft(), 0, getRight()
+		
+		
+		mHeader.layout(getPaddingLeft(), 0, getWidth()
 				- getPaddingRight(), mHeader.getMeasuredHeight());
+	}
+
+	private boolean isScrollBarOverlay() {
+		int scrollBarStyle = getScrollBarStyle();
+		return scrollBarStyle == SCROLLBARS_INSIDE_OVERLAY || scrollBarStyle == SCROLLBARS_OUTSIDE_OVERLAY;
 	}
 
 	private int getHeaderHeight() {
@@ -365,10 +383,9 @@ public class StickyListHeadersListView extends ListView {
 			return;
 		}
 
-		long newHeaderId = mAdapter.getHeaderId(firstVisibleItem);
-		if (mCurrentHeaderId == null || mCurrentHeaderId != newHeaderId) {
+		if (mHeaderPosition == null || mHeaderPosition != firstVisibleItem) {
 			mHeaderPosition = firstVisibleItem;
-			mCurrentHeaderId = newHeaderId;
+			mCurrentHeaderId = mAdapter.getHeaderId(firstVisibleItem);
 			mHeader = mAdapter.getHeaderView(mHeaderPosition, mHeader, this);
 			measureHeader();
 		}
@@ -485,33 +502,6 @@ public class StickyListHeadersListView extends ListView {
 			}
 		}
 		return firstVisibleItem;
-	}
-
-	@Override
-	public void setSelectionFromTop(int position, int y) {
-		if (mAreHeadersSticky) {
-			y += getHeaderHeight();
-		}
-		super.setSelectionFromTop(position, y);
-	}
-
-	@SuppressLint("NewApi")
-	@Override
-	public void smoothScrollToPositionFromTop(int position, int offset) {
-		if (mAreHeadersSticky) {
-			offset += getHeaderHeight();
-		}
-		super.smoothScrollToPositionFromTop(position, offset);
-	}
-
-	@SuppressLint("NewApi")
-	@Override
-	public void smoothScrollToPositionFromTop(int position, int offset,
-			int duration) {
-		if (mAreHeadersSticky) {
-			offset += getHeaderHeight();
-		}
-		super.smoothScrollToPositionFromTop(position, offset, duration);
 	}
 
 	public void setOnHeaderClickListener(
