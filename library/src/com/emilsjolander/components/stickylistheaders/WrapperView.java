@@ -3,7 +3,6 @@ package com.emilsjolander.components.stickylistheaders;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -131,7 +130,7 @@ class WrapperView extends ViewGroup {
 		if (mHeader == null && mDivider != null) {
 			// Drawable.setBounds() does not seem to work pre-honeycomb. So have
 			// to do this instead
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			if (!Ver.honeycomb()) {
 				canvas.clipRect(0, 0, getWidth(), mDividerHeight);
 			}
 			mDivider.draw(canvas);

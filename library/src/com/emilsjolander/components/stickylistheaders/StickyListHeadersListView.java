@@ -1,5 +1,6 @@
 package com.emilsjolander.components.stickylistheaders;
 
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
@@ -8,9 +9,7 @@ import android.database.DataSetObserver;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -91,7 +90,7 @@ public class StickyListHeadersListView extends ListView {
 				mOnScrollListenerDelegate.onScroll(view, firstVisibleItem,
 						visibleItemCount, totalItemCount);
 			}
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+			if (Ver.froyo()) {
 				scrollChanged(firstVisibleItem);
 			}
 		}
@@ -253,7 +252,7 @@ public class StickyListHeadersListView extends ListView {
 
 	@Override
 	protected void dispatchDraw(Canvas canvas) {
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
+		if (!Ver.froyo()) {
 			scrollChanged(getFirstVisiblePosition());
 		}
 		positionSelectorRect();
@@ -481,7 +480,7 @@ public class StickyListHeadersListView extends ListView {
 	}
 
 	private int fixedFirstVisibleItem(int firstVisibleItem) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+		if (Ver.honeycomb()) {
 			return firstVisibleItem;
 		}
 

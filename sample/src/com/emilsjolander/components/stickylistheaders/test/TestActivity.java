@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import com.emilsjolander.components.stickylistheaders.*;
 
 /**
  * @author Emil Sjölander
@@ -29,7 +30,7 @@ public class TestActivity extends FragmentActivity implements OnPageChangeListen
 		mPager.setOnPageChangeListener(this);
 		mPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
 
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+		if(Ver.honeycomb()) {
 			
 			tabChangeListener = new TabListener() {
 
@@ -62,7 +63,7 @@ public class TestActivity extends FragmentActivity implements OnPageChangeListen
 
 	@Override
 	public void onPageSelected(int position) {
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+		if(Ver.honeycomb()) {
 			getActionBar().setSelectedNavigationItem(position);
 		}
 	}
