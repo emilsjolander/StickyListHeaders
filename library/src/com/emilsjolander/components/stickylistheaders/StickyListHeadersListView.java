@@ -156,7 +156,7 @@ public class StickyListHeadersListView extends ListView {
 	@Override
 	public boolean performItemClick(View view, int position, long id) {
 		if (view instanceof WrapperView) {
-			view = ((WrapperView) view).mItem;
+			view = ((WrapperView) view).mWrapped;
 		}
 		return super.performItemClick(view, position, id);
 	}
@@ -247,7 +247,7 @@ public class StickyListHeadersListView extends ListView {
 	public View getWrappedView(int position) {
 		View view = getChildAt(position);
 		if ((view instanceof WrapperView))
-			return ((WrapperView) view).mItem;
+			return ((WrapperView) view).mWrapped;
 		return view;
 	}
 

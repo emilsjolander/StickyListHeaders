@@ -16,12 +16,12 @@ class CheckableWrapperView extends WrapperView implements Checkable {
 
 	@Override
 	public boolean isChecked() {
-		return ((Checkable) mItem).isChecked();
+		return ((Checkable) mWrapped).isChecked();
 	}
 
 	@Override
 	public void setChecked(final boolean checked) {
-		((Checkable) mItem).setChecked(checked);
+		((Checkable) mWrapped).setChecked(checked);
 	}
 
 	@Override

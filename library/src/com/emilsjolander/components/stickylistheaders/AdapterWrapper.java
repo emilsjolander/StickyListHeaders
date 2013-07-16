@@ -162,7 +162,7 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 	@Override
 	public WrapperView getView(int position, View convertView, ViewGroup parent) {
 		WrapperView wv = (convertView == null) ? new WrapperView(mContext) : (WrapperView) convertView;
-		View item = mDelegate.getView(position, wv.mItem, wv);
+		View item = mDelegate.getView(position, wv.mWrapped, wv);
 		View header = null;
 		if (previousPositionHasSameHeader(position)) {
 			recycleHeaderIfExists(wv);
