@@ -2,6 +2,7 @@ package com.emilsjolander.components.stickylistheaders.test;
 
 import static android.widget.Toast.LENGTH_SHORT;
 import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -49,10 +50,12 @@ public class TestFragment extends Fragment implements
 			int itemPosition, long headerId, boolean currentlySticky) {
 		Toast.makeText(getActivity(), "header " + headerId, Toast.LENGTH_SHORT)
 				.show();
-		mStickyList.smoothScrollToPositionFromTop(
-				mAdapter.getSectionStart(itemPosition)
-						+ mStickyList.getHeaderViewsCount(),
-				-mStickyList.getPaddingTop());
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			mStickyList.smoothScrollToPositionFromTop(
+					mAdapter.getSectionStart(itemPosition)
+							+ mStickyList.getHeaderViewsCount(),
+					-mStickyList.getPaddingTop());
+		}
 	}
 
 }

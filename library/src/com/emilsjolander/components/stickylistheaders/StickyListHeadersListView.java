@@ -189,6 +189,7 @@ public class StickyListHeadersListView extends ListView {
 	}
 
 	private boolean hasStickyHeaderAtPosition(int position) {
+		position -= getHeaderViewsCount();
 		return mAreHeadersSticky
 				&& position > 0
 				&& position < mAdapter.getCount()
@@ -386,7 +387,7 @@ public class StickyListHeadersListView extends ListView {
 					MeasureSpec.UNSPECIFIED);
 		}
 		mHeader.measure(widthMeasureSpec, heightMeasureSpec);
-		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
 			mHeader.setLayoutDirection(this.getLayoutDirection());
 		}
 
