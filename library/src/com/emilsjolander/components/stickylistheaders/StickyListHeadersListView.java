@@ -1,5 +1,8 @@
 package com.emilsjolander.components.stickylistheaders;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.DataSetObserver;
@@ -16,9 +19,6 @@ import android.widget.AbsListView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 
 /**
  * @author Emil Sjölander
@@ -372,9 +372,10 @@ public class StickyListHeadersListView extends ListView {
 
 		ViewGroup.LayoutParams params = mHeader.getLayoutParams();
 		if (params == null) {
-			mHeader.setLayoutParams(new ViewGroup.LayoutParams(
+			mHeader.setLayoutParams(new ViewGroup.MarginLayoutParams(
 					ViewGroup.LayoutParams.MATCH_PARENT,
 					ViewGroup.LayoutParams.WRAP_CONTENT));
+			
 		}
 		if (params != null && params.height > 0) {
 			heightMeasureSpec = MeasureSpec.makeMeasureSpec(params.height,
@@ -384,6 +385,7 @@ public class StickyListHeadersListView extends ListView {
 					MeasureSpec.UNSPECIFIED);
 		}
 		mHeader.measure(widthMeasureSpec, heightMeasureSpec);
+		mHeader.setLayoutDirection(this.getLayoutDirection());
 
 		mHeader.layout(getPaddingLeft(), 0, getWidth() - getPaddingRight(),
 				mHeader.getMeasuredHeight());

@@ -8,7 +8,7 @@
         android:id="@+id/text1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="left"
+        android:layout_gravity="start|left"
         android:padding="5dp"
         android:textColor="#ff33b5e5"
         android:textSize="15sp"
@@ -17,7 +17,7 @@
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
+        android:layout_gravity="end|right"
         android:indeterminate="true" />
 
     <View
