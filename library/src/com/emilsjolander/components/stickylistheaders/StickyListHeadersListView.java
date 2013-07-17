@@ -386,7 +386,9 @@ public class StickyListHeadersListView extends ListView {
 					MeasureSpec.UNSPECIFIED);
 		}
 		mHeader.measure(widthMeasureSpec, heightMeasureSpec);
-		mHeader.setLayoutDirection(this.getLayoutDirection());
+		if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR1) {
+			mHeader.setLayoutDirection(this.getLayoutDirection());
+		}
 
 		mHeader.layout(getPaddingLeft(), 0, getWidth() - getPaddingRight(),
 				mHeader.getMeasuredHeight());
