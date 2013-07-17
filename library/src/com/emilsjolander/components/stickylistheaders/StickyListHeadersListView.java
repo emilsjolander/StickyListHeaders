@@ -1,8 +1,6 @@
 package com.emilsjolander.components.stickylistheaders;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
@@ -10,7 +8,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -19,6 +16,9 @@ import android.widget.AbsListView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 
 /**
  * @author Emil Sjölander
@@ -159,6 +159,40 @@ public class StickyListHeadersListView extends ListView {
 			view = ((WrapperView) view).mItem;
 		}
 		return super.performItemClick(view, position, id);
+	}
+
+	@Override
+	public void setSelectionFromTop(int position, int y) {
+		if (hasStickyHeaderAtPosition(position)) {
+			y += getHeaderHeight();
+		}
+		super.setSelectionFromTop(position, y);
+	}
+
+	@SuppressLint("NewApi")
+	@Override
+	public void smoothScrollToPositionFromTop(int position, int offset) {
+		if (hasStickyHeaderAtPosition(position)) {
+			offset += getHeaderHeight();
+		}
+		super.smoothScrollToPositionFromTop(position, offset);
+	}
+
+	@SuppressLint("NewApi")
+	@Override
+	public void smoothScrollToPositionFromTop(int position, int offset,
+			int duration) {
+		if (hasStickyHeaderAtPosition(position)) {
+			offset += getHeaderHeight();
+		}
+		super.smoothScrollToPositionFromTop(position, offset, duration);
+	}
+
+	private boolean hasStickyHeaderAtPosition(int position) {
+		return mAreHeadersSticky
+				&& position > 0
+				&& mAdapter.getHeaderId(position) == mAdapter
+						.getHeaderId(position - 1);
 	}
 
 	@Override
