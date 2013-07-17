@@ -371,6 +371,11 @@ public class StickyListHeadersListView extends ListView {
 		int heightMeasureSpec = 0;
 
 		ViewGroup.LayoutParams params = mHeader.getLayoutParams();
+		if (params == null) {
+			mHeader.setLayoutParams(new ViewGroup.LayoutParams(
+					ViewGroup.LayoutParams.MATCH_PARENT,
+					ViewGroup.LayoutParams.WRAP_CONTENT));
+		}
 		if (params != null && params.height > 0) {
 			heightMeasureSpec = MeasureSpec.makeMeasureSpec(params.height,
 					MeasureSpec.EXACTLY);
