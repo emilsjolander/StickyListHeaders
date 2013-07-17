@@ -191,6 +191,7 @@ public class StickyListHeadersListView extends ListView {
 	private boolean hasStickyHeaderAtPosition(int position) {
 		return mAreHeadersSticky
 				&& position > 0
+				&& position < mAdapter.getCount()
 				&& mAdapter.getHeaderId(position) == mAdapter
 						.getHeaderId(position - 1);
 	}
