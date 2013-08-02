@@ -125,9 +125,10 @@ public class StickyListHeadersListView extends ListView {
 			selectorRectField.setAccessible(true);
 			mSelectorRect = (Rect) selectorRectField.get(this);
 
-			mSelectorPositionField = AbsListView.class
-					.getDeclaredField("mSelectorPosition");
-			mSelectorPositionField.setAccessible(true);
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+				mSelectorPositionField = AbsListView.class.getDeclaredField("mSelectorPosition");
+				mSelectorPositionField.setAccessible(true);
+			}
 		} catch (NoSuchFieldException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
