@@ -364,6 +364,7 @@ public class StickyListHeadersListView extends ListView {
 		canvas.restore();
 	}
 
+	@SuppressLint("NewApi")
 	private void measureHeader() {
 
 		int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth()
@@ -433,7 +434,8 @@ public class StickyListHeadersListView extends ListView {
 			mHeaderPosition = firstVisibleItem;
 			mCurrentHeaderId = mAdapter.getHeaderId(firstVisibleItem);
 			mHeader = mAdapter.getHeaderView(mHeaderPosition, mHeader, this);
-			measureHeader();
+			if (mHeader !=	null)
+				measureHeader();
 		}
 
 		int childCount = getChildCount();

@@ -127,21 +127,20 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 	private View configureHeader(WrapperView wv, final int position) {
 		View header = wv.mHeader == null ? popHeader() : wv.mHeader;
 		header = mDelegate.getHeaderView(position, header, wv);
-		if (header == null) {
-			throw new NullPointerException("Header view must not be null.");
-		}
-		//if the header isn't clickable, the listselector will be drawn on top of the header
-		header.setClickable(true);
-		header.setOnClickListener(new OnClickListener() {
+		if (header != null) {
+			//if the header isn't clickable, the listselector will be drawn on top of the header
+			header.setClickable(true);
+			header.setOnClickListener(new OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				if(mOnHeaderClickListener != null){
-					long headerId = mDelegate.getHeaderId(position);
-					mOnHeaderClickListener.onHeaderClick(v, position, headerId);
+				@Override
+				public void onClick(View v) {
+					if(mOnHeaderClickListener != null){
+						long headerId = mDelegate.getHeaderId(position);
+						mOnHeaderClickListener.onHeaderClick(v, position, headerId);
+					}
 				}
-			}
-		});
+			});
+		}
 		return header;
 	}
 
