@@ -5,11 +5,14 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:0.5.+'
-		
     }
 }
 
 apply plugin: 'android-library'
+apply plugin: 'maven'
+
+version = "1.0.0-SNAPSHOT"
+group = "com.emilsjolander"
 
 android {
     compileSdkVersion 18
@@ -24,3 +27,13 @@ android {
         }
     }
 }
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository url: 'file://' + new File(System.getProperty('user.home'), '.m2/repository').absolutePath
+            pom.artifactId = "stickylistheaders"
+        }
+    }
+}
+task install(dependsOn: uploadArchives)
