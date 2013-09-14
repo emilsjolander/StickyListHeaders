@@ -212,7 +212,7 @@ public class StickyListHeadersListView extends FrameLayout {
 				}
 
 				// measure the header
-				final int width = getWidth()-mPaddingLeft-mPaddingRight;
+				final int width = getWidth();
 				final int parentWidthMeasureSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
 				final int parentHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
 				measureChild(mHeader, parentWidthMeasureSpec, parentHeightMeasureSpec);
@@ -394,11 +394,10 @@ public class StickyListHeadersListView extends FrameLayout {
 		if (!isStartOfSection) {
 			View header = mAdapter.getView(position, null, mList);
 
-			int widthMeasureSpec = MeasureSpec.makeMeasureSpec(0,
-					MeasureSpec.UNSPECIFIED);
-			int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0,
-					MeasureSpec.UNSPECIFIED);
-			header.measure(widthMeasureSpec, heightMeasureSpec);
+			final int width = getWidth();
+			final int parentWidthMeasureSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
+			final int parentHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+			measureChild(header, parentWidthMeasureSpec, parentHeightMeasureSpec);
 			return header.getMeasuredHeight();
 		}
 		return 0;
