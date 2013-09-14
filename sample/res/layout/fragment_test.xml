@@ -8,11 +8,13 @@
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:padding="16dp"
+        android:clipToPadding="false"
         android:scrollbarStyle="outsideOverlay"
         android:fastScrollEnabled="true"
         android:drawSelectorOnTop="true" />
     
-    <TextView 
+    <TextView
         android:id="@+id/empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
