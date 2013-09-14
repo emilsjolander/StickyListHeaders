@@ -303,6 +303,27 @@ public class StickyListHeadersListView extends FrameLayout {
 
 	}
 
+	private boolean isStartOfSection(int position) {
+		return position == 0
+				|| mAdapter.getHeaderId(position) == mAdapter
+						.getHeaderId(position - 1);
+	}
+
+	private int getHeaderOverlap(int position) {
+		boolean isStartOfSection = isStartOfSection(position);
+		if (!isStartOfSection) {
+			View header = mAdapter.getView(position, null, mList);
+
+			int widthMeasureSpec = MeasureSpec.makeMeasureSpec(0,
+					MeasureSpec.UNSPECIFIED);
+			int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0,
+					MeasureSpec.UNSPECIFIED);
+			header.measure(widthMeasureSpec, heightMeasureSpec);
+			return header.getMeasuredHeight();
+		}
+		return 0;
+	}
+
 	/* ---------- StickyListHeaders specific API ---------- */
 
 	public void setAreHeadersSticky(boolean areHeadersSticky) {
@@ -453,8 +474,14 @@ public class StickyListHeadersListView extends FrameLayout {
 		mList.smoothScrollByOffset(offset);
 	}
 
+	@SuppressLint("NewApi")
 	public void smoothScrollToPosition(int position) {
-		mList.smoothScrollToPosition(position);
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			mList.smoothScrollToPosition(position);
+		} else {
+			int offset = mAdapter == null ? 0 : getHeaderOverlap(position);
+			mList.smoothScrollToPositionFromTop(position, offset);
+		}
 	}
 
 	public void smoothScrollToPosition(int position, int boundPosition) {
@@ -466,6 +493,7 @@ public class StickyListHeadersListView extends FrameLayout {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
 			throw new ApiLevelTooLowException("requires api lvl 11");
 		}
+		offset += mAdapter == null ? 0 : getHeaderOverlap(position);
 		mList.smoothScrollToPositionFromTop(position, offset);
 	}
 
@@ -475,6 +503,7 @@ public class StickyListHeadersListView extends FrameLayout {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
 			throw new ApiLevelTooLowException("requires api lvl 11");
 		}
+		offset += mAdapter == null ? 0 : getHeaderOverlap(position);
 		mList.smoothScrollToPositionFromTop(position, offset, duration);
 	}
 
