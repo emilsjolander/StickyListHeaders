@@ -137,6 +137,19 @@ public class StickyListHeadersListView extends FrameLayout {
 			}
 		}
 	}
+	
+	@Override
+	protected void onLayout(boolean changed, int left, int top, int right,
+			int bottom) {
+		mList.layout(mPaddingLeft, 0, mList.getMeasuredWidth()+mPaddingLeft, getHeight());
+		if (mHeader != null) {
+			MarginLayoutParams lp = (MarginLayoutParams) mHeader.getLayoutParams();
+			int headerTop = lp.topMargin + (mClippingToPadding ? mPaddingTop : 0);
+			// The left parameter must for some reason be set to 0.
+			// I think it should be set to mPaddingLeft but apparently not
+			mHeader.layout(0, headerTop, mHeader.getMeasuredWidth(), headerTop+mHeader.getMeasuredHeight());
+		}
+	}
 
 	@Override
 	protected void dispatchDraw(Canvas canvas) {
