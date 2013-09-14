@@ -56,12 +56,10 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 		delegate.registerDataSetObserver(mDataSetObserver);
 	}
 
-	void setDivider(Drawable divider) {
+	void setDivider(Drawable divider, int dividerHeight) {
 		this.mDivider = divider;
-	}
-
-	void setDividerHeight(int dividerHeight) {
 		this.mDividerHeight = dividerHeight;
+		notifyDataSetChanged();
 	}
 
 	@Override

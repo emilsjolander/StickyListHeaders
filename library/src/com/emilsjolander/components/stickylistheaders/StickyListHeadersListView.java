@@ -4,8 +4,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -51,6 +53,8 @@ public class StickyListHeadersListView extends FrameLayout {
 	/* --- Other --- */
 	private AdapterWrapper mAdapter;
 	private OnHeaderClickListener mOnHeaderClickListener;
+	private Drawable mDivider;
+	private int mDividerHeight;
 
 	public StickyListHeadersListView(Context context) {
 		this(context, null);
@@ -66,9 +70,19 @@ public class StickyListHeadersListView extends FrameLayout {
 
 		// Initialize the list
 		mList = new WrapperViewList(context);
+		mDivider = mList.getDivider();
+		mDividerHeight = mList.getDividerHeight();
+
+		// null out divider, dividers are handled by adapter so they look good
+		// with headers
+		mList.setDivider(null);
+		mList.setDividerHeight(0);
+
 		mList.setLifeCycleListener(new WrapperViewListLifeCycleListener());
 		mList.setOnScrollListener(new WrapperListScrollListener());
 		addView(mList);
+
+		// TODO do shit with xml attributes
 	}
 
 	@Override
@@ -340,6 +354,12 @@ public class StickyListHeadersListView extends FrameLayout {
 	/* ---------- ListView delegate methods ---------- */
 
 	public void setAdapter(StickyListHeadersAdapter adapter) {
+		if (adapter == null) {
+			mList.setAdapter(null);
+			clearHeader();
+			return;
+		}
+
 		mAdapter = new AdapterWrapper(getContext(), adapter);
 		mAdapter.registerDataSetObserver(new AdapterWrapperDataSetObserver());
 
@@ -349,12 +369,36 @@ public class StickyListHeadersListView extends FrameLayout {
 			mAdapter.setOnHeaderClickListener(null);
 		}
 
+		mAdapter.setDivider(mDivider, mDividerHeight);
+
 		mList.setAdapter(mAdapter);
 		clearHeader();
 	}
 
 	public StickyListHeadersAdapter getAdapter() {
 		return mAdapter == null ? null : mAdapter.mDelegate;
+	}
+
+	public void setDivider(Drawable divider) {
+		mDivider = divider;
+		if (mAdapter != null) {
+			mAdapter.setDivider(mDivider, mDividerHeight);
+		}
+	}
+
+	public void setDividerHeight(int dividerHeight) {
+		mDividerHeight = dividerHeight;
+		if (mAdapter != null) {
+			mAdapter.setDivider(mDivider, mDividerHeight);
+		}
+	}
+
+	public Drawable getDivider() {
+		return mDivider;
+	}
+
+	public int getDividerHeight() {
+		return mDividerHeight;
 	}
 
 	public void setOnScrollListener(OnScrollListener onScrollListener) {
@@ -395,6 +439,111 @@ public class StickyListHeadersListView extends FrameLayout {
 
 	public View setEmptyView() {
 		return mList.getEmptyView();
+	}
+
+	public void smoothScrollBy(int distance, int duration) {
+		mList.smoothScrollBy(distance, duration);
+	}
+
+	@SuppressLint("NewApi")
+	public void smoothScrollByOffset(int offset) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			throw new ApiLevelTooLowException("requires api lvl 11");
+		}
+		mList.smoothScrollByOffset(offset);
+	}
+
+	public void smoothScrollToPosition(int position) {
+		mList.smoothScrollToPosition(position);
+	}
+
+	public void smoothScrollToPosition(int position, int boundPosition) {
+		mList.smoothScrollToPosition(position, boundPosition);
+	}
+
+	@SuppressLint("NewApi")
+	public void smoothScrollToPositionFromTop(int position, int offset) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			throw new ApiLevelTooLowException("requires api lvl 11");
+		}
+		mList.smoothScrollToPositionFromTop(position, offset);
+	}
+
+	@SuppressLint("NewApi")
+	public void smoothScrollToPositionFromTop(int position, int offset,
+			int duration) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			throw new ApiLevelTooLowException("requires api lvl 11");
+		}
+		mList.smoothScrollToPositionFromTop(position, offset, duration);
+	}
+
+	public void setSelection(int position) {
+		mList.setSelection(position);
+	}
+
+	public void setSelectionAfterHeaderView() {
+		mList.setSelectionAfterHeaderView();
+	}
+
+	public void setSelectionFromTop(int position, int y) {
+		mList.setSelectionFromTop(position, y);
+	}
+
+	public void setSelector(Drawable sel) {
+		mList.setSelector(sel);
+	}
+
+	public void setSelector(int resID) {
+		mList.setSelector(resID);
+	}
+
+	public int getFirstVisiblePosition() {
+		return mList.getFirstVisiblePosition();
+	}
+
+	public int getLastVisiblePosition() {
+		return mList.getLastVisiblePosition();
+	}
+
+	public void setChoiceMode(int choiceMode) {
+		mList.setChoiceMode(choiceMode);
+	}
+
+	public void setItemChecked(int position, boolean value) {
+		mList.setItemChecked(position, value);
+	}
+
+	@SuppressLint("NewApi")
+	public int getCheckedItemCount() {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			throw new ApiLevelTooLowException("requires api lvl 11");
+		}
+		return mList.getCheckedItemCount();
+	}
+
+	public long[] getCheckedItemIds() {
+		return mList.getCheckedItemIds();
+	}
+
+	public int getCheckedItemPosition() {
+		return mList.getCheckedItemPosition();
+	}
+
+	public SparseBooleanArray getCheckedItemPositions() {
+		return mList.getCheckedItemPositions();
+	}
+
+	public int getCount() {
+		return mList.getCount();
+	}
+
+	public Object getItemAtPosition(int position) {
+		return mList.getItemAtPosition(position);
+	}
+
+	public long getItemIdAtPosition(int position) {
+		return mList.getItemIdAtPosition(position);
 	}
 
 }

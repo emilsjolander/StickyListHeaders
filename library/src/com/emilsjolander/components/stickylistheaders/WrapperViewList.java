@@ -27,11 +27,6 @@ class WrapperViewList extends ListView {
 	public WrapperViewList(Context context) {
 		super(context);
 
-		// null out divider, dividers are handled by adapter so they look good
-		// with headers
-		super.setDivider(null);
-		super.setDividerHeight(0);
-
 		// Use reflection to be able to change the size/position of the list
 		// selector so it does not come under/over the header
 		try {
