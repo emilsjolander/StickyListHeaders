@@ -164,14 +164,7 @@ public class StickyListHeadersListView extends FrameLayout {
 	// This is called in response to the data set or the adapter changing
 	private void clearHeader() {
 		if (mHeader != null) {
-			final View oldHeader = mHeader;
-			post(new Runnable() {
-				
-				@Override
-				public void run() {
-					removeView(oldHeader);
-				}
-			});
+			removeView(mHeader);
 			mHeader = null;
 			mHeaderId = null;
 			mHeaderPosition = null;
@@ -260,18 +253,11 @@ public class StickyListHeadersListView extends FrameLayout {
 	}
 
 	private void swapHeader(View newHeader) {
-		final View oldHeader = mHeader;
-		post(new Runnable() {
-			
-			@Override
-			public void run() {
-				if (oldHeader != null) {
-					removeView(oldHeader);
-				}
-				addView(mHeader);
-			}
-		});
+		if (mHeader != null) {
+			removeView(mHeader);
+		}
 		mHeader = newHeader;
+		addView(mHeader);
 		mHeader.setOnClickListener(new OnClickListener() {
 
 			@Override
