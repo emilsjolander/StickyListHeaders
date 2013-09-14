@@ -145,6 +145,9 @@ public class StickyListHeadersListView extends FrameLayout {
 					swapHeader(header);
 				}
 
+				// measure the header
+				measureChild(mHeader, 0, 0);
+
 				// Reset mHeaderOffset to null ensuring
 				// that it will be set on the header and
 				// not skipped for performance reasons.
@@ -157,22 +160,23 @@ public class StickyListHeadersListView extends FrameLayout {
 		// Calculate new header offset
 		// Skip looking at the first view. it never matters because it always
 		// results in a headerOffset = 0
+		int headerBottom = mHeader.getMeasuredHeight() + mHeader.getTop();
 		for (int i = 1; i < mList.getChildCount(); i++) {
 			final View child = mList.getChildAt(i);
 			final boolean doesChildHaveHeader = child instanceof WrapperView
 					&& ((WrapperView) child).hasHeader();
 			final boolean isChildFooter = mList.containsFooterView(child);
 			if (doesChildHaveHeader || isChildFooter) {
-				headerOffset = Math
-						.min(child.getTop() - mHeader.getBottom(), 0);
+				headerOffset = Math.min(
+						child.getTop() - headerBottom , 0);
 				break;
 			}
 		}
-
+		
 		setHeaderOffet(headerOffset);
 
 		if (!mIsDrawingListUnderStickyHeader) {
-			mList.setTopClippingLength(mHeader.getHeight() + mHeaderOffset);
+			mList.setTopClippingLength(mHeader.getMeasuredHeight() + mHeaderOffset);
 		}
 
 		updateHeaderVisibilities();
@@ -201,7 +205,7 @@ public class StickyListHeadersListView extends FrameLayout {
 	private void updateHeaderVisibilities() {
 		int top;
 		if (mHeader != null) {
-			top = mHeader.getHeight()
+			top = mHeader.getMeasuredHeight()
 					+ (mHeaderOffset != null ? mHeaderOffset : 0);
 		} else {
 			top = mClippingToPadding ? getPaddingTop() : 0;
