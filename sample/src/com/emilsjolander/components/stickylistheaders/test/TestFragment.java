@@ -1,8 +1,6 @@
 package com.emilsjolander.components.stickylistheaders.test;
 
 import static android.widget.Toast.LENGTH_SHORT;
-import android.annotation.SuppressLint;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -30,10 +28,14 @@ public class TestFragment extends Fragment implements
 
 		mStickyList.addHeaderView(inflater.inflate(R.layout.list_header, null));
 		mStickyList.addFooterView(inflater.inflate(R.layout.list_footer, null));
-		mAdapter = new TestBaseAdapter(getActivity());
 		mStickyList.setEmptyView(v.findViewById(R.id.empty));
 
+		mStickyList.setDrawingListUnderStickyHeader(true);
+		mStickyList.setAreHeadersSticky(true);
+		
+		mAdapter = new TestBaseAdapter(getActivity());
 		mStickyList.setAdapter(mAdapter);
+		
 		return v;
 	}
 
@@ -44,18 +46,11 @@ public class TestFragment extends Fragment implements
 				LENGTH_SHORT).show();
 	}
 
-	@SuppressLint("NewApi")
 	@Override
 	public void onHeaderClick(StickyListHeadersListView l, View header,
 			int itemPosition, long headerId, boolean currentlySticky) {
-		Toast.makeText(getActivity(), "header " + headerId, Toast.LENGTH_SHORT)
-				.show();
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			mStickyList.smoothScrollToPositionFromTop(
-					mAdapter.getSectionStart(itemPosition)
-							+ mStickyList.getHeaderViewsCount(),
-					-mStickyList.getPaddingTop());
-		}
+		Toast.makeText(getActivity(), "Header " + headerId + " currentlySticky ?"+currentlySticky,
+				LENGTH_SHORT).show();
 	}
 
 }

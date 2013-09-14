@@ -25,8 +25,7 @@ import android.widget.ListAdapter;
  */
 class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 
-
-	public interface OnHeaderClickListener{
+	interface OnHeaderClickListener {
 		public void onHeaderClick(View header, int itemPosition, long headerId);
 	}
 
@@ -116,6 +115,8 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 	private void recycleHeaderIfExists(WrapperView wv) {
 		View header = wv.mHeader;
 		if (header != null) {
+			// reset the headers visibility when adding it to the cache
+			header.setVisibility(View.VISIBLE);
 			mHeaderCache.add(header);
 		}
 	}

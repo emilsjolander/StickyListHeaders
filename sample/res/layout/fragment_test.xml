@@ -1,20 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
     <com.emilsjolander.components.stickylistheaders.StickyListHeadersListView
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dip"
-        android:clipToPadding="false" 
         android:scrollbarStyle="outsideOverlay"
         android:fastScrollEnabled="true"
-        android:drawSelectorOnTop="true"
-        tools:listitem="@layout/test_list_item_layout" />
+        android:drawSelectorOnTop="true" />
     
     <TextView 
         android:id="@+id/empty"
@@ -23,6 +19,6 @@
         android:textSize="30sp"
         android:text="empty"
         android:gravity="center"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
-</LinearLayout>
+</FrameLayout>
