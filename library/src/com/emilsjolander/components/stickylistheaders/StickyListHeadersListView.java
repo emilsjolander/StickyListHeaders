@@ -42,6 +42,7 @@ public class StickyListHeadersListView extends ListView {
 	private AdapterWrapper mAdapter;
 	private float mHeaderDownY = -1;
 	private boolean mHeaderBeingPressed = false;
+    private boolean mHeaderChildBeingPressed = false;
 	private OnHeaderClickListener mOnHeaderClickListener;
 	private Integer mHeaderPosition;
 	private ViewConfiguration mViewConfig;
@@ -568,41 +569,52 @@ public class StickyListHeadersListView extends ListView {
 	// TODO handle touches better, multitouch etc.
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
-		int action = ev.getAction();
-		if (action == MotionEvent.ACTION_DOWN
-				&& ev.getY() <= mHeaderBottomPosition) {
-			mHeaderDownY = ev.getY();
-			mHeaderBeingPressed = true;
-			mHeader.setPressed(true);
-			mHeader.invalidate();
-			invalidate(0, 0, getWidth(), mHeaderBottomPosition);
-			return true;
-		}
-		if (mHeaderBeingPressed) {
-			if (Math.abs(ev.getY() - mHeaderDownY) < mViewConfig
-					.getScaledTouchSlop()) {
-				if (action == MotionEvent.ACTION_UP
-						|| action == MotionEvent.ACTION_CANCEL) {
-					mHeaderDownY = -1;
-					mHeaderBeingPressed = false;
-					mHeader.setPressed(false);
-					mHeader.invalidate();
-					invalidate(0, 0, getWidth(), mHeaderBottomPosition);
-					if (mOnHeaderClickListener != null) {
-						mOnHeaderClickListener.onHeaderClick(this, mHeader,
-								mHeaderPosition, mCurrentHeaderId, true);
-					}
-				}
-				return true;
-			} else {
-				mHeaderDownY = -1;
-				mHeaderBeingPressed = false;
-				mHeader.setPressed(false);
-				mHeader.invalidate();
-				invalidate(0, 0, getWidth(), mHeaderBottomPosition);
-			}
-		}
-		return super.onTouchEvent(ev);
+        int action = ev.getAction();
+        if (action == MotionEvent.ACTION_DOWN
+                && ev.getY() <= mHeaderBottomPosition) {
+            if (!mHeader.dispatchTouchEvent(ev)) {
+                mHeaderDownY = ev.getY();
+                mHeader.setPressed(true);
+                mHeaderBeingPressed = true;
+            } else {
+                mHeaderChildBeingPressed = true;
+            }
+            mHeader.invalidate();
+            invalidate(0, 0, getWidth(), mHeaderBottomPosition);
+            return true;
+        }
+
+        if (mHeaderBeingPressed || mHeaderChildBeingPressed) {
+            if (mHeaderChildBeingPressed) {
+                if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                    mHeaderChildBeingPressed = false;
+                }
+                mHeader.dispatchTouchEvent(ev);
+            } else {
+                if (Math.abs(ev.getY() - mHeaderDownY) < mViewConfig
+                        .getScaledTouchSlop()) {
+                    if (action == MotionEvent.ACTION_UP
+                            || action == MotionEvent.ACTION_CANCEL) {
+                        mHeaderDownY = -1;
+                        mHeaderBeingPressed = false;
+                        mHeader.setPressed(false);
+                        if (mOnHeaderClickListener != null) {
+                            mOnHeaderClickListener.onHeaderClick(this, mHeader,
+                                    mHeaderPosition, mCurrentHeaderId, true);
+                        }
+                    }
+                    return true;
+                } else {
+                    mHeaderDownY = -1;
+                    mHeaderBeingPressed = false;
+                    mHeader.setPressed(false);
+                }
+            }
+            mHeader.invalidate();
+            invalidate(0, 0, getWidth(), mHeaderBottomPosition);
+            return true;
+        }
+        return super.onTouchEvent(ev);
 	}
 
 }
