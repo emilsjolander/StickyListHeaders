@@ -1,8 +1,8 @@
 StickyListHeaders
 =================
-StickyListHeaders is an Android library that makes it easy to integrate section headers in your `ListView`. These section headers stick to the top like in the new People app of Android 4.0 Ice Cream Sandwich. This behavior is also found in lists with sections on iOS devices. This library can also be used for without the sticky functionality if you just want section headers.
+StickyListHeaders is an Android library that makes it easy to integrate section headers in your `ListView`. These section headers stick to the top like in the new People app of Android 4.0 Ice Cream Sandwich. This behavior is also found in lists with sections on iOS devices. This library can also be used without the sticky functionality if you just want section headers.
 
-StickyListHeaders actively supports android versions 2.3 (gingerbread) and above
+StickyListHeaders actively supports android versions 2.3 (gingerbread) and above.
 That said, it works all the way down to 2.1 but is not actively tested or working perfectly.
 
 Here is a short gif showing the functionality you get with this library:
@@ -12,7 +12,7 @@ Here is a short gif showing the functionality you get with this library:
 
 Goal
 ----
-The goal of this project is to deliver a high performance replacement to `ListView`. You should with minimal effort and time be able to add section headers to a list. This should be done via a simple to use api without any special features. This library will always priorities general use cases over special ones. This means that the library will add very few public methods to the standard `ListView` and will not try to work for every use case. While i will want to support even narrow use cases i will not do se if it comprimises the api or any other feature.
+The goal of this project is to deliver a high performance replacement to `ListView`. You should with minimal effort and time be able to add section headers to a list. This should be done via a simple to use API without any special features. This library will always priorities general use cases over special ones. This means that the library will add very few public methods to the standard `ListView` and will not try to work for every use case. While I will want to support even narrow use cases I will not do so if it compromises the API or any other feature.
 
 
 Getting started
@@ -23,15 +23,12 @@ First of all you will have to clone the library.
 git clone https://github.com/emilsjolander/StickyListHeaders.git
 ```
 
-Now that you have the library you will have to import it into eclipse (or any other IDE but this is how you do it in eclipse).
-Inn eclipse navigate the menus like this.
+Now that you have the library you will have to import it into Android Studio.
+In Android Studio navigate the menus like this.
 ```
-file -> new -> project -> android project from existing source
+File -> Import Project ...
 ```
-In the following dialog navigate to StickyListHeaders which you cloned to your computer in the previous steps.
-Press finish and you should have the library in your workspace.
-
-Now right click the project you want to use StickyListHeaders in and click on `properties`. In the dialog that appears you should navigate to `android` in the side menu. Now press the add button on the bottom right of the dialog and choose StickyListHeaders. Press ok and you are good to go!
+In the following dialog navigate to StickyListHeaders which you cloned to your computer in the previous steps and select the `build.gradle`.
 
 
 ###Code
@@ -128,12 +125,12 @@ public class MyAdapter extends BaseAdapter implements StickyListHeadersAdapter {
 }
 ```
 
-Thats it! look through the api docs below to get know about things to customize and if you have any problems getting started please open an issue as it probably means the getting started guide need some improvement!
+That's it! Look through the API docs below to get know about things to customize and if you have any problems getting started please open an issue as it probably means the getting started guide need some improvement!
 
 ###Upgrading to version 2.x
 If you are Upgrading from a version prior to 2.x you might run into the following problems.
-1. `StickyListHeadersListView` is no longer a `ListView` subclass. This means that it cannot be passed into a method expecting a ListView. You can retreive an instance of the `ListView` via `getWrappedList()` but use this with caution as things will probably break if you start setting things directly on that list.
-2. Because `StickyListHeadersListView` is no longer a `ListView` it does not support all the methods. I have implemented delegate methods for all the usuall methods and gladely accept pull requests for more.
+1. `StickyListHeadersListView` is no longer a `ListView` subclass. This means that it cannot be passed into a method expecting a ListView. You can retrieve an instance of the `ListView` via `getWrappedList()` but use this with caution as things will probably break if you start setting things directly on that list.
+2. Because `StickyListHeadersListView` is no longer a `ListView` it does not support all the methods. I have implemented delegate methods for all the usual methods and gladly accept pull requests for more.
 
 Api
 ---
@@ -172,7 +169,7 @@ public View getListChildAt(int index);
 public int getListChildCount();
 ```
 
-This is a setter and getter for an internal attribute that controlls if the list should be drawn under the stuck header. The default value is false. If you want to see the list scroll under your header(the header should have a semi-transparent background) you will want to set this attribute to `true`.
+This is a setter and getter for an internal attribute that controls if the list should be drawn under the stuck header. The default value is false. If you want to see the list scroll under your header(the header should have a semi-transparent background) you will want to set this attribute to `true`.
 ```java
 public void setDrawingListUnderStickyHeader(boolean drawingListUnderStickyHeader);
 public boolean isDrawingListUnderStickyHeader();
