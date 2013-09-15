@@ -3,7 +3,7 @@ StickyListHeaders
 StickyListHeaders is an Android library that makes it easy to integrate section headers in your `ListView`. These section headers stick to the top like in the new People app of Android 4.0 Ice Cream Sandwich. This behavior is also found in lists with sections on iOS devices. This library can also be used for without the sticky functionality if you just want section headers.
 
 StickyListHeaders actively supports android versions 2.3 (gingerbread) and above
-That said, it should be compatible with much older versions of android as well but these are not actively tested.
+That said, it works all the way down to 2.1 but is not actively tested or working perfectly.
 
 Here is a short gif showing the functionality you get with this library:
 
@@ -19,17 +19,11 @@ Getting started
 ---------------
 ###Installing the library
 First of all you will have to clone the library.
-
-If you are using a unix-like terminal first use the following command to navigate to the directory or you choosing.
-```shell
-cd ~/my/directory
-```
-After you are in the directory you want to clone the library to, use this command to clone StickyListHeaders.
 ```shell
 git clone https://github.com/emilsjolander/StickyListHeaders.git
 ```
 
-Now that you have the library you will have to import it into eclipse (or any other ide but this is how you do it in eclipse).
+Now that you have the library you will have to import it into eclipse (or any other IDE but this is how you do it in eclipse).
 Inn eclipse navigate the menus like this.
 ```
 file -> new -> project -> android project from existing source
@@ -136,6 +130,10 @@ public class MyAdapter extends BaseAdapter implements StickyListHeadersAdapter {
 
 Thats it! look through the api docs below to get know about things to customize and if you have any problems getting started please open an issue as it probably means the getting started guide need some improvement!
 
+###Upgrading to version 2.x
+If you are Upgrading from a version prior to 2.x you might run into the following problems.
+1. `StickyListHeadersListView` is no longer a `ListView` subclass. This means that it cannot be passed into a method expecting a ListView. You can retreive an instance of the `ListView` via `getWrappedList()` but use this with caution as things will probably break if you start setting things directly on that list.
+2. Because `StickyListHeadersListView` is no longer a `ListView` it does not support all the methods. I have implemented delegate methods for all the usuall methods and gladely accept pull requests for more.
 
 Api
 ---
@@ -156,7 +154,7 @@ Your adapter must implement this interface to function with `StickyListHeadersLi
 Headers are sticky by default but that can easily be changed with this setter. There is of course also a matching getter for the sticky property.
 ```java
 public void setAreHeadersSticky(boolean areHeadersSticky);
-public boolean getAreHeadersSticky();
+public boolean areHeadersSticky();
 ```
 
 A OnHeaderClickListener is the header version of OnItemClickListener. This is the setter for it and the interface of the listener. The currentlySticky boolean flag indicated if the header that was clicked was sticking to the top at the time it was clicked.
@@ -168,9 +166,10 @@ public interface OnHeaderClickListener {
 }
 ```
 
-StickyListHeaders wraps the adapter passed to `setAdapter()` is it's own adapter, so `getAdapter()` will not return the adapter that `setAdapter()` was passed. It is often recomended that you keep a reference to the adapter in your activity/fragment but if this does not fit you there is a method to retrieve the original adapter.
+Here are two methods added to the API for inspecting the children of the underlying `ListView`.
 ```java
-public StickyListHeadersAdapter getWrappedAdapter();
+public View getListChildAt(int index);
+public int getListChildCount();
 ```
 
 This is a setter and getter for an internal attribute that controlls if the list should be drawn under the stuck header. The default value is false. If you want to see the list scroll under your header(the header should have a semi-transparent background) you will want to set this attribute to `true`.
@@ -179,34 +178,27 @@ public void setDrawingListUnderStickyHeader(boolean drawingListUnderStickyHeader
 public boolean isDrawingListUnderStickyHeader();
 ```
 
-
-Limitations
------------
-There is currently two limitations with this library, they both have to do with what kind of views the header can contain and the both only apply for when sticky header are activated.
-
-The first limitation is that the header can as of now not contain anything that animates, the list will not crash but the animation will just not run as expected while the header is stuck. The other limitation is that it is currently not possible to have interactive elements in the header, Buttons, switches, etc. will only work when the header is not stuck.
-
-
 Contributing
 ------------
-Contributions are very welcome. Now that this library has grown in popularity i have a hard time keeping upp with all the issues while tending to a multitude of other projects as well as school. So if you find a big in the library or want a feature and think you can fix it yourself, fork + pull request and i will greatly appreciate it!
+Contributions are very welcome. Now that this library has grown in popularity i have a hard time keeping upp with all the issues while tending to a multitude of other projects as well as school. So if you find a bug in the library or want a feature and think you can fix it yourself, fork + pull request and i will greatly appreciate it!
 
 I love getting pull requests for new features as well as bugs. However, when it comes to new features please also explain the use case and way you think the library should include it. If you don't want to start coding a feature without knowing if the feature will have chance of being included, open an issue and we can discuss the feature!
 
 
 License
 -------
+```
+Copyright 2013 Emil Sjölander
 
-    Copyright 2013 Emil Sjölander
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+   http://www.apache.org/licenses/LICENSE-2.0
 
-       http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
