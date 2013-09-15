@@ -61,6 +61,7 @@ public class StickyListHeadersListView extends FrameLayout {
 	private OnHeaderClickListener mOnHeaderClickListener;
 	private Drawable mDivider;
 	private int mDividerHeight;
+	private AdapterWrapperDataSetObserver mDataSetObserver;
 
 	public StickyListHeadersListView(Context context) {
 		this(context, null);
@@ -495,9 +496,13 @@ public class StickyListHeadersListView extends FrameLayout {
 			clearHeader();
 			return;
 		}
+		if (mAdapter != null) {
+			mAdapter.unregisterDataSetObserver(mDataSetObserver);
+		}
 
 		mAdapter = new AdapterWrapper(getContext(), adapter);
-		mAdapter.registerDataSetObserver(new AdapterWrapperDataSetObserver());
+		mDataSetObserver = new AdapterWrapperDataSetObserver();
+		mAdapter.registerDataSetObserver(mDataSetObserver);
 
 		if (mOnHeaderClickListener != null) {
 			mAdapter.setOnHeaderClickListener(new AdapterWrapperHeaderClickHandler());
