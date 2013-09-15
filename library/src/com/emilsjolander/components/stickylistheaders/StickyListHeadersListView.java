@@ -14,6 +14,7 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
+import android.widget.ListView;
 
 import com.emilsjolander.components.stickylistheaders.WrapperViewList.LifeCycleListener;
 
@@ -469,6 +470,16 @@ public class StickyListHeadersListView extends FrameLayout {
 
 	public int getListChildCount() {
 		return mList.getChildCount();
+	}
+	
+	/**
+	 * Use the method with extreme caution!!
+	 * Changing any values on the underlying ListView might break everything.
+	 * 
+	 * @return the ListView backing this view.
+	 */
+	public ListView getWrappedList() {
+		return mList;
 	}
 
 	/* ---------- ListView delegate methods ---------- */
