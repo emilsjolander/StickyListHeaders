@@ -26,8 +26,8 @@ public class TestFragment extends Fragment implements
 		mStickyList.setOnItemClickListener(this);
 		mStickyList.setOnHeaderClickListener(this);
 
-//		mStickyList.addHeaderView(inflater.inflate(R.layout.list_header, null));
-//		mStickyList.addFooterView(inflater.inflate(R.layout.list_footer, null));
+		mStickyList.addHeaderView(inflater.inflate(R.layout.list_header, null));
+		mStickyList.addFooterView(inflater.inflate(R.layout.list_footer, null));
 		mStickyList.setEmptyView(v.findViewById(R.id.empty));
 
 		mStickyList.setDrawingListUnderStickyHeader(true);

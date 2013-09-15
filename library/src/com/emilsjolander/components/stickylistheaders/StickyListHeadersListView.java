@@ -29,8 +29,8 @@ import com.emilsjolander.components.stickylistheaders.WrapperViewList.LifeCycleL
 public class StickyListHeadersListView extends FrameLayout {
 
 	public interface OnHeaderClickListener {
-		public void onHeaderClick(StickyListHeadersListView l, View header,
-				int itemPosition, long headerId, boolean currentlySticky);
+		public void onHeaderClick(StickyListHeadersListView l, View header, int itemPosition, long headerId,
+				boolean currentlySticky);
 	}
 
 	/* --- Children --- */
@@ -69,8 +69,7 @@ public class StickyListHeadersListView extends FrameLayout {
 		this(context, attrs, 0);
 	}
 
-	public StickyListHeadersListView(Context context, AttributeSet attrs,
-			int defStyle) {
+	public StickyListHeadersListView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 
 		// Initialize the list
@@ -88,92 +87,74 @@ public class StickyListHeadersListView extends FrameLayout {
 		addView(mList);
 
 		if (attrs != null) {
-			TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
-					R.styleable.StickyListHeadersListView, 0, 0);
+			TypedArray a = context.getTheme()
+					.obtainStyledAttributes(attrs, R.styleable.StickyListHeadersListView, 0, 0);
 
 			try {
 				// Android attributes
 				if (a.hasValue(R.styleable.StickyListHeadersListView_android_padding)) {
-					int padding = a
-							.getDimensionPixelSize(
-									R.styleable.StickyListHeadersListView_android_padding,
-									0);
+					int padding = a.getDimensionPixelSize(R.styleable.StickyListHeadersListView_android_padding, 0);
 					mPaddingLeft = padding;
 					mPaddingTop = padding;
 					mPaddingRight = padding;
 					mPaddingBottom = padding;
 				} else {
 					mPaddingLeft = a
-							.getDimensionPixelSize(
-									R.styleable.StickyListHeadersListView_android_paddingLeft,
-									0);
-					mPaddingTop = a
-							.getDimensionPixelSize(
-									R.styleable.StickyListHeadersListView_android_paddingTop,
-									0);
-					mPaddingRight = a
-							.getDimensionPixelSize(
-									R.styleable.StickyListHeadersListView_android_paddingRight,
-									0);
-					mPaddingBottom = a
-							.getDimensionPixelSize(
-									R.styleable.StickyListHeadersListView_android_paddingBottom,
-									0);
+							.getDimensionPixelSize(R.styleable.StickyListHeadersListView_android_paddingLeft, 0);
+					mPaddingTop = a.getDimensionPixelSize(R.styleable.StickyListHeadersListView_android_paddingTop, 0);
+					mPaddingRight = a.getDimensionPixelSize(R.styleable.StickyListHeadersListView_android_paddingRight,
+							0);
+					mPaddingBottom = a.getDimensionPixelSize(
+							R.styleable.StickyListHeadersListView_android_paddingBottom, 0);
 				}
-				setPadding(mPaddingLeft, mPaddingTop, mPaddingRight,
-						mPaddingBottom);
+				setPadding(mPaddingLeft, mPaddingTop, mPaddingRight, mPaddingBottom);
 
 				// Set clip to padding on the list and reset value to default on
 				// wrapper
-				mClippingToPadding = a
-						.getBoolean(
-								R.styleable.StickyListHeadersListView_android_clipToPadding,
-								true);
+				mClippingToPadding = a.getBoolean(R.styleable.StickyListHeadersListView_android_clipToPadding, true);
 				super.setClipToPadding(true);
 				mList.setClipToPadding(mClippingToPadding);
 
 				// ListView attributes
-				mList.setCacheColorHint(a
-						.getColor(
-								R.styleable.StickyListHeadersListView_android_cacheColorHint,
-								mList.getCacheColorHint()));
-				mList.setChoiceMode(a
-						.getInt(R.styleable.StickyListHeadersListView_android_choiceMode,
-								mList.getChoiceMode()));
-				mList.setDrawSelectorOnTop(a
-						.getBoolean(
-								R.styleable.StickyListHeadersListView_android_drawSelectorOnTop,
-								false));
-				mList.setFastScrollEnabled(a
-						.getBoolean(
-								R.styleable.StickyListHeadersListView_android_fastScrollEnabled,
-								mList.isFastScrollEnabled()));
-				final Drawable selector = a
-						.getDrawable(R.styleable.StickyListHeadersListView_android_listSelector);
+				mList.setFadingEdgeLength(a.getDimensionPixelSize(
+						R.styleable.StickyListHeadersListView_android_fadingEdgeLength,
+						mList.getVerticalFadingEdgeLength()));
+				final int fadingEdge = a.getInt(R.styleable.StickyListHeadersListView_android_requiresFadingEdge, 0);
+				if (fadingEdge == 0x00001000) {
+					mList.setVerticalFadingEdgeEnabled(false);
+					mList.setHorizontalFadingEdgeEnabled(true);
+				} else if (fadingEdge == 0x00002000) {
+					mList.setVerticalFadingEdgeEnabled(true);
+					mList.setHorizontalFadingEdgeEnabled(false);
+				} else {
+					mList.setVerticalFadingEdgeEnabled(false);
+					mList.setHorizontalFadingEdgeEnabled(false);
+				}
+				mList.setCacheColorHint(a.getColor(R.styleable.StickyListHeadersListView_android_cacheColorHint,
+						mList.getCacheColorHint()));
+				mList.setChoiceMode(a.getInt(R.styleable.StickyListHeadersListView_android_choiceMode,
+						mList.getChoiceMode()));
+				mList.setDrawSelectorOnTop(a.getBoolean(
+						R.styleable.StickyListHeadersListView_android_drawSelectorOnTop, false));
+				mList.setFastScrollEnabled(a.getBoolean(
+						R.styleable.StickyListHeadersListView_android_fastScrollEnabled, mList.isFastScrollEnabled()));
+				mList.setScrollBarStyle(a.getInt(R.styleable.StickyListHeadersListView_android_scrollbarStyle, 0));
+				final Drawable selector = a.getDrawable(R.styleable.StickyListHeadersListView_android_listSelector);
 				if (selector != null) {
 					mList.setSelector(selector);
 				}
-				mList.setScrollingCacheEnabled(a
-						.getBoolean(
-								R.styleable.StickyListHeadersListView_android_scrollingCache,
-								mList.isScrollingCacheEnabled()));
-				final Drawable divider = a
-						.getDrawable(R.styleable.StickyListHeadersListView_android_divider);
+				mList.setScrollingCacheEnabled(a.getBoolean(
+						R.styleable.StickyListHeadersListView_android_scrollingCache, mList.isScrollingCacheEnabled()));
+				final Drawable divider = a.getDrawable(R.styleable.StickyListHeadersListView_android_divider);
 				if (divider != null) {
 					mDivider = divider;
 				}
-				mDividerHeight = a
-						.getInt(R.styleable.StickyListHeadersListView_android_dividerHeight,
-								mDividerHeight);
+				mDividerHeight = a.getInt(R.styleable.StickyListHeadersListView_android_dividerHeight, mDividerHeight);
 
 				// StickyListHeaders attributes
-				mAreHeadersSticky = a.getBoolean(
-						R.styleable.StickyListHeadersListView_hasStickyHeaders,
-						true);
-				mIsDrawingListUnderStickyHeader = a
-						.getBoolean(
-								R.styleable.StickyListHeadersListView_isDrawingListUnderStickyHeader,
-								true);
+				mAreHeadersSticky = a.getBoolean(R.styleable.StickyListHeadersListView_hasStickyHeaders, true);
+				mIsDrawingListUnderStickyHeader = a.getBoolean(
+						R.styleable.StickyListHeadersListView_isDrawingListUnderStickyHeader, true);
 
 			} finally {
 				a.recycle();
@@ -182,19 +163,14 @@ public class StickyListHeadersListView extends FrameLayout {
 	}
 
 	@Override
-	protected void onLayout(boolean changed, int left, int top, int right,
-			int bottom) {
-		mList.layout(mPaddingLeft, 0, mList.getMeasuredWidth() + mPaddingLeft,
-				getHeight());
+	protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+		mList.layout(mPaddingLeft, 0, mList.getMeasuredWidth() + mPaddingLeft, getHeight());
 		if (mHeader != null) {
-			MarginLayoutParams lp = (MarginLayoutParams) mHeader
-					.getLayoutParams();
-			int headerTop = lp.topMargin
-					+ (mClippingToPadding ? mPaddingTop : 0);
+			MarginLayoutParams lp = (MarginLayoutParams) mHeader.getLayoutParams();
+			int headerTop = lp.topMargin + (mClippingToPadding ? mPaddingTop : 0);
 			// The left parameter must for some reason be set to 0.
 			// I think it should be set to mPaddingLeft but apparently not
-			mHeader.layout(0, headerTop, mHeader.getMeasuredWidth(), headerTop
-					+ mHeader.getMeasuredHeight());
+			mHeader.layout(0, headerTop, mHeader.getMeasuredWidth(), headerTop + mHeader.getMeasuredHeight());
 		}
 	}
 
@@ -232,12 +208,14 @@ public class StickyListHeadersListView extends FrameLayout {
 		final int headerViewCount = mList.getHeaderViewsCount();
 		final int realFirstVisibleItem = firstVisiblePosition - headerViewCount;
 
-		final boolean isFirstViewBelowTop = mList.getChildAt(0).getTop() > 0;
+		// It is not a mistake to call getFirstVisiblePosition() here.
+		// Most of the time getFixedFirstVisibleItem() should be called
+		// but that does not work great together with getChildAt()
+		final boolean isFirstViewBelowTop = mList.getFirstVisiblePosition() == 0 && mList.getChildAt(0).getTop() > 0;
 		final boolean isFirstVisibleItemOutsideAdapterRange = realFirstVisibleItem > adapterCount - 1
 				|| realFirstVisibleItem < 0;
 		final boolean doesListHaveChildren = mList.getChildCount() != 0;
-		if (!doesListHaveChildren  || isFirstVisibleItemOutsideAdapterRange
-				|| isFirstViewBelowTop) {
+		if (!doesListHaveChildren || isFirstVisibleItemOutsideAdapterRange || isFirstViewBelowTop) {
 			clearHeader();
 			return;
 		}
@@ -247,14 +225,13 @@ public class StickyListHeadersListView extends FrameLayout {
 
 	private void updateHeader(int firstVisiblePosition) {
 
-		// check if there is a new header in town
+		// check if there is a new header should be sticky
 		if (mHeaderPosition == null || mHeaderPosition != firstVisiblePosition) {
 			mHeaderPosition = firstVisiblePosition;
 			final long headerId = mAdapter.getHeaderId(firstVisiblePosition);
 			if (mHeaderId == null || mHeaderId != headerId) {
 				mHeaderId = headerId;
-				final View header = mAdapter.getHeaderView(mHeaderPosition,
-						mHeader, this);
+				final View header = mAdapter.getHeaderView(mHeaderPosition, mHeader, this);
 				if (mHeader != header) {
 					if (header == null) {
 						throw new NullPointerException("header may not be null");
@@ -264,12 +241,9 @@ public class StickyListHeadersListView extends FrameLayout {
 
 				// measure the header
 				final int width = getWidth();
-				final int parentWidthMeasureSpec = MeasureSpec.makeMeasureSpec(
-						width, MeasureSpec.EXACTLY);
-				final int parentHeightMeasureSpec = MeasureSpec
-						.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
-				measureChild(mHeader, parentWidthMeasureSpec,
-						parentHeightMeasureSpec);
+				final int parentWidthMeasureSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
+				final int parentHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+				measureChild(mHeader, parentWidthMeasureSpec, parentHeightMeasureSpec);
 
 				// Reset mHeaderOffset to null ensuring
 				// that it will be set on the header and
@@ -283,25 +257,21 @@ public class StickyListHeadersListView extends FrameLayout {
 		// Calculate new header offset
 		// Skip looking at the first view. it never matters because it always
 		// results in a headerOffset = 0
-		int headerBottom = mHeader.getMeasuredHeight()
-				+ (mClippingToPadding ? mPaddingTop : 0);
-		for (int i = 1; i < mList.getChildCount(); i++) {
+		int headerBottom = mHeader.getMeasuredHeight() + (mClippingToPadding ? mPaddingTop : 0);
+		for (int i = 0; i < mList.getChildCount(); i++) {
 			final View child = mList.getChildAt(i);
-			final boolean doesChildHaveHeader = child instanceof WrapperView
-					&& ((WrapperView) child).hasHeader();
+			final boolean doesChildHaveHeader = child instanceof WrapperView && ((WrapperView) child).hasHeader();
 			final boolean isChildFooter = mList.containsFooterView(child);
-			if (doesChildHaveHeader || isChildFooter) {
+			if (child.getTop() >= (mClippingToPadding ? mPaddingTop : 0) && (doesChildHaveHeader || isChildFooter)) {
 				headerOffset = Math.min(child.getTop() - headerBottom, 0);
 				break;
 			}
 		}
 
-		headerOffset += mClippingToPadding ? mPaddingTop : 0;
 		setHeaderOffet(headerOffset);
 
 		if (!mIsDrawingListUnderStickyHeader) {
-			mList.setTopClippingLength(mHeader.getMeasuredHeight()
-					+ mHeaderOffset);
+			mList.setTopClippingLength(mHeader.getMeasuredHeight() + mHeaderOffset);
 		}
 
 		updateHeaderVisibilities();
@@ -317,9 +287,8 @@ public class StickyListHeadersListView extends FrameLayout {
 
 			@Override
 			public void onClick(View v) {
-				mOnHeaderClickListener.onHeaderClick(
-						StickyListHeadersListView.this, mHeader,
-						mHeaderPosition, mHeaderId, true);
+				mOnHeaderClickListener.onHeaderClick(StickyListHeadersListView.this, mHeader, mHeaderPosition,
+						mHeaderId, true);
 			}
 		});
 	}
@@ -329,8 +298,7 @@ public class StickyListHeadersListView extends FrameLayout {
 	private void updateHeaderVisibilities() {
 		int top;
 		if (mHeader != null) {
-			top = mHeader.getMeasuredHeight()
-					+ (mHeaderOffset != null ? mHeaderOffset : 0);
+			top = mHeader.getMeasuredHeight() + (mHeaderOffset != null ? mHeaderOffset : 0);
 		} else {
 			top = mClippingToPadding ? mPaddingTop : 0;
 		}
@@ -364,8 +332,7 @@ public class StickyListHeadersListView extends FrameLayout {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 				mHeader.setTranslationY(mHeaderOffset);
 			} else {
-				MarginLayoutParams params = (MarginLayoutParams) mHeader
-						.getLayoutParams();
+				MarginLayoutParams params = (MarginLayoutParams) mHeader.getLayoutParams();
 				params.topMargin = mHeaderOffset;
 				mHeader.setLayoutParams(params);
 			}
@@ -389,11 +356,9 @@ public class StickyListHeadersListView extends FrameLayout {
 	private class WrapperListScrollListener implements OnScrollListener {
 
 		@Override
-		public void onScroll(AbsListView view, int firstVisibleItem,
-				int visibleItemCount, int totalItemCount) {
+		public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 			if (mOnScrollListenerDelegate != null) {
-				mOnScrollListenerDelegate.onScroll(view, firstVisibleItem,
-						visibleItemCount, totalItemCount);
+				mOnScrollListenerDelegate.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
 			}
 			updateOrClearHeader(mList.getFixedFirstVisibleItem());
 		}
@@ -401,8 +366,7 @@ public class StickyListHeadersListView extends FrameLayout {
 		@Override
 		public void onScrollStateChanged(AbsListView view, int scrollState) {
 			if (mOnScrollListenerDelegate != null) {
-				mOnScrollListenerDelegate.onScrollStateChanged(view,
-						scrollState);
+				mOnScrollListenerDelegate.onScrollStateChanged(view, scrollState);
 			}
 		}
 
@@ -426,22 +390,17 @@ public class StickyListHeadersListView extends FrameLayout {
 
 	}
 
-	private class AdapterWrapperHeaderClickHandler implements
-			AdapterWrapper.OnHeaderClickListener {
+	private class AdapterWrapperHeaderClickHandler implements AdapterWrapper.OnHeaderClickListener {
 
 		@Override
 		public void onHeaderClick(View header, int itemPosition, long headerId) {
-			mOnHeaderClickListener.onHeaderClick(
-					StickyListHeadersListView.this, header, itemPosition,
-					headerId, false);
+			mOnHeaderClickListener.onHeaderClick(StickyListHeadersListView.this, header, itemPosition, headerId, false);
 		}
 
 	}
 
 	private boolean isStartOfSection(int position) {
-		return position == 0
-				|| mAdapter.getHeaderId(position) == mAdapter
-						.getHeaderId(position - 1);
+		return position == 0 || mAdapter.getHeaderId(position) == mAdapter.getHeaderId(position - 1);
 	}
 
 	private int getHeaderOverlap(int position) {
@@ -450,12 +409,9 @@ public class StickyListHeadersListView extends FrameLayout {
 			View header = mAdapter.getView(position, null, mList);
 
 			final int width = getWidth();
-			final int parentWidthMeasureSpec = MeasureSpec.makeMeasureSpec(
-					width, MeasureSpec.EXACTLY);
-			final int parentHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0,
-					MeasureSpec.UNSPECIFIED);
-			measureChild(header, parentWidthMeasureSpec,
-					parentHeightMeasureSpec);
+			final int parentWidthMeasureSpec = MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY);
+			final int parentHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+			measureChild(header, parentWidthMeasureSpec, parentHeightMeasureSpec);
 			return header.getMeasuredHeight();
 		}
 		return 0;
@@ -486,8 +442,7 @@ public class StickyListHeadersListView extends FrameLayout {
 		return areHeadersSticky();
 	}
 
-	public void setDrawingListUnderStickyHeader(
-			boolean drawingListUnderStickyHeader) {
+	public void setDrawingListUnderStickyHeader(boolean drawingListUnderStickyHeader) {
 		mIsDrawingListUnderStickyHeader = drawingListUnderStickyHeader;
 		// reset the top clipping length
 		mList.setTopClippingLength(0);
@@ -497,8 +452,7 @@ public class StickyListHeadersListView extends FrameLayout {
 		return mIsDrawingListUnderStickyHeader;
 	}
 
-	public void setOnHeaderClickListener(
-			OnHeaderClickListener onHeaderClickListener) {
+	public void setOnHeaderClickListener(OnHeaderClickListener onHeaderClickListener) {
 		mOnHeaderClickListener = onHeaderClickListener;
 		if (mAdapter != null) {
 			if (mOnHeaderClickListener != null) {
@@ -643,8 +597,7 @@ public class StickyListHeadersListView extends FrameLayout {
 	}
 
 	@SuppressLint("NewApi")
-	public void smoothScrollToPositionFromTop(int position, int offset,
-			int duration) {
+	public void smoothScrollToPositionFromTop(int position, int offset, int duration) {
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
 			throw new ApiLevelTooLowException("requires api lvl 11");
 		}
@@ -721,6 +674,14 @@ public class StickyListHeadersListView extends FrameLayout {
 	}
 
 	@Override
+	public void setClipToPadding(boolean clipToPadding) {
+		if (mList != null) {
+			mList.setClipToPadding(clipToPadding);
+		}
+		mClippingToPadding = clipToPadding;
+	}
+
+	@Override
 	public void setPadding(int left, int top, int right, int bottom) {
 		mPaddingLeft = left;
 		mPaddingTop = top;
@@ -730,7 +691,9 @@ public class StickyListHeadersListView extends FrameLayout {
 		// Set left/right paddings on the wrapper and top/bottom on the
 		// list to support the clip to padding flag
 		super.setPadding(left, 0, right, 0);
-		mList.setPadding(0, top, 0, bottom);
+		if (mList != null) {
+			mList.setPadding(0, top, 0, bottom);
+		}
 	}
 
 	@Override

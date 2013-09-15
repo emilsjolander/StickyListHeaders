@@ -11,12 +11,15 @@
         <attr name="android:paddingBottom" />
 
         <!-- ListView attributes -->
+        <attr name="android:fadingEdgeLength" />
+        <attr name="android:requiresFadingEdge" />
         <attr name="android:cacheColorHint" />
         <attr name="android:choiceMode" />
         <attr name="android:drawSelectorOnTop" />
         <attr name="android:fastScrollEnabled" />
         <attr name="android:listSelector" />
         <attr name="android:scrollingCache" />
+        <attr name="android:scrollbarStyle" />
         <attr name="android:divider" />
         <attr name="android:dividerHeight" />
 

@@ -23,6 +23,7 @@ class WrapperViewList extends ListView {
 	private int mTopClippingLength;
 	private Rect mSelectorRect = new Rect();// for if reflection fails
 	private Field mSelectorPositionField;
+	private boolean mClippingToPadding = true;
 
 	public WrapperViewList(Context context) {
 		super(context);
@@ -30,14 +31,12 @@ class WrapperViewList extends ListView {
 		// Use reflection to be able to change the size/position of the list
 		// selector so it does not come under/over the header
 		try {
-			Field selectorRectField = AbsListView.class
-					.getDeclaredField("mSelectorRect");
+			Field selectorRectField = AbsListView.class.getDeclaredField("mSelectorRect");
 			selectorRectField.setAccessible(true);
 			mSelectorRect = (Rect) selectorRectField.get(this);
 
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-				mSelectorPositionField = AbsListView.class
-						.getDeclaredField("mSelectorPosition");
+				mSelectorPositionField = AbsListView.class.getDeclaredField("mSelectorPosition");
 				mSelectorPositionField.setAccessible(true);
 			}
 		} catch (NoSuchFieldException e) {
@@ -146,6 +145,8 @@ class WrapperViewList extends ListView {
 			return firstVisibleItem;
 		}
 
+		// first getFirstVisiblePosition() reports items
+		// outside the view sometimes on old versions of android
 		for (int i = 0; i < getChildCount(); i++) {
 			if (getChildAt(i).getBottom() >= 0) {
 				firstVisibleItem += i;
@@ -155,13 +156,20 @@ class WrapperViewList extends ListView {
 
 		// work around to fix bug with firstVisibleItem being to high
 		// because list view does not take clipToPadding=false into account
-		// TODO
-		/*
-		 * if (!mClippingToPadding && getPaddingTop() > 0) { if
-		 * (getChildAt(0).getTop() > 0) { if (firstVisibleItem > 0) {
-		 * firstVisibleItem -= 1; } } }
-		 */
+		// on old versions of android
+		if (!mClippingToPadding && getPaddingTop() > 0 && firstVisibleItem > 0) {
+			if (getChildAt(0).getTop() > 0) {
+				firstVisibleItem -= 1;
+			}
+		}
+
 		return firstVisibleItem;
+	}
+
+	@Override
+	public void setClipToPadding(boolean clipToPadding) {
+		mClippingToPadding = clipToPadding;
+		super.setClipToPadding(clipToPadding);
 	}
 
 }
