@@ -377,6 +377,11 @@ public class StickyListHeadersListView extends FrameLayout {
 
 		@Override
 		public void onDispatchDrawOccurred(Canvas canvas) {
+			// onScroll is not called often at all before froyo
+			// therefor we need to update the header here as well.
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
+				updateOrClearHeader(mList.getFixedFirstVisibleItem());
+			}
 			if (mHeader != null) {
 				if (mClippingToPadding) {
 					canvas.save();
@@ -572,7 +577,11 @@ public class StickyListHeadersListView extends FrameLayout {
 		return mList.getEmptyView();
 	}
 
+	@SuppressLint("NewApi")
 	public void smoothScrollBy(int distance, int duration) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
+			throw new ApiLevelTooLowException("requires api lvl 8");
+		}
 		mList.smoothScrollBy(distance, duration);
 	}
 
@@ -594,7 +603,11 @@ public class StickyListHeadersListView extends FrameLayout {
 		}
 	}
 
+	@SuppressLint("NewApi")
 	public void smoothScrollToPosition(int position, int boundPosition) {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
+			throw new ApiLevelTooLowException("requires api lvl 8");
+		}
 		mList.smoothScrollToPosition(position, boundPosition);
 	}
 
@@ -660,7 +673,11 @@ public class StickyListHeadersListView extends FrameLayout {
 		return mList.getCheckedItemCount();
 	}
 
+	@SuppressLint("NewApi")
 	public long[] getCheckedItemIds() {
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
+			throw new ApiLevelTooLowException("requires api lvl 8");
+		}
 		return mList.getCheckedItemIds();
 	}
 
