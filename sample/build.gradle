@@ -1,4 +1,9 @@
-apply plugin: 'android-library'
+apply plugin: 'android'
+
+dependencies {
+    compile project(':library')
+    compile 'com.android.support:support-v4:18.0.0'
+}
 
 android {
     compileSdkVersion 18
@@ -12,5 +17,3 @@ android {
         }
     }
 }
-
-apply from: '../maven_push.gradle'
