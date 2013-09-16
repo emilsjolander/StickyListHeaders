@@ -1,5 +1,9 @@
 <resources>
 
     <string name="app_name">StickyListHeaders Sample</string>
+    <string name="restore">Restore</string>
+    <string name="update">Update</string>
+    <string name="clear">Clear</string>
+    <string name="empty">Empty Adapter</string>
 
 </resources>

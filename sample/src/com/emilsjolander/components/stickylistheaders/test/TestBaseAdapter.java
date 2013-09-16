@@ -18,33 +18,35 @@ import java.util.ArrayList;
 public class TestBaseAdapter extends BaseAdapter implements
         StickyListHeadersAdapter, SectionIndexer {
 
-    private String[] countries;
-    private int[] sectionIndices;
-    private Character[] sectionsLetters;
-    private LayoutInflater inflater;
+    private final Context mContext;
+    private String[] mCountries;
+    private int[] mSectionIndices;
+    private Character[] mSectionLetters;
+    private LayoutInflater mInflater;
 
     public TestBaseAdapter(Context context) {
-        inflater = LayoutInflater.from(context);
-        countries = context.getResources().getStringArray(R.array.countries);
-        sectionIndices = getSectionIndices();
-        sectionsLetters = getStartingLetters();
+        mContext = context;
+        mInflater = LayoutInflater.from(context);
+        mCountries = context.getResources().getStringArray(R.array.countries);
+        mSectionIndices = getmSectionIndices();
+        mSectionLetters = getStartingLetters();
     }
 
     private Character[] getStartingLetters() {
-        Character[] letters = new Character[sectionIndices.length];
-        for (int i = 0; i < sectionIndices.length; i++) {
-            letters[i] = countries[sectionIndices[i]].charAt(0);
+        Character[] letters = new Character[mSectionIndices.length];
+        for (int i = 0; i < mSectionIndices.length; i++) {
+            letters[i] = mCountries[mSectionIndices[i]].charAt(0);
         }
         return letters;
     }
 
-    private int[] getSectionIndices() {
+    private int[] getmSectionIndices() {
         ArrayList<Integer> sectionIndices = new ArrayList<Integer>();
-        char lastFirstChar = countries[0].charAt(0);
+        char lastFirstChar = mCountries[0].charAt(0);
         sectionIndices.add(0);
-        for (int i = 1; i < countries.length; i++) {
-            if (countries[i].charAt(0) != lastFirstChar) {
-                lastFirstChar = countries[i].charAt(0);
+        for (int i = 1; i < mCountries.length; i++) {
+            if (mCountries[i].charAt(0) != lastFirstChar) {
+                lastFirstChar = mCountries[i].charAt(0);
                 sectionIndices.add(i);
             }
         }
@@ -57,12 +59,12 @@ public class TestBaseAdapter extends BaseAdapter implements
 
     @Override
     public int getCount() {
-        return countries.length;
+        return mCountries.length;
     }
 
     @Override
     public Object getItem(int position) {
-        return countries[position];
+        return mCountries[position];
     }
 
     @Override
@@ -70,47 +72,48 @@ public class TestBaseAdapter extends BaseAdapter implements
         return position;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
 
         if (convertView == null) {
             holder = new ViewHolder();
-            convertView = inflater.inflate(R.layout.test_list_item_layout,
-                    parent, false);
+            convertView = mInflater.inflate(R.layout.test_list_item_layout, parent, false);
             holder.text = (TextView) convertView.findViewById(R.id.text);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
-        holder.text.setText(countries[position]);
+        holder.text.setText(mCountries[position]);
 
         return convertView;
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
         HeaderViewHolder holder;
 
         if (convertView == null) {
             holder = new HeaderViewHolder();
-            convertView = inflater.inflate(R.layout.header, parent, false);
-            holder.text1 = (TextView) convertView.findViewById(R.id.text1);
+            convertView = mInflater.inflate(R.layout.header, parent, false);
+            holder.text = (TextView) convertView.findViewById(R.id.text1);
             convertView.setTag(holder);
         } else {
             holder = (HeaderViewHolder) convertView.getTag();
         }
 
         // set header text as first char in name
-        char headerChar = countries[position].subSequence(0, 1).charAt(0);
+        char headerChar = mCountries[position].subSequence(0, 1).charAt(0);
         String headerText;
         if (headerChar % 2 == 0) {
             headerText = headerChar + "\n" + headerChar + "\n" + headerChar;
         } else {
             headerText = headerChar + "\n" + headerChar;
         }
-        holder.text1.setText(headerText);
+        holder.text.setText(headerText);
 
         return convertView;
     }
@@ -123,36 +126,50 @@ public class TestBaseAdapter extends BaseAdapter implements
     public long getHeaderId(int position) {
         // return the first character of the country as ID because this is what
         // headers are based upon
-        return countries[position].subSequence(0, 1).charAt(0);
+        return mCountries[position].subSequence(0, 1).charAt(0);
     }
 
     @Override
     public int getPositionForSection(int section) {
-        if (section >= sectionIndices.length) {
-            section = sectionIndices.length - 1;
+        if (section >= mSectionIndices.length) {
+            section = mSectionIndices.length - 1;
         } else if (section < 0) {
             section = 0;
         }
-        return sectionIndices[section];
+        return mSectionIndices[section];
     }
 
     @Override
     public int getSectionForPosition(int position) {
-        for (int i = 0; i < sectionIndices.length; i++) {
-            if (position < sectionIndices[i]) {
+        for (int i = 0; i < mSectionIndices.length; i++) {
+            if (position < mSectionIndices[i]) {
                 return i - 1;
             }
         }
-        return sectionIndices.length - 1;
+        return mSectionIndices.length - 1;
     }
 
     @Override
     public Object[] getSections() {
-        return sectionsLetters;
+        return mSectionLetters;
+    }
+
+    public void clear() {
+        mSectionIndices = new int[0];
+        mSectionLetters = new Character[0];
+        mCountries = new String[0];
+        notifyDataSetChanged();
+    }
+
+    public void restore() {
+        mCountries = mContext.getResources().getStringArray(R.array.countries);
+        mSectionIndices = getmSectionIndices();
+        mSectionLetters = getStartingLetters();
+        notifyDataSetChanged();
     }
 
     class HeaderViewHolder {
-        TextView text1;
+        TextView text;
     }
 
     class ViewHolder {

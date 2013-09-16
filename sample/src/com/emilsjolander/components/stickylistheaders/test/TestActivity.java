@@ -1,61 +1,80 @@
 package com.emilsjolander.components.stickylistheaders.test;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.emilsjolander.components.stickylistheaders.StickyListHeadersListView;
 
 /**
  * @author Emil Sjölander
  */
 public class TestActivity extends SherlockFragmentActivity implements
-        ViewPager.OnPageChangeListener, ActionBar.TabListener {
+        AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener {
 
-    private ViewPager mViewPager;
+    private TestBaseAdapter mAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setOnPageChangeListener(this);
-        mViewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
+        mAdapter = new TestBaseAdapter(this);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        actionBar.addTab(actionBar.newTab().setText("1").setTabListener(this));
-        actionBar.addTab(actionBar.newTab().setText("2").setTabListener(this));
-        actionBar.addTab(actionBar.newTab().setText("3").setTabListener(this));
-        actionBar.addTab(actionBar.newTab().setText("4").setTabListener(this));
+        StickyListHeadersListView stickyList = (StickyListHeadersListView) findViewById(R.id.list);
+        stickyList.setOnItemClickListener(this);
+        stickyList.setOnHeaderClickListener(this);
+
+//		mStickyList.addHeaderView(inflater.inflate(R.layout.list_header, null));
+//		mStickyList.addFooterView(inflater.inflate(R.layout.list_footer, null));
+        stickyList.setEmptyView(findViewById(R.id.empty));
+
+        stickyList.setDrawingListUnderStickyHeader(true);
+        stickyList.setAreHeadersSticky(true);
+
+        stickyList.setAdapter(mAdapter);
     }
 
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getSupportMenuInflater().inflate(R.menu.main, menu);
+
+        return true;
     }
 
     @Override
-    public void onPageSelected(int position) {
-        getSupportActionBar().setSelectedNavigationItem(position);
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.restore:
+                mAdapter.restore();
+                return true;
+            case R.id.update:
+                mAdapter.notifyDataSetChanged();
+                return true;
+            case R.id.clear:
+                mAdapter.clear();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
-    public void onPageScrollStateChanged(int state) {
+    public void onItemClick(AdapterView<?> parent, View view, int position,
+                            long id) {
+        Toast.makeText(this, "Item " + position + " clicked!",
+                Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-    }
-
-    @Override
-    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-        mViewPager.setCurrentItem(tab.getPosition(), true);
-    }
-
-    @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+    public void onHeaderClick(StickyListHeadersListView l, View header,
+                              int itemPosition, long headerId, boolean currentlySticky) {
+        Toast.makeText(this, "Header " + headerId + " currentlySticky ? " + currentlySticky,
+                Toast.LENGTH_SHORT).show();
     }
 
 }
