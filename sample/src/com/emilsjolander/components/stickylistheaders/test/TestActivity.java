@@ -1,70 +1,61 @@
 package com.emilsjolander.components.stickylistheaders.test;
 
-import android.annotation.TargetApi;
-import android.app.ActionBar;
-import android.app.ActionBar.Tab;
-import android.app.ActionBar.TabListener;
-import android.app.FragmentTransaction;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
+
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 /**
  * @author Emil Sjölander
  */
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class TestActivity extends FragmentActivity implements OnPageChangeListener {
+public class TestActivity extends SherlockFragmentActivity implements
+        ViewPager.OnPageChangeListener, ActionBar.TabListener {
 
-	private ViewPager mPager;
-	private TabListener tabChangeListener;
+    private ViewPager mViewPager;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
 
-		mPager = (ViewPager) findViewById(R.id.pager);
-		mPager.setOnPageChangeListener(this);
-		mPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager.setOnPageChangeListener(this);
+        mViewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
 
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			
-			tabChangeListener = new TabListener() {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.addTab(actionBar.newTab().setText("1").setTabListener(this));
+        actionBar.addTab(actionBar.newTab().setText("2").setTabListener(this));
+        actionBar.addTab(actionBar.newTab().setText("3").setTabListener(this));
+        actionBar.addTab(actionBar.newTab().setText("4").setTabListener(this));
+    }
 
-				@Override
-				public void onTabReselected(Tab tab, FragmentTransaction ft) {}
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    }
 
-				@Override
-				public void onTabSelected(Tab tab, FragmentTransaction ft) {
-					mPager.setCurrentItem(tab.getPosition(), true);
-				}
+    @Override
+    public void onPageSelected(int position) {
+        getSupportActionBar().setSelectedNavigationItem(position);
+    }
 
-				@Override
-				public void onTabUnselected(Tab tab, FragmentTransaction ft) {}
-			};
-			
-		    ActionBar actionBar = getActionBar();
-		    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		    actionBar.addTab(getActionBar().newTab().setText("1").setTabListener(tabChangeListener));
-		    actionBar.addTab(getActionBar().newTab().setText("2").setTabListener(tabChangeListener));
-		    actionBar.addTab(getActionBar().newTab().setText("3").setTabListener(tabChangeListener));
-		    actionBar.addTab(getActionBar().newTab().setText("4").setTabListener(tabChangeListener));
-		}
-	}
+    @Override
+    public void onPageScrollStateChanged(int state) {
+    }
 
-	@Override
-	public void onPageScrollStateChanged(int arg0) {}
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+    }
 
-	@Override
-	public void onPageScrolled(int arg0, float arg1, int arg2) {}
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+        mViewPager.setCurrentItem(tab.getPosition(), true);
+    }
 
-	@Override
-	public void onPageSelected(int position) {
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			getActionBar().setSelectedNavigationItem(position);
-		}
-	}
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+    }
 
 }
