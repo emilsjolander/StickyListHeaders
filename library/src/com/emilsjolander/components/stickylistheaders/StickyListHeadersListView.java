@@ -136,7 +136,7 @@ public class StickyListHeadersListView extends FrameLayout {
 				}
 				mList.setCacheColorHint(a.getColor(R.styleable.StickyListHeadersListView_android_cacheColorHint,
 						mList.getCacheColorHint()));
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     mList.setChoiceMode(a.getInt(R.styleable.StickyListHeadersListView_android_choiceMode,
                             mList.getChoiceMode()));
                 }
