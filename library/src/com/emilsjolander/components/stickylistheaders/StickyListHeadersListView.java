@@ -293,8 +293,9 @@ public class StickyListHeadersListView extends FrameLayout {
 
 			@Override
 			public void onClick(View v) {
-				mOnHeaderClickListener.onHeaderClick(StickyListHeadersListView.this, mHeader, mHeaderPosition,
-						mHeaderId, true);
+				if(mOnHeaderClickListener != null)
+					mOnHeaderClickListener.onHeaderClick(StickyListHeadersListView.this, mHeader, mHeaderPosition,
+							mHeaderId, true);
 			}
 		});
 	}
