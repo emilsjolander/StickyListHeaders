@@ -34,7 +34,6 @@ In the following dialog navigate to StickyListHeaders which you cloned to your c
 ###Code
 Ok lets start with your activities or fragments xml file. It might look something like this.
 ```xml
-<?xml version="1.0" encoding="utf-8"?>
 <com.emilsjolander.components.stickylistheaders.StickyListHeadersListView
     android:id="@+id/list"
     android:layout_width="match_parent"
@@ -132,7 +131,7 @@ If you are Upgrading from a version prior to 2.x you might run into the followin
 1. `StickyListHeadersListView` is no longer a `ListView` subclass. This means that it cannot be passed into a method expecting a ListView. You can retrieve an instance of the `ListView` via `getWrappedList()` but use this with caution as things will probably break if you start setting things directly on that list.
 2. Because `StickyListHeadersListView` is no longer a `ListView` it does not support all the methods. I have implemented delegate methods for all the usual methods and gladly accept pull requests for more.
 
-Api
+API
 ---
 ###StickyListHeadersAdapter
 ```java

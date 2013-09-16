@@ -1,70 +1,80 @@
 package com.emilsjolander.components.stickylistheaders.test;
 
-import android.annotation.TargetApi;
-import android.app.ActionBar;
-import android.app.ActionBar.Tab;
-import android.app.ActionBar.TabListener;
-import android.app.FragmentTransaction;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Toast;
+
+import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
+import com.emilsjolander.components.stickylistheaders.StickyListHeadersListView;
 
 /**
  * @author Emil Sjölander
  */
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class TestActivity extends FragmentActivity implements OnPageChangeListener {
+public class TestActivity extends SherlockFragmentActivity implements
+        AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener {
 
-	private ViewPager mPager;
-	private TabListener tabChangeListener;
+    private TestBaseAdapter mAdapter;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
 
-		mPager = (ViewPager) findViewById(R.id.pager);
-		mPager.setOnPageChangeListener(this);
-		mPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager()));
+        mAdapter = new TestBaseAdapter(this);
 
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			
-			tabChangeListener = new TabListener() {
+        StickyListHeadersListView stickyList = (StickyListHeadersListView) findViewById(R.id.list);
+        stickyList.setOnItemClickListener(this);
+        stickyList.setOnHeaderClickListener(this);
 
-				@Override
-				public void onTabReselected(Tab tab, FragmentTransaction ft) {}
+//		mStickyList.addHeaderView(inflater.inflate(R.layout.list_header, null));
+//		mStickyList.addFooterView(inflater.inflate(R.layout.list_footer, null));
+        stickyList.setEmptyView(findViewById(R.id.empty));
 
-				@Override
-				public void onTabSelected(Tab tab, FragmentTransaction ft) {
-					mPager.setCurrentItem(tab.getPosition(), true);
-				}
+        stickyList.setDrawingListUnderStickyHeader(true);
+        stickyList.setAreHeadersSticky(true);
 
-				@Override
-				public void onTabUnselected(Tab tab, FragmentTransaction ft) {}
-			};
-			
-		    ActionBar actionBar = getActionBar();
-		    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-		    actionBar.addTab(getActionBar().newTab().setText("1").setTabListener(tabChangeListener));
-		    actionBar.addTab(getActionBar().newTab().setText("2").setTabListener(tabChangeListener));
-		    actionBar.addTab(getActionBar().newTab().setText("3").setTabListener(tabChangeListener));
-		    actionBar.addTab(getActionBar().newTab().setText("4").setTabListener(tabChangeListener));
-		}
-	}
+        stickyList.setAdapter(mAdapter);
+    }
 
-	@Override
-	public void onPageScrollStateChanged(int arg0) {}
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getSupportMenuInflater().inflate(R.menu.main, menu);
 
-	@Override
-	public void onPageScrolled(int arg0, float arg1, int arg2) {}
+        return true;
+    }
 
-	@Override
-	public void onPageSelected(int position) {
-		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			getActionBar().setSelectedNavigationItem(position);
-		}
-	}
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.restore:
+                mAdapter.restore();
+                return true;
+            case R.id.update:
+                mAdapter.notifyDataSetChanged();
+                return true;
+            case R.id.clear:
+                mAdapter.clear();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position,
+                            long id) {
+        Toast.makeText(this, "Item " + position + " clicked!",
+                Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onHeaderClick(StickyListHeadersListView l, View header,
+                              int itemPosition, long headerId, boolean currentlySticky) {
+        Toast.makeText(this, "Header " + headerId + " currentlySticky ? " + currentlySticky,
+                Toast.LENGTH_SHORT).show();
+    }
 
 }
