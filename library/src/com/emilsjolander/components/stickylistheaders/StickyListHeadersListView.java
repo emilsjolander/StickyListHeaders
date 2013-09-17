@@ -748,6 +748,10 @@ public class StickyListHeadersListView extends FrameLayout {
 		return mPaddingBottom;
 	}
 
+	public void setFastScrollEnabled(boolean fastScrollEnabled) {
+		mList.setFastScrollEnabled(fastScrollEnabled);
+	}
+
     private void requireSdkVersion(int versionCode) {
         if (Build.VERSION.SDK_INT < versionCode) {
             throw new ApiLevelTooLowException(versionCode);
