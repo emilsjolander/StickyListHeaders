@@ -16,6 +16,7 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.SectionIndexer;
 
 import com.emilsjolander.components.stickylistheaders.WrapperViewList.LifeCycleListener;
 
@@ -284,21 +285,23 @@ public class StickyListHeadersListView extends FrameLayout {
 	}
 
 	private void swapHeader(View newHeader) {
-		if (mHeader != null) {
-			removeView(mHeader);
-		}
-		mHeader = newHeader;
-		addView(mHeader);
-		mHeader.setOnClickListener(new OnClickListener() {
+        if (mHeader != null) {
+            removeView(mHeader);
+        }
+        mHeader = newHeader;
+        addView(mHeader);
+        mHeader.setOnClickListener(new OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				if(mOnHeaderClickListener != null)
-					mOnHeaderClickListener.onHeaderClick(StickyListHeadersListView.this, mHeader, mHeaderPosition,
-							mHeaderId, true);
-			}
-		});
-	}
+            @Override
+            public void onClick(View v) {
+                if (mOnHeaderClickListener != null) {
+                    mOnHeaderClickListener.onHeaderClick(StickyListHeadersListView.this, mHeader, mHeaderPosition,
+                            mHeaderId, true);
+                }
+            }
+
+        });
+    }
 
 	// hides the headers in the list under the sticky header.
 	// Makes sure the other ones are showing
@@ -482,11 +485,11 @@ public class StickyListHeadersListView extends FrameLayout {
 	public int getListChildCount() {
 		return mList.getChildCount();
 	}
-	
+
 	/**
 	 * Use the method with extreme caution!!
 	 * Changing any values on the underlying ListView might break everything.
-	 * 
+	 *
 	 * @return the ListView backing this view.
 	 */
 	public ListView getWrappedList() {
@@ -495,31 +498,35 @@ public class StickyListHeadersListView extends FrameLayout {
 
 	/* ---------- ListView delegate methods ---------- */
 
-	public void setAdapter(StickyListHeadersAdapter adapter) {
-		if (adapter == null) {
-			mList.setAdapter(null);
-			clearHeader();
-			return;
-		}
-		if (mAdapter != null) {
-			mAdapter.unregisterDataSetObserver(mDataSetObserver);
-		}
+    public void setAdapter(StickyListHeadersAdapter adapter) {
+        if (adapter == null) {
+            mList.setAdapter(null);
+            clearHeader();
+            return;
+        }
+        if (mAdapter != null) {
+            mAdapter.unregisterDataSetObserver(mDataSetObserver);
+        }
 
-		mAdapter = new AdapterWrapper(getContext(), adapter);
-		mDataSetObserver = new AdapterWrapperDataSetObserver();
-		mAdapter.registerDataSetObserver(mDataSetObserver);
+        if (adapter instanceof SectionIndexer) {
+            mAdapter = new SectionIndexerAdapterWrapper(getContext(), adapter);
+        } else {
+            mAdapter = new AdapterWrapper(getContext(), adapter);
+        }
+        mDataSetObserver = new AdapterWrapperDataSetObserver();
+        mAdapter.registerDataSetObserver(mDataSetObserver);
 
-		if (mOnHeaderClickListener != null) {
-			mAdapter.setOnHeaderClickListener(new AdapterWrapperHeaderClickHandler());
-		} else {
-			mAdapter.setOnHeaderClickListener(null);
-		}
+        if (mOnHeaderClickListener != null) {
+            mAdapter.setOnHeaderClickListener(new AdapterWrapperHeaderClickHandler());
+        } else {
+            mAdapter.setOnHeaderClickListener(null);
+        }
 
-		mAdapter.setDivider(mDivider, mDividerHeight);
+        mAdapter.setDivider(mDivider, mDividerHeight);
 
-		mList.setAdapter(mAdapter);
-		clearHeader();
-	}
+        mList.setAdapter(mAdapter);
+        clearHeader();
+    }
 
 	public StickyListHeadersAdapter getAdapter() {
 		return mAdapter == null ? null : mAdapter.mDelegate;
@@ -747,6 +754,10 @@ public class StickyListHeadersListView extends FrameLayout {
 	public int getPaddingBottom() {
 		return mPaddingBottom;
 	}
+
+    public void setFastScrollEnabled(boolean fastScrollEnabled) {
+        mList.setFastScrollEnabled(fastScrollEnabled);
+    }
 
     private void requireSdkVersion(int versionCode) {
         if (Build.VERSION.SDK_INT < versionCode) {
