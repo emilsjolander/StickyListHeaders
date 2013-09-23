@@ -1,4 +1,6 @@
-package com.emilsjolander.components.stickylistheaders.test;
+package se.emilsjolander.stickylistheaders;
+
+import java.util.ArrayList;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,10 +9,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
-
-import com.emilsjolander.components.stickylistheaders.StickyListHeadersAdapter;
-
-import java.util.ArrayList;
 
 /**
  * @author Emil Sjölander
@@ -72,7 +70,6 @@ public class TestBaseAdapter extends BaseAdapter implements
         return position;
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
@@ -91,7 +88,6 @@ public class TestBaseAdapter extends BaseAdapter implements
         return convertView;
     }
 
-    @SuppressWarnings("ConstantConditions")
     @Override
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
         HeaderViewHolder holder;

@@ -1,4 +1,4 @@
-package com.emilsjolander.components.stickylistheaders;
+package se.emilsjolander.stickylistheaders;
 
 import android.view.View;
 import android.view.ViewGroup;

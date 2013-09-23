@@ -1,19 +1,17 @@
-package com.emilsjolander.components.stickylistheaders.test;
+package se.emilsjolander.stickylistheaders;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.emilsjolander.components.stickylistheaders.StickyListHeadersListView;
-
 /**
  * @author Emil Sjölander
  */
-public class TestActivity extends SherlockFragmentActivity implements
+public class TestActivity extends FragmentActivity implements
         AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener {
 
     private TestBaseAdapter mAdapter;
@@ -41,8 +39,7 @@ public class TestActivity extends SherlockFragmentActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getSupportMenuInflater().inflate(R.menu.main, menu);
-
+        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 

@@ -1,5 +1,6 @@
-package com.emilsjolander.components.stickylistheaders;
+package se.emilsjolander.stickylistheaders;
 
+import se.emilsjolander.stickylistheaders.WrapperViewList.LifeCycleListener;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -18,7 +19,6 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
 
-import com.emilsjolander.components.stickylistheaders.WrapperViewList.LifeCycleListener;
 
 /**
  * Even though this is a FrameLayout subclass we it is called a
@@ -28,7 +28,6 @@ import com.emilsjolander.components.stickylistheaders.WrapperViewList.LifeCycleL
  *
  * @author Emil Sjölander
  */
-@SuppressWarnings("unused") // Public API
 public class StickyListHeadersListView extends FrameLayout {
 
 	public interface OnHeaderClickListener {

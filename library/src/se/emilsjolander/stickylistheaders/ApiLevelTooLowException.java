@@ -1,4 +1,4 @@
-package com.emilsjolander.components.stickylistheaders;
+package se.emilsjolander.stickylistheaders;
 
 public class ApiLevelTooLowException extends RuntimeException {
 
