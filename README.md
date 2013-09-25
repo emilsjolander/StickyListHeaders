@@ -82,7 +82,8 @@ public class MyAdapter extends BaseAdapter implements StickyListHeadersAdapter {
         return position;
     }
 
-    @Override public View getView(int position, View convertView, ViewGroup parent) {
+    @Override 
+    public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
 
         if (convertView == null) {
@@ -99,7 +100,8 @@ public class MyAdapter extends BaseAdapter implements StickyListHeadersAdapter {
         return convertView;
     }
 
-    @Override public View getHeaderView(int position, View convertView, ViewGroup parent) {
+    @Override 
+    public View getHeaderView(int position, View convertView, ViewGroup parent) {
         HeaderViewHolder holder;
         if (convertView == null) {
             holder = new HeaderViewHolder();
