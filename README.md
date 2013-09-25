@@ -15,9 +15,17 @@ Goal
 The goal of this project is to deliver a high performance replacement to `ListView`. You should with minimal effort and time be able to add section headers to a list. This should be done via a simple to use API without any special features. This library will always priorities general use cases over special ones. This means that the library will add very few public methods to the standard `ListView` and will not try to work for every use case. While I will want to support even narrow use cases I will not do so if it compromises the API or any other feature.
 
 
-Getting started
+Installing
 ---------------
-###Installing the library
+###Gradle
+Add the following gradle dependency exchanging `2.x.x` for the latest release.
+```groovy
+dependencies {
+    compile 'se.emilsjolander:stickylistheaders:2.x.x@aar'
+}
+```
+
+###Cloning
 First of all you will have to clone the library.
 ```shell
 git clone https://github.com/emilsjolander/StickyListHeaders.git
@@ -30,8 +38,8 @@ File -> Import Project ...
 ```
 In the following dialog navigate to StickyListHeaders which you cloned to your computer in the previous steps and select the `build.gradle`.
 
-
-###Code
+Getting Started
+---------------
 Ok lets start with your activities or fragments xml file. It might look something like this.
 ```xml
 <se.emilsjolander.stickylistheaders.StickyListHeadersListView
@@ -126,7 +134,8 @@ public class MyAdapter extends BaseAdapter implements StickyListHeadersAdapter {
 
 That's it! Look through the API docs below to get know about things to customize and if you have any problems getting started please open an issue as it probably means the getting started guide need some improvement!
 
-###Upgrading to version 2.x
+Upgrading from 1.x versions
+---------------------------
 First of all the package name has changed from `com.emilsjolander.components.stickylistheaders` -> `se.emilsjolander.stickylistheaders` so update all your imports and xml files using StickyListHeaders!
 
 If you are Upgrading from a version prior to 2.x you might run into the following problems.
