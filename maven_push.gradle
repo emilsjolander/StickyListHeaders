@@ -1,7 +1,10 @@
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-def sonatypeRepositoryUrl
+ENV = System.getenv()
+USERNAME = ENV['SONATYPE_USERNAME']
+PASSWORD = ENV['SONATYPE_PASSWORD']
+
 if (isReleaseBuild()) {
     println 'RELEASE BUILD'
     sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
@@ -19,7 +22,7 @@ afterEvaluate { project ->
                 pom.artifactId = POM_ARTIFACT_ID
 
                 repository(url: sonatypeRepositoryUrl) {
-                    authentication(userName: nexusUsername, password: nexusPassword)
+                    authentication(userName: USERNAME, password: PASSWORD)
                 }
 
                 pom.project {
