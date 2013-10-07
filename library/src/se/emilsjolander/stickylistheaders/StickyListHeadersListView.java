@@ -605,7 +605,7 @@ public class StickyListHeadersListView extends FrameLayout {
         mList.smoothScrollByOffset(offset);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @TargetApi(Build.VERSION_CODES.FROYO)
     public void smoothScrollToPosition(int position) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             mList.smoothScrollToPosition(position);
@@ -663,15 +663,11 @@ public class StickyListHeadersListView extends FrameLayout {
         return mList.getLastVisiblePosition();
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void setChoiceMode(int choiceMode) {
-        requireSdkVersion(Build.VERSION_CODES.HONEYCOMB);
         mList.setChoiceMode(choiceMode);
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void setItemChecked(int position, boolean value) {
-        requireSdkVersion(Build.VERSION_CODES.HONEYCOMB);
         mList.setItemChecked(position, value);
     }
 
@@ -681,21 +677,17 @@ public class StickyListHeadersListView extends FrameLayout {
         return mList.getCheckedItemCount();
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    @TargetApi(Build.VERSION_CODES.FROYO)
     public long[] getCheckedItemIds() {
-        requireSdkVersion(Build.VERSION_CODES.HONEYCOMB);
+        requireSdkVersion(Build.VERSION_CODES.FROYO);
         return mList.getCheckedItemIds();
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public int getCheckedItemPosition() {
-        requireSdkVersion(Build.VERSION_CODES.HONEYCOMB);
         return mList.getCheckedItemPosition();
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public SparseBooleanArray getCheckedItemPositions() {
-        requireSdkVersion(Build.VERSION_CODES.HONEYCOMB);
         return mList.getCheckedItemPositions();
     }
 
