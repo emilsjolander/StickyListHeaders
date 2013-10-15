@@ -756,4 +756,8 @@ public class StickyListHeadersListView extends FrameLayout {
         }
     }
 
+    public int getPositionForView(View view){
+        return mList.getPositionForView(view);
+    }
+
 }
