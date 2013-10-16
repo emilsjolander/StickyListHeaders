@@ -155,7 +155,7 @@ public class StickyListHeadersListView extends FrameLayout {
 				if (divider != null) {
 					mDivider = divider;
 				}
-				mDividerHeight = a.getInt(R.styleable.StickyListHeadersListView_android_dividerHeight, mDividerHeight);
+				mDividerHeight = a.getDimensionPixelSize(R.styleable.StickyListHeadersListView_android_dividerHeight, 0);
 
 				// StickyListHeaders attributes
 				mAreHeadersSticky = a.getBoolean(R.styleable.StickyListHeadersListView_hasStickyHeaders, true);
