@@ -605,7 +605,7 @@ public class StickyListHeadersListView extends FrameLayout {
         mList.smoothScrollByOffset(offset);
     }
 
-    @TargetApi(Build.VERSION_CODES.FROYO)
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void smoothScrollToPosition(int position) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             mList.smoothScrollToPosition(position);
