@@ -12,6 +12,7 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.util.SparseBooleanArray;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView.OnItemClickListener;
@@ -26,7 +27,7 @@ import android.widget.SectionIndexer;
  * 2. It used to be a ListView subclass and i did not was to change to
  * name causing compatibility errors.
  *
- * @author Emil Sj√∂lander
+ * @author Emil Sjölander
  */
 public class StickyListHeadersListView extends FrameLayout {
 
@@ -243,6 +244,12 @@ public class StickyListHeadersListView extends FrameLayout {
 						throw new NullPointerException("header may not be null");
 					}
 					swapHeader(header);
+				}
+				
+				ViewGroup.LayoutParams lp = mHeader.getLayoutParams();
+				if (lp.height == ViewGroup.LayoutParams.MATCH_PARENT) {
+					lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+					mHeader.setLayoutParams(lp);
 				}
 
 				// measure the header
@@ -605,7 +612,8 @@ public class StickyListHeadersListView extends FrameLayout {
         mList.smoothScrollByOffset(offset);
     }
 
-    @TargetApi(Build.VERSION_CODES.FROYO)
+    @SuppressLint("NewApi")
+	@TargetApi(Build.VERSION_CODES.FROYO)
     public void smoothScrollToPosition(int position) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             mList.smoothScrollToPosition(position);
