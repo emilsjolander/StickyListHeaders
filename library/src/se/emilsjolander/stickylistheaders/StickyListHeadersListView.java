@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
@@ -566,6 +567,10 @@ public class StickyListHeadersListView extends FrameLayout {
 
 	public void setOnItemClickListener(OnItemClickListener listener) {
 		mList.setOnItemClickListener(listener);
+	}
+
+	public void setOnItemLongClickListener(OnItemLongClickListener listener) {
+		mList.setOnItemLongClickListener(listener);
 	}
 
 	public void addHeaderView(View v) {
