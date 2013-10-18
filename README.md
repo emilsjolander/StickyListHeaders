@@ -175,7 +175,7 @@ public interface OnHeaderClickListener {
 }
 ```
 
-Here are two methods added to the API for inspecting the children of the underlying `ListView`.
+Here are two methods added to the API for inspecting the children of the underlying `ListView`. I could not override the normal `getChildAt()` and `getChildCount()` methods as that would mess up the underlying measurement system of the `FrameLayout` wrapping the `ListView`.
 ```java
 public View getListChildAt(int index);
 public int getListChildCount();
