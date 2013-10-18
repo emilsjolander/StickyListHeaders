@@ -14,7 +14,7 @@ import android.view.ViewParent;
  * 
  * @author Emil Sjölander
  */
-class WrapperView extends ViewGroup {
+public class WrapperView extends ViewGroup {
 
 	View mItem;
 	Drawable mDivider;
@@ -22,8 +22,20 @@ class WrapperView extends ViewGroup {
 	View mHeader;
 	int mItemTop;
 
-	public WrapperView(Context c) {
+	WrapperView(Context c) {
 		super(c);
+	}
+
+	public boolean hasHeader() {
+		return mHeader != null;
+	}
+	
+	public View getItem() {
+		return mItem;
+	}
+	
+	public View getHeader() {
+		return mHeader;
 	}
 
 	void update(View item, View header, Drawable divider, int dividerHeight) {
@@ -62,10 +74,6 @@ class WrapperView extends ViewGroup {
 			this.mDividerHeight = dividerHeight;
 			invalidate();
 		}
-	}
-
-	boolean hasHeader() {
-		return mHeader != null;
 	}
 
 	@Override
