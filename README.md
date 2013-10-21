@@ -18,7 +18,7 @@ The goal of this project is to deliver a high performance replacement to `ListVi
 Installing
 ---------------
 ###Gradle
-Add the following gradle dependency exchanging `x.x.x` for the latest release. NOT YET READY!
+Add the following gradle dependency exchanging `x.x.x` for the latest release.
 ```groovy
 dependencies {
     compile 'se.emilsjolander.stickylistheaders:library:x.x.x'
