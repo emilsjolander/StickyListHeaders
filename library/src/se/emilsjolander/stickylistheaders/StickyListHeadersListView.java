@@ -503,7 +503,9 @@ public class StickyListHeadersListView extends FrameLayout {
 	private int getHeaderOverlap(int position) {
 		boolean isStartOfSection = isStartOfSection(position);
 		if (!isStartOfSection) {
-			View header = mAdapter.getView(position, null, mList);
+			View header = mAdapter.getHeaderView(position, null, mList);
+			header.setLayoutParams(new ViewGroup.LayoutParams(
+					LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
 			final int width = getWidth();
 			final int parentWidthMeasureSpec = MeasureSpec.makeMeasureSpec(
