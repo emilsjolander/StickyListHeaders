@@ -805,6 +805,10 @@ public class StickyListHeadersListView extends FrameLayout {
 		return mList.showContextMenu();
 	}
 
+	public void invalidateViews() {
+		mList.invalidateViews();
+	}
+
 	@Override
 	public void setClipToPadding(boolean clipToPadding) {
 		if (mList != null) {
