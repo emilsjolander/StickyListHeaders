@@ -730,7 +730,7 @@ public class StickyListHeadersListView extends FrameLayout {
 	}
 
 	public void setSelection(int position) {
-		mList.setSelection(position);
+		setSelectionFromTop(position, 0);
 	}
 
 	public void setSelectionAfterHeaderView() {
@@ -738,6 +738,7 @@ public class StickyListHeadersListView extends FrameLayout {
 	}
 
 	public void setSelectionFromTop(int position, int y) {
+		y += mAdapter == null ? 0 : getHeaderOverlap(position);
 		mList.setSelectionFromTop(position, y);
 	}
 
