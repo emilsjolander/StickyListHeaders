@@ -212,17 +212,27 @@ public class StickyListHeadersListView extends FrameLayout {
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-		measureHeader();
+		measureHeader(mHeader);
 	}
 
-	private void measureHeader() {
-		if (mHeader != null) {
+	private void ensureHeaderHasCorrectLayoutParams(View header) {
+		ViewGroup.LayoutParams lp = header.getLayoutParams();
+		if (lp == null) {
+			lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+		} else if (lp.height == LayoutParams.MATCH_PARENT) {
+			lp.height = LayoutParams.WRAP_CONTENT;
+		}
+		header.setLayoutParams(lp);
+	}
+
+	private void measureHeader(View header) {
+		if (header != null) {
 			final int width = getMeasuredWidth() - mPaddingLeft - mPaddingRight;
 			final int parentWidthMeasureSpec = MeasureSpec.makeMeasureSpec(
 					width, MeasureSpec.EXACTLY);
 			final int parentHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0,
 					MeasureSpec.UNSPECIFIED);
-			measureChild(mHeader, parentWidthMeasureSpec,
+			measureChild(header, parentWidthMeasureSpec,
 					parentHeightMeasureSpec);
 		}
 	}
@@ -310,14 +320,9 @@ public class StickyListHeadersListView extends FrameLayout {
 					}
 					swapHeader(header);
 				}
-
-				ViewGroup.LayoutParams lp = mHeader.getLayoutParams();
-				if (lp.height == ViewGroup.LayoutParams.MATCH_PARENT) {
-					lp.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-					mHeader.setLayoutParams(lp);
-				}
 				
-				measureHeader();
+				ensureHeaderHasCorrectLayoutParams(mHeader);
+				measureHeader(mHeader);
 
 				// Reset mHeaderOffset to null ensuring
 				// that it will be set on the header and
@@ -503,15 +508,12 @@ public class StickyListHeadersListView extends FrameLayout {
 	private int getHeaderOverlap(int position) {
 		boolean isStartOfSection = isStartOfSection(position);
 		if (!isStartOfSection) {
-			View header = mAdapter.getView(position, null, mList);
-
-			final int width = getWidth();
-			final int parentWidthMeasureSpec = MeasureSpec.makeMeasureSpec(
-					width, MeasureSpec.EXACTLY);
-			final int parentHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0,
-					MeasureSpec.UNSPECIFIED);
-			measureChild(header, parentWidthMeasureSpec,
-					parentHeightMeasureSpec);
+			final View header = mAdapter.getView(position, null, mList);
+			if (header == null) {
+				throw new NullPointerException("header may not be null");
+			}
+			ensureHeaderHasCorrectLayoutParams(header);
+			measureHeader(header);
 			return header.getMeasuredHeight();
 		}
 		return 0;
