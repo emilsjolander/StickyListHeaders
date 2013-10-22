@@ -21,7 +21,7 @@ Installing
 Add the following gradle dependency exchanging `x.x.x` for the latest release.
 ```groovy
 dependencies {
-    compile 'se.emilsjolander.stickylistheaders:library:x.x.x'
+    compile 'se.emilsjolander:stickylistheaders:x.x.x'
 }
 ```
 
