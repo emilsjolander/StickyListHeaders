@@ -27,7 +27,7 @@ import android.widget.SectionIndexer;
  * ListView subclass and i did not was to change to name causing compatibility
  * errors.
  * 
- * @author Emil Sjölander
+ * @author Emil Sj√∂lander
  */
 public class StickyListHeadersListView extends FrameLayout {
 
@@ -795,6 +795,14 @@ public class StickyListHeadersListView extends FrameLayout {
 
 	public long getItemIdAtPosition(int position) {
 		return mList.getItemIdAtPosition(position);
+	}
+
+	public void setOnCreateContextMenuListener(OnCreateContextMenuListener l) {
+		mList.setOnCreateContextMenuListener(l);
+	}
+
+	public boolean showContextMenu() {
+		return mList.showContextMenu();
 	}
 
 	@Override
