@@ -507,8 +507,8 @@ public class StickyListHeadersListView extends FrameLayout {
 
 	private int getHeaderOverlap(int position) {
 		boolean isStartOfSection = isStartOfSection(position);
-		if (!isStartOfSection) {
-			final View header = mAdapter.getView(position, null, mList);
+		if (isStartOfSection) {
+			View header = mAdapter.getHeaderView(position, null, mList);
 			if (header == null) {
 				throw new NullPointerException("header may not be null");
 			}
