@@ -655,6 +655,10 @@ public class StickyListHeadersListView extends FrameLayout {
 		mList.setOnItemLongClickListener(listener);
 	}
 
+    public void addHeaderView(View v, Object data, boolean isSelectable) {
+        mList.addHeaderView(v, data, isSelectable);
+    }
+
 	public void addHeaderView(View v) {
 		mList.addHeaderView(v);
 	}
