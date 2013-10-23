@@ -290,11 +290,11 @@ public class StickyListHeadersListView extends FrameLayout {
 		// It is not a mistake to call getFirstVisiblePosition() here.
 		// Most of the time getFixedFirstVisibleItem() should be called
 		// but that does not work great together with getChildAt()
-		final boolean isFirstViewBelowTop = mList.getFirstVisiblePosition() == 0
+		final boolean doesListHaveChildren = mList.getChildCount() != 0;
+		final boolean isFirstViewBelowTop = doesListHaveChildren && mList.getFirstVisiblePosition() == 0
 				&& mList.getChildAt(0).getTop() > 0;
 		final boolean isFirstVisibleItemOutsideAdapterRange = realFirstVisibleItem > adapterCount - 1
 				|| realFirstVisibleItem < 0;
-		final boolean doesListHaveChildren = mList.getChildCount() != 0;
 		if (!doesListHaveChildren || isFirstVisibleItemOutsideAdapterRange
 				|| isFirstViewBelowTop) {
 			clearHeader();
