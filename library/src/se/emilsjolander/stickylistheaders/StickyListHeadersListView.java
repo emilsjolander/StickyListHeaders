@@ -501,7 +501,7 @@ public class StickyListHeadersListView extends FrameLayout {
 
 	private boolean isStartOfSection(int position) {
 		return position == 0
-				|| mAdapter.getHeaderId(position) == mAdapter
+				|| mAdapter.getHeaderId(position) != mAdapter
 						.getHeaderId(position - 1);
 	}
 
@@ -710,6 +710,7 @@ public class StickyListHeadersListView extends FrameLayout {
 			mList.smoothScrollToPosition(position);
 		} else {
 			int offset = mAdapter == null ? 0 : getHeaderOverlap(position);
+			offset -= mClippingToPadding ? 0 : mPaddingTop;
 			mList.smoothScrollToPositionFromTop(position, offset);
 		}
 	}
@@ -724,6 +725,7 @@ public class StickyListHeadersListView extends FrameLayout {
 	public void smoothScrollToPositionFromTop(int position, int offset) {
 		requireSdkVersion(Build.VERSION_CODES.HONEYCOMB);
 		offset += mAdapter == null ? 0 : getHeaderOverlap(position);
+		offset -= mClippingToPadding ? 0 : mPaddingTop;
 		mList.smoothScrollToPositionFromTop(position, offset);
 	}
 
@@ -732,6 +734,7 @@ public class StickyListHeadersListView extends FrameLayout {
 			int duration) {
 		requireSdkVersion(Build.VERSION_CODES.HONEYCOMB);
 		offset += mAdapter == null ? 0 : getHeaderOverlap(position);
+		offset -= mClippingToPadding ? 0 : mPaddingTop;
 		mList.smoothScrollToPositionFromTop(position, offset, duration);
 	}
 
@@ -745,6 +748,7 @@ public class StickyListHeadersListView extends FrameLayout {
 
 	public void setSelectionFromTop(int position, int y) {
 		y += mAdapter == null ? 0 : getHeaderOverlap(position);
+		y -= mClippingToPadding ? 0 : mPaddingTop;
 		mList.setSelectionFromTop(position, y);
 	}
 
