@@ -172,6 +172,12 @@ public class StickyListHeadersListView extends FrameLayout {
 						.getBoolean(
 								R.styleable.StickyListHeadersListView_android_fastScrollEnabled,
 								mList.isFastScrollEnabled()));
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+					mList.setFastScrollAlwaysVisible(a
+							.getBoolean(
+									R.styleable.StickyListHeadersListView_android_fastScrollAlwaysVisible,
+									mList.isFastScrollAlwaysVisible()));
+				}
 				mList.setScrollBarStyle(a
 						.getInt(R.styleable.StickyListHeadersListView_android_scrollbarStyle,
 								0));
@@ -864,6 +870,30 @@ public class StickyListHeadersListView extends FrameLayout {
 
 	public void setFastScrollEnabled(boolean fastScrollEnabled) {
 		mList.setFastScrollEnabled(fastScrollEnabled);
+	}
+
+	/**
+	 * @see android.widget.AbsListView#setFastScrollAlwaysVisible(boolean)
+	 * @throws ApiLevelTooLowException on pre-Honeycomb device.
+	 */
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	public void setFastScrollAlwaysVisible(boolean alwaysVisible) {
+		requireSdkVersion(Build.VERSION_CODES.HONEYCOMB);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			mList.setFastScrollAlwaysVisible(alwaysVisible);
+		}
+	}
+
+	/**
+	 * @see android.widget.AbsListView#isFastScrollAlwaysVisible()
+	 * @return true if the fast scroller will always show. False on pre-Honeycomb devices.
+	 */
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	public boolean isFastScrollAlwaysVisible(){
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			return false;
+		}
+		return mList.isFastScrollAlwaysVisible();
 	}
 
 	private void requireSdkVersion(int versionCode) {
