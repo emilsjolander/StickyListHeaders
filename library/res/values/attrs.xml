@@ -17,6 +17,7 @@
         <attr name="android:choiceMode" />
         <attr name="android:drawSelectorOnTop" />
         <attr name="android:fastScrollEnabled" />
+        <attr name="android:fastScrollAlwaysVisible" />
         <attr name="android:listSelector" />
         <attr name="android:scrollingCache" />
         <attr name="android:scrollbarStyle" />
