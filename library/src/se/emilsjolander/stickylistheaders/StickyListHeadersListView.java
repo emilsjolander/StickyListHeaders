@@ -208,12 +208,14 @@ public class StickyListHeadersListView extends FrameLayout {
 						.getBoolean(
 								R.styleable.StickyListHeadersListView_isDrawingListUnderStickyHeader,
 								true);
-
-			} finally {
+            } finally {
 				a.recycle();
 			}
 		}
-	}
+
+        mList.setVerticalScrollBarEnabled(isVerticalScrollBarEnabled());
+        mList.setHorizontalScrollBarEnabled(isHorizontalScrollBarEnabled());
+    }
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -696,6 +698,16 @@ public class StickyListHeadersListView extends FrameLayout {
 	public View getEmptyView() {
 		return mList.getEmptyView();
 	}
+
+    @Override
+    public void setVerticalScrollBarEnabled(boolean verticalScrollBarEnabled) {
+        mList.setVerticalScrollBarEnabled(verticalScrollBarEnabled);
+    }
+
+    @Override
+    public void setHorizontalScrollBarEnabled(boolean horizontalScrollBarEnabled) {
+        mList.setHorizontalScrollBarEnabled(horizontalScrollBarEnabled);
+    }
 
 	@TargetApi(Build.VERSION_CODES.FROYO)
 	public void smoothScrollBy(int distance, int duration) {
