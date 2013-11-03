@@ -8,10 +8,9 @@
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:drawSelectorOnTop="true"
-        android:fastScrollEnabled="false"
+        android:fastScrollEnabled="true"
         android:padding="16dp"
-        android:scrollbarStyle="outsideOverlay"
-        android:scrollbars="none"/>
+        android:scrollbarStyle="outsideOverlay" />
 
     <TextView
         android:id="@+id/empty"
