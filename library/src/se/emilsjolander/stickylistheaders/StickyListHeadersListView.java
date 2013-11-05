@@ -79,15 +79,12 @@ public class StickyListHeadersListView extends FrameLayout {
 		super(context, attrs, defStyle);
 
 		// Get as many attributes as we can from the list's default style
-		ListView tempList = new ListView(context, attrs,
-				android.R.attr.listViewStyle);
+		ListView tempList = new ListView(context, attrs);
 		mDivider = tempList.getDivider();
 		mDividerHeight = tempList.getDividerHeight();
 
 		// Initialize the list
 		mList = new WrapperViewList(context);
-		mDivider = mList.getDivider();
-		mDividerHeight = mList.getDividerHeight();
 
 		// null out divider, dividers are handled by adapter so they look good
 		// with headers
