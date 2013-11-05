@@ -25,8 +25,8 @@ class WrapperViewList extends ListView {
 	private Field mSelectorPositionField;
 	private boolean mClippingToPadding = true;
 
-	public WrapperViewList(Context context) {
-		super(context);
+	public WrapperViewList(Context context, AttributeSet attrs) {
+		super(context, attrs);
 
 		// Use reflection to be able to change the size/position of the list
 		// selector so it does not come under/over the header
