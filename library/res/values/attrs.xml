@@ -21,8 +21,6 @@
         <attr name="android:listSelector" />
         <attr name="android:scrollingCache" />
         <attr name="android:scrollbarStyle" />
-        <attr name="android:divider" />
-        <attr name="android:dividerHeight" />
 
         <!-- StickyListHeaders attributes -->
         <attr name="hasStickyHeaders" format="boolean" />

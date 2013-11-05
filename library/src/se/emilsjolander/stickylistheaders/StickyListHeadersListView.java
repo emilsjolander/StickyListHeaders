@@ -78,6 +78,12 @@ public class StickyListHeadersListView extends FrameLayout {
 			int defStyle) {
 		super(context, attrs, defStyle);
 
+		// Get as many attributes as we can from the list's default style
+		ListView tempList = new ListView(context, attrs,
+				android.R.attr.listViewStyle);
+		mDivider = tempList.getDivider();
+		mDividerHeight = tempList.getDividerHeight();
+
 		// Initialize the list
 		mList = new WrapperViewList(context);
 		mDivider = mList.getDivider();
@@ -190,15 +196,6 @@ public class StickyListHeadersListView extends FrameLayout {
 						.getBoolean(
 								R.styleable.StickyListHeadersListView_android_scrollingCache,
 								mList.isScrollingCacheEnabled()));
-				final Drawable divider = a
-						.getDrawable(R.styleable.StickyListHeadersListView_android_divider);
-				if (divider != null) {
-					mDivider = divider;
-				}
-				mDividerHeight = a
-						.getDimensionPixelSize(
-								R.styleable.StickyListHeadersListView_android_dividerHeight,
-								mDividerHeight);
 
 				// StickyListHeaders attributes
 				mAreHeadersSticky = a.getBoolean(
