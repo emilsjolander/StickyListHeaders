@@ -80,9 +80,13 @@ public class StickyListHeadersListView extends FrameLayout {
 		// Initialize the list
 		mList = new WrapperViewList(context, attrs);
 
-		// We initialized the ID to be the same as the sticky list, set
-		// it to our own instead
-		mList.setId(R.id._se_emilsjolander_stickylistheaders_wrapper_view_list);
+		// We initialized the ID to be the same as the sticky list, remove it.
+		// This will prevent state saving for the wrapped list view, and if that
+		// becomes a problem, we can use a View.generateViewId-like method to
+		// generate a unique id. Setting it to a constant is not a good solution
+		// as there could be multiple SLH's in a given view hierarchy (in
+		// fragments, typically)
+		mList.setId(View.NO_ID);
 
 		setPadding(mList.getPaddingLeft(), mList.getPaddingTop(),
 				mList.getPaddingRight(), mList.getPaddingBottom());
