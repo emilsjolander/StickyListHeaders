@@ -1,6 +1,5 @@
 package se.emilsjolander.stickylistheaders;
 
-import se.emilsjolander.stickylistheaders.WrapperViewList.LifeCycleListener;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -20,6 +19,8 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
+
+import se.emilsjolander.stickylistheaders.WrapperViewList.LifeCycleListener;
 
 /**
  * Even though this is a FrameLayout subclass we it is called a ListView. This
@@ -300,12 +301,12 @@ public class StickyListHeadersListView extends FrameLayout {
 		// but that does not work great together with getChildAt()
 		final boolean doesListHaveChildren = mList.getChildCount() != 0;
 		final boolean isFirstViewBelowTop = doesListHaveChildren && mList.getFirstVisiblePosition() == 0
-				&& mList.getChildAt(0).getTop() > 0;
+				&& mList.getChildAt(0).getTop() > (mClippingToPadding ? mPaddingTop : 0);
 		final boolean isFirstVisibleItemOutsideAdapterRange = realFirstVisibleItem > adapterCount - 1
 				|| realFirstVisibleItem < 0;
 		if (!doesListHaveChildren || isFirstVisibleItemOutsideAdapterRange
 				|| isFirstViewBelowTop) {
-			clearHeader();
+            clearHeader();
 			return;
 		}
 
@@ -396,26 +397,30 @@ public class StickyListHeadersListView extends FrameLayout {
 			top = mHeader.getMeasuredHeight()
 					+ (mHeaderOffset != null ? mHeaderOffset : 0);
 		} else {
-			top = mClippingToPadding ? mPaddingTop : 0;
+            top = mClippingToPadding ? mPaddingTop : 0;
 		}
 		int childCount = mList.getChildCount();
 		for (int i = 0; i < childCount; i++) {
 			View child = mList.getChildAt(i);
-			if (child instanceof WrapperView) {
-				WrapperView wrapperViewChild = (WrapperView) child;
-				if (wrapperViewChild.hasHeader()) {
-					View childHeader = wrapperViewChild.mHeader;
-					if (wrapperViewChild.getTop() < top) {
-						if (childHeader.getVisibility() != View.INVISIBLE) {
-							childHeader.setVisibility(View.INVISIBLE);
-						}
-					} else {
-						if (childHeader.getVisibility() != View.VISIBLE) {
-							childHeader.setVisibility(View.VISIBLE);
-						}
-					}
-				}
+			if (!(child instanceof WrapperView)) {
+				continue;
 			}
+
+            WrapperView wrapperViewChild = (WrapperView) child;
+            if (!wrapperViewChild.hasHeader()) {
+                continue;
+            }
+
+            View childHeader = wrapperViewChild.mHeader;
+            if (wrapperViewChild.getTop() < top) {
+                if (childHeader.getVisibility() != View.INVISIBLE) {
+                    childHeader.setVisibility(View.INVISIBLE);
+                }
+            } else {
+                if (childHeader.getVisibility() != View.VISIBLE) {
+                    childHeader.setVisibility(View.VISIBLE);
+                }
+            }
 		}
 	}
 
