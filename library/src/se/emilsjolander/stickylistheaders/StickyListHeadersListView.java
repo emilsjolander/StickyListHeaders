@@ -50,13 +50,13 @@ public class StickyListHeadersListView extends FrameLayout {
 	private OnScrollListener mOnScrollListenerDelegate;
 
 	/* --- Settings --- */
-	private boolean mAreHeadersSticky = true;
+	private boolean mAreHeadersSticky;
 	private boolean mClippingToPadding = true;
-	private boolean mIsDrawingListUnderStickyHeader = true;
-	private int mPaddingLeft = 0;
-	private int mPaddingTop = 0;
-	private int mPaddingRight = 0;
-	private int mPaddingBottom = 0;
+	private boolean mIsDrawingListUnderStickyHeader;
+	private int mPaddingLeft;
+	private int mPaddingTop;
+	private int mPaddingRight;
+	private int mPaddingBottom;
 
 	/* --- Other --- */
 	private AdapterWrapper mAdapter;
@@ -66,19 +66,28 @@ public class StickyListHeadersListView extends FrameLayout {
 	private AdapterWrapperDataSetObserver mDataSetObserver;
 
 	public StickyListHeadersListView(Context context) {
-		this(context, null);
+		super(context, null);
+
+		init(context, null, 0, new WrapperViewList(context));
 	}
 
 	public StickyListHeadersListView(Context context, AttributeSet attrs) {
-		this(context, attrs, 0);
+		super(context, attrs);
+
+		init(context, attrs, 0, new WrapperViewList(context, attrs));
 	}
 
 	public StickyListHeadersListView(Context context, AttributeSet attrs,
 			int defStyle) {
-		super(context, attrs, defStyle);
+		super(context, attrs);
 
-		// Initialize the list
-		mList = new WrapperViewList(context, attrs);
+		init(context, attrs, defStyle, new WrapperViewList(context, attrs,
+				defStyle));
+	}
+
+	private void init(Context context, AttributeSet attrs, int defStyle,
+			WrapperViewList list) {
+		mList = list;
 
 		// We initialized the ID to be the same as the sticky list, remove it.
 		// This will prevent state saving for the wrapped list view, and if that
@@ -87,6 +96,9 @@ public class StickyListHeadersListView extends FrameLayout {
 		// as there could be multiple SLH's in a given view hierarchy (in
 		// fragments, typically)
 		mList.setId(View.NO_ID);
+
+		// Clear our background since the list view will draw it
+		setBackground(null);
 
 		setPadding(mList.getPaddingLeft(), mList.getPaddingTop(),
 				mList.getPaddingRight(), mList.getPaddingBottom());
@@ -105,27 +117,18 @@ public class StickyListHeadersListView extends FrameLayout {
 		mList.setOnScrollListener(new WrapperListScrollListener());
 		addView(mList);
 
-		if (attrs != null) {
-			TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
-					R.styleable.StickyListHeadersListView, 0, 0);
+		// StickyListHeaders attributes
+		TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
+				R.styleable.StickyListHeadersListView, defStyle, 0);
 
-			try {
-				// StickyListHeaders attributes
-				mAreHeadersSticky = a.getBoolean(
-						R.styleable.StickyListHeadersListView_hasStickyHeaders,
+		mAreHeadersSticky = a.getBoolean(
+				R.styleable.StickyListHeadersListView_hasStickyHeaders, true);
+		mIsDrawingListUnderStickyHeader = a
+				.getBoolean(
+						R.styleable.StickyListHeadersListView_isDrawingListUnderStickyHeader,
 						true);
-				mIsDrawingListUnderStickyHeader = a
-						.getBoolean(
-								R.styleable.StickyListHeadersListView_isDrawingListUnderStickyHeader,
-								true);
-            } finally {
-				a.recycle();
-			}
-		}
-
-        mList.setVerticalScrollBarEnabled(isVerticalScrollBarEnabled());
-        mList.setHorizontalScrollBarEnabled(isHorizontalScrollBarEnabled());
-    }
+		a.recycle();
+	}
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
