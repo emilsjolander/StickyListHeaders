@@ -1,5 +1,6 @@
 package se.emilsjolander.stickylistheaders;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
@@ -12,7 +13,8 @@ import android.widget.Toast;
  * @author Emil Sjölander
  */
 public class TestActivity extends FragmentActivity implements
-        AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener {
+        AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener,
+        StickyListHeadersListView.OnStickyHeaderOffsetChangedListener {
 
     private TestBaseAdapter mAdapter;
 
@@ -26,6 +28,7 @@ public class TestActivity extends FragmentActivity implements
         StickyListHeadersListView stickyList = (StickyListHeadersListView) findViewById(R.id.list);
         stickyList.setOnItemClickListener(this);
         stickyList.setOnHeaderClickListener(this);
+        stickyList.setOnStickyHeaderOffsetChangedListener(this);
 
 //		mStickyList.addHeaderView(inflater.inflate(R.layout.list_header, null));
 //		mStickyList.addFooterView(inflater.inflate(R.layout.list_footer, null));
@@ -74,4 +77,10 @@ public class TestActivity extends FragmentActivity implements
                 Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onStickyHeaderOffsetChanged(StickyListHeadersListView l, View header, int offset) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            header.setAlpha(1-(offset/(float)header.getMeasuredHeight()));
+        }
+    }
 }

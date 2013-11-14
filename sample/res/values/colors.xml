@@ -1,6 +1,6 @@
 <resources>
 
-    <color name="header_normal">#aae74c3c</color>
-    <color name="header_pressed">#aac0392b</color>
+    <color name="header_normal">#ffe74c3c</color>
+    <color name="header_pressed">#ffc0392b</color>
 
 </resources>
