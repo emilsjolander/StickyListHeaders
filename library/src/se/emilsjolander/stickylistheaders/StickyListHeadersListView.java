@@ -70,7 +70,7 @@ public class StickyListHeadersListView extends FrameLayout {
 	}
 
 	public StickyListHeadersListView(Context context, AttributeSet attrs) {
-		this(context, attrs, 0);
+		this(context, attrs, android.R.attr.listViewStyle);
 	}
 
 	public StickyListHeadersListView(Context context, AttributeSet attrs,
