@@ -66,28 +66,21 @@ public class StickyListHeadersListView extends FrameLayout {
 	private AdapterWrapperDataSetObserver mDataSetObserver;
 
 	public StickyListHeadersListView(Context context) {
-		super(context, null);
-
-		init(context, null, 0, new WrapperViewList(context));
+		this(context, null);
 	}
 
 	public StickyListHeadersListView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-
-		init(context, attrs, 0, new WrapperViewList(context, attrs));
+		this(context, attrs, 0);
 	}
 
 	public StickyListHeadersListView(Context context, AttributeSet attrs,
 			int defStyle) {
-		super(context, attrs);
+		super(context);
 
-		init(context, attrs, defStyle, new WrapperViewList(context, attrs,
-				defStyle));
-	}
+		mList = new WrapperViewList(context, attrs, defStyle);
 
-	private void init(Context context, AttributeSet attrs, int defStyle,
-			WrapperViewList list) {
-		mList = list;
+		// Copy the ID from the list we just created
+		setId(mList.getId());
 
 		// We initialized the ID to be the same as the sticky list, remove it.
 		// This will prevent state saving for the wrapped list view, and if that
@@ -96,9 +89,6 @@ public class StickyListHeadersListView extends FrameLayout {
 		// as there could be multiple SLH's in a given view hierarchy (in
 		// fragments, typically)
 		mList.setId(View.NO_ID);
-
-		// Clear our background since the list view will draw it
-		setBackground(null);
 
 		setPadding(mList.getPaddingLeft(), mList.getPaddingTop(),
 				mList.getPaddingRight(), mList.getPaddingBottom());
