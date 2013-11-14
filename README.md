@@ -168,7 +168,7 @@ public boolean areHeadersSticky();
 
 A `OnHeaderClickListener` is the header version of OnItemClickListener. This is the setter for it and the interface of the listener. The currentlySticky boolean flag indicated if the header that was clicked was sticking to the top at the time it was clicked.
 ```java
-public void setOnHeaderClickListener(OnHeaderClickListener onHeaderClickListener);
+public void setOnHeaderClickListener(OnHeaderClickListener listener);
 
 public interface OnHeaderClickListener {
     public void onHeaderClick(StickyListHeadersListView l, View header, int itemPosition, long headerId, boolean currentlySticky);
@@ -177,10 +177,10 @@ public interface OnHeaderClickListener {
 
 A `OnStickyHeaderOffsetChangedListener` is a Listener used for listening to when the sticky header slides out of the screen. The offset parameter will slowly grow to be the same size as the headers height. Use the listeners callback to transform the header in any way you see fit, the standard android contacts app dims the text for example.
 ```java
-public void setOnHeaderClickListener(OnHeaderClickListener onHeaderClickListener);
+public void setOnStickyHeaderOffsetChangedListener(OnStickyHeaderOffsetChangedListener listener);
 
-public interface OnHeaderClickListener {
-    public void onHeaderClick(StickyListHeadersListView l, View header, int itemPosition, long headerId, boolean currentlySticky);
+public interface OnStickyHeaderOffsetChangedListener {
+    public void onStickyHeaderOffsetChanged(StickyListHeadersListView l, View header, int offset);
 }
 ```
 
