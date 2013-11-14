@@ -109,7 +109,7 @@ public class StickyListHeadersListView extends FrameLayout {
 
 		// StickyListHeaders attributes
 		TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
-				R.styleable.StickyListHeadersListView, defStyle, 0);
+				R.styleable.StickyListHeadersListView, 0, 0);
 
 		mAreHeadersSticky = a.getBoolean(
 				R.styleable.StickyListHeadersListView_hasStickyHeaders, true);
