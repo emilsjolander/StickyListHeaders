@@ -23,9 +23,9 @@ import android.widget.SectionIndexer;
 import se.emilsjolander.stickylistheaders.WrapperViewList.LifeCycleListener;
 
 /**
- * Even though this is a FrameLayout subclass we it is called a ListView. This
- * is because of 2 reasons. 1. It acts like as ListView 2. It used to be a
- * ListView subclass and i did not was to change to name causing compatibility
+ * Even though this is a FrameLayout subclass, it is called a ListView. This
+ * is because of two reasons. 1. It acts like as ListView 2. It used to be a
+ * ListView subclass and I did not was to change the name, causing compatibility
  * errors.
  *
  * @author Emil Sjölander
@@ -38,17 +38,17 @@ public class StickyListHeadersListView extends FrameLayout {
 	}
 
 	/**
-	 * Notifies the listener when the sticky headers top offset has changed.
+	 * Notifies the listener when the sticky header's top offset has changed.
 	 */
 	public interface OnStickyHeaderOffsetChangedListener {
 	    /**
-	     * @param l      The view parent
-	     * @param header The currently sticky header being offset.
-	     *               This header is not guaranteed to have it's measurements set.
-	     *               It is however guaranteed that this view has been measured,
-	     *               therefor you should user getMeasured* methods instead of
-	     *               get* methods for determining the view's size.
-	     * @param offset The amount the sticky header is offset by towards to top of the screen.
+	     * @param l      The view's parent
+	     * @param header The current sticky header being offset.
+	     *               This header is not guaranteed to have its measurements set.
+	     *               It is, however, guaranteed that this view has been measured,
+	     *               therefore you should use the getMeasured* methods instead of
+	     *               the get* methods for determining the view's size.
+	     * @param offset The amount the sticky header is offset by towards the top of the screen.
 	     */
 	    public void onStickyHeaderOffsetChanged(StickyListHeadersListView l, View header, int offset);
 	}
@@ -521,7 +521,7 @@ public class StickyListHeadersListView extends FrameLayout {
     }
 
     /**
-     * Use the method with extreme caution!! Changing any values on the
+     * Use this method with extreme caution!! Changing any values on the
      * underlying ListView might break everything.
      *
      * @return the ListView backing this view.
