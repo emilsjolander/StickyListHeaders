@@ -23,217 +23,120 @@ import android.widget.SectionIndexer;
 import se.emilsjolander.stickylistheaders.WrapperViewList.LifeCycleListener;
 
 /**
- * Even though this is a FrameLayout subclass we it is called a ListView. This
- * is because of 2 reasons. 1. It acts like as ListView 2. It used to be a
- * ListView subclass and i did not was to change to name causing compatibility
+ * Even though this is a FrameLayout subclass, it is called a ListView. This
+ * is because of two reasons. 1. It acts like as ListView 2. It used to be a
+ * ListView subclass and I did not was to change the name, causing compatibility
  * errors.
  *
  * @author Emil Sjölander
  */
 public class StickyListHeadersListView extends FrameLayout {
 
-    public interface OnHeaderClickListener {
-        public void onHeaderClick(StickyListHeadersListView l, View header,
-                                  int itemPosition, long headerId, boolean currentlySticky);
-    }
+	public interface OnHeaderClickListener {
+		public void onHeaderClick(StickyListHeadersListView l, View header,
+				int itemPosition, long headerId, boolean currentlySticky);
+	}
 
-    /**
-     * Notifies the listener when the sticky headers top offset has changed.
-     */
-    public interface OnStickyHeaderOffsetChangedListener {
-        /**
-         * @param l      The view parent
-         * @param header The currently sticky header being offset.
-         *               This header is not guaranteed to have it's measurements set.
-         *               It is however guaranteed that this view has been measured,
-         *               therefor you should user getMeasured* methods instead of
-         *               get* methods for determining the view's size.
-         * @param offset The amount the sticky header is offset by towards to top of the screen.
-         */
-        public void onStickyHeaderOffsetChanged(StickyListHeadersListView l, View header, int offset);
-    }
+	/**
+	 * Notifies the listener when the sticky header's top offset has changed.
+	 */
+	public interface OnStickyHeaderOffsetChangedListener {
+	    /**
+	     * @param l      The view's parent
+	     * @param header The current sticky header being offset.
+	     *               This header is not guaranteed to have its measurements set.
+	     *               It is, however, guaranteed that this view has been measured,
+	     *               therefore you should use the getMeasured* methods instead of
+	     *               the get* methods for determining the view's size.
+	     * @param offset The amount the sticky header is offset by towards the top of the screen.
+	     */
+	    public void onStickyHeaderOffsetChanged(StickyListHeadersListView l, View header, int offset);
+	}
 
-    /* --- Children --- */
-    private WrapperViewList mList;
-    private View mHeader;
+	/* --- Children --- */
+	private WrapperViewList mList;
+	private View mHeader;
 
-    /* --- Header state --- */
-    private Long mHeaderId;
-    // used to not have to call getHeaderId() all the time
-    private Integer mHeaderPosition;
-    private Integer mHeaderOffset;
+	/* --- Header state --- */
+	private Long mHeaderId;
+	// used to not have to call getHeaderId() all the time
+	private Integer mHeaderPosition;
+	private Integer mHeaderOffset;
 
-    /* --- Delegates --- */
-    private OnScrollListener mOnScrollListenerDelegate;
-    private AdapterWrapper mAdapter;
+	/* --- Delegates --- */
+	private OnScrollListener mOnScrollListenerDelegate;
+	private AdapterWrapper mAdapter;
 
-    /* --- Settings --- */
-    private boolean mAreHeadersSticky = true;
-    private boolean mClippingToPadding = true;
-    private boolean mIsDrawingListUnderStickyHeader = true;
-    private int mPaddingLeft = 0;
-    private int mPaddingTop = 0;
-    private int mPaddingRight = 0;
-    private int mPaddingBottom = 0;
+	/* --- Settings --- */
+	private boolean mAreHeadersSticky;
+	private boolean mClippingToPadding = true;
+	private boolean mIsDrawingListUnderStickyHeader;
+	private int mPaddingLeft;
+	private int mPaddingTop;
+	private int mPaddingRight;
+	private int mPaddingBottom;
 
-    /* --- Other --- */
-    private OnHeaderClickListener mOnHeaderClickListener;
+	/* --- Other --- */
+	private OnHeaderClickListener mOnHeaderClickListener;
     private OnStickyHeaderOffsetChangedListener mOnStickyHeaderOffsetChangedListener;
     private AdapterWrapperDataSetObserver mDataSetObserver;
     private Drawable mDivider;
     private int mDividerHeight;
+    
+	public StickyListHeadersListView(Context context) {
+		this(context, null);
+	}
 
-    public StickyListHeadersListView(Context context) {
-        this(context, null);
-    }
+	public StickyListHeadersListView(Context context, AttributeSet attrs) {
+		this(context, attrs, android.R.attr.listViewStyle);
+	}
 
-    public StickyListHeadersListView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
-    }
+	public StickyListHeadersListView(Context context, AttributeSet attrs,
+			int defStyle) {
+		super(context);
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public StickyListHeadersListView(Context context, AttributeSet attrs,
-                                     int defStyle) {
-        super(context, attrs, defStyle);
+		mList = new WrapperViewList(context, attrs, defStyle);
 
-        // Initialize the list
-        mList = new WrapperViewList(context);
-        mDivider = mList.getDivider();
-        mDividerHeight = mList.getDividerHeight();
+		// Copy the ID from the list we just created
+		setId(mList.getId());
 
-        // null out divider, dividers are handled by adapter so they look good
-        // with headers
-        mList.setDivider(null);
-        mList.setDividerHeight(0);
+		// We initialized the ID to be the same as the sticky list, remove it.
+		// This will prevent state saving for the wrapped list view, and if that
+		// becomes a problem, we can use a View.generateViewId-like method to
+		// generate a unique id. Setting it to a constant is not a good solution
+		// as there could be multiple SLH's in a given view hierarchy (in
+		// fragments, typically)
+		mList.setId(View.NO_ID);
 
-        mList.setLifeCycleListener(new WrapperViewListLifeCycleListener());
-        mList.setOnScrollListener(new WrapperListScrollListener());
-        addView(mList);
+		setPadding(mList.getPaddingLeft(), mList.getPaddingTop(),
+				mList.getPaddingRight(), mList.getPaddingBottom());
 
-        if (attrs != null) {
-            TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
-                    R.styleable.StickyListHeadersListView, 0, 0);
+		super.setClipToPadding(true);
 
-            try {
-                // Android attributes
-                if (a.hasValue(R.styleable.StickyListHeadersListView_android_padding)) {
-                    int padding = a
-                            .getDimensionPixelSize(
-                                    R.styleable.StickyListHeadersListView_android_padding,
-                                    0);
-                    mPaddingLeft = padding;
-                    mPaddingTop = padding;
-                    mPaddingRight = padding;
-                    mPaddingBottom = padding;
-                } else {
-                    mPaddingLeft = a
-                            .getDimensionPixelSize(
-                                    R.styleable.StickyListHeadersListView_android_paddingLeft,
-                                    0);
-                    mPaddingTop = a
-                            .getDimensionPixelSize(
-                                    R.styleable.StickyListHeadersListView_android_paddingTop,
-                                    0);
-                    mPaddingRight = a
-                            .getDimensionPixelSize(
-                                    R.styleable.StickyListHeadersListView_android_paddingRight,
-                                    0);
-                    mPaddingBottom = a
-                            .getDimensionPixelSize(
-                                    R.styleable.StickyListHeadersListView_android_paddingBottom,
-                                    0);
-                }
-                setPadding(mPaddingLeft, mPaddingTop, mPaddingRight,
-                        mPaddingBottom);
+		mDivider = mList.getDivider();
+		mDividerHeight = mList.getDividerHeight();
 
-                // Set clip to padding on the list and reset value to default on
-                // wrapper
-                mClippingToPadding = a
-                        .getBoolean(
-                                R.styleable.StickyListHeadersListView_android_clipToPadding,
-                                true);
-                super.setClipToPadding(true);
-                mList.setClipToPadding(mClippingToPadding);
+		// null out divider, dividers are handled by adapter so they look good
+		// with headers
+		mList.setDivider(null);
+		mList.setDividerHeight(0);
 
-                // ListView attributes
-                mList.setFadingEdgeLength(a
-                        .getDimensionPixelSize(
-                                R.styleable.StickyListHeadersListView_android_fadingEdgeLength,
-                                mList.getVerticalFadingEdgeLength()));
-                final int fadingEdge = a
-                        .getInt(R.styleable.StickyListHeadersListView_android_requiresFadingEdge,
-                                0);
-                if (fadingEdge == 0x00001000) {
-                    mList.setVerticalFadingEdgeEnabled(false);
-                    mList.setHorizontalFadingEdgeEnabled(true);
-                } else if (fadingEdge == 0x00002000) {
-                    mList.setVerticalFadingEdgeEnabled(true);
-                    mList.setHorizontalFadingEdgeEnabled(false);
-                } else {
-                    mList.setVerticalFadingEdgeEnabled(false);
-                    mList.setHorizontalFadingEdgeEnabled(false);
-                }
-                mList.setCacheColorHint(a
-                        .getColor(
-                                R.styleable.StickyListHeadersListView_android_cacheColorHint,
-                                mList.getCacheColorHint()));
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    mList.setChoiceMode(a
-                            .getInt(R.styleable.StickyListHeadersListView_android_choiceMode,
-                                    mList.getChoiceMode()));
-                }
-                mList.setDrawSelectorOnTop(a
-                        .getBoolean(
-                                R.styleable.StickyListHeadersListView_android_drawSelectorOnTop,
-                                false));
-                mList.setFastScrollEnabled(a
-                        .getBoolean(
-                                R.styleable.StickyListHeadersListView_android_fastScrollEnabled,
-                                mList.isFastScrollEnabled()));
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    mList.setFastScrollAlwaysVisible(a
-                            .getBoolean(
-                                    R.styleable.StickyListHeadersListView_android_fastScrollAlwaysVisible,
-                                    mList.isFastScrollAlwaysVisible()));
-                }
-                mList.setScrollBarStyle(a
-                        .getInt(R.styleable.StickyListHeadersListView_android_scrollbarStyle,
-                                0));
-                final Drawable selector = a
-                        .getDrawable(R.styleable.StickyListHeadersListView_android_listSelector);
-                if (selector != null) {
-                    mList.setSelector(selector);
-                }
-                mList.setScrollingCacheEnabled(a
-                        .getBoolean(
-                                R.styleable.StickyListHeadersListView_android_scrollingCache,
-                                mList.isScrollingCacheEnabled()));
-                final Drawable divider = a
-                        .getDrawable(R.styleable.StickyListHeadersListView_android_divider);
-                if (divider != null) {
-                    mDivider = divider;
-                }
-                mDividerHeight = a
-                        .getDimensionPixelSize(
-                                R.styleable.StickyListHeadersListView_android_dividerHeight,
-                                mDividerHeight);
+		mList.setLifeCycleListener(new WrapperViewListLifeCycleListener());
+		mList.setOnScrollListener(new WrapperListScrollListener());
+		addView(mList);
 
-                // StickyListHeaders attributes
-                mAreHeadersSticky = a.getBoolean(
-                        R.styleable.StickyListHeadersListView_hasStickyHeaders,
-                        true);
-                mIsDrawingListUnderStickyHeader = a
-                        .getBoolean(
-                                R.styleable.StickyListHeadersListView_isDrawingListUnderStickyHeader,
-                                true);
-            } finally {
-                a.recycle();
-            }
-        }
+		// StickyListHeaders attributes
+		TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
+				R.styleable.StickyListHeadersListView, 0, 0);
 
-        mList.setVerticalScrollBarEnabled(isVerticalScrollBarEnabled());
-        mList.setHorizontalScrollBarEnabled(isHorizontalScrollBarEnabled());
-    }
+		mAreHeadersSticky = a.getBoolean(
+				R.styleable.StickyListHeadersListView_hasStickyHeaders, true);
+		mIsDrawingListUnderStickyHeader = a
+				.getBoolean(
+						R.styleable.StickyListHeadersListView_isDrawingListUnderStickyHeader,
+						true);
+		a.recycle();
+	}
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -618,7 +521,7 @@ public class StickyListHeadersListView extends FrameLayout {
     }
 
     /**
-     * Use the method with extreme caution!! Changing any values on the
+     * Use this method with extreme caution!! Changing any values on the
      * underlying ListView might break everything.
      *
      * @return the ListView backing this view.
