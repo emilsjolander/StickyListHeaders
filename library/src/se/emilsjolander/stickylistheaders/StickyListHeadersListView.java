@@ -92,8 +92,7 @@ public class StickyListHeadersListView extends FrameLayout {
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public StickyListHeadersListView(Context context, AttributeSet attrs,
-                                     int defStyle) {
+    public StickyListHeadersListView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
         // Initialize the list
@@ -111,58 +110,35 @@ public class StickyListHeadersListView extends FrameLayout {
         addView(mList);
 
         if (attrs != null) {
-            TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
-                    R.styleable.StickyListHeadersListView, 0, 0);
+            TypedArray a = context.getTheme().obtainStyledAttributes(attrs,R.styleable.StickyListHeadersListView, 0, 0);
 
             try {
                 // Android attributes
                 if (a.hasValue(R.styleable.StickyListHeadersListView_android_padding)) {
-                    int padding = a
-                            .getDimensionPixelSize(
-                                    R.styleable.StickyListHeadersListView_android_padding,
-                                    0);
+                    int padding = a.getDimensionPixelSize(R.styleable.StickyListHeadersListView_android_padding, 0);
                     mPaddingLeft = padding;
                     mPaddingTop = padding;
                     mPaddingRight = padding;
                     mPaddingBottom = padding;
                 } else {
-                    mPaddingLeft = a
-                            .getDimensionPixelSize(
-                                    R.styleable.StickyListHeadersListView_android_paddingLeft,
-                                    0);
-                    mPaddingTop = a
-                            .getDimensionPixelSize(
-                                    R.styleable.StickyListHeadersListView_android_paddingTop,
-                                    0);
-                    mPaddingRight = a
-                            .getDimensionPixelSize(
-                                    R.styleable.StickyListHeadersListView_android_paddingRight,
-                                    0);
-                    mPaddingBottom = a
-                            .getDimensionPixelSize(
-                                    R.styleable.StickyListHeadersListView_android_paddingBottom,
-                                    0);
+                    mPaddingLeft = a.getDimensionPixelSize(R.styleable.StickyListHeadersListView_android_paddingLeft, 0);
+                    mPaddingTop = a.getDimensionPixelSize(R.styleable.StickyListHeadersListView_android_paddingTop, 0);
+                    mPaddingRight = a.getDimensionPixelSize(R.styleable.StickyListHeadersListView_android_paddingRight, 0);
+                    mPaddingBottom = a.getDimensionPixelSize(R.styleable.StickyListHeadersListView_android_paddingBottom, 0);
                 }
                 setPadding(mPaddingLeft, mPaddingTop, mPaddingRight,
                         mPaddingBottom);
 
                 // Set clip to padding on the list and reset value to default on
                 // wrapper
-                mClippingToPadding = a
-                        .getBoolean(
-                                R.styleable.StickyListHeadersListView_android_clipToPadding,
-                                true);
+                mClippingToPadding = a.getBoolean(R.styleable.StickyListHeadersListView_android_clipToPadding, true);
                 super.setClipToPadding(true);
                 mList.setClipToPadding(mClippingToPadding);
 
                 // ListView attributes
-                mList.setFadingEdgeLength(a
-                        .getDimensionPixelSize(
-                                R.styleable.StickyListHeadersListView_android_fadingEdgeLength,
-                                mList.getVerticalFadingEdgeLength()));
-                final int fadingEdge = a
-                        .getInt(R.styleable.StickyListHeadersListView_android_requiresFadingEdge,
-                                0);
+                mList.setFadingEdgeLength(a.getDimensionPixelSize(R.styleable.StickyListHeadersListView_android_fadingEdgeLength,
+                        mList.getVerticalFadingEdgeLength()));
+                final int fadingEdge = a.getInt(R.styleable.StickyListHeadersListView_android_requiresFadingEdge, 0);
                 if (fadingEdge == 0x00001000) {
                     mList.setVerticalFadingEdgeEnabled(false);
                     mList.setHorizontalFadingEdgeEnabled(true);
@@ -174,58 +150,37 @@ public class StickyListHeadersListView extends FrameLayout {
                     mList.setHorizontalFadingEdgeEnabled(false);
                 }
                 mList.setCacheColorHint(a
-                        .getColor(
-                                R.styleable.StickyListHeadersListView_android_cacheColorHint,
-                                mList.getCacheColorHint()));
+                        .getColor(R.styleable.StickyListHeadersListView_android_cacheColorHint, mList.getCacheColorHint()));
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    mList.setChoiceMode(a
-                            .getInt(R.styleable.StickyListHeadersListView_android_choiceMode,
-                                    mList.getChoiceMode()));
+                    mList.setChoiceMode(a.getInt(R.styleable.StickyListHeadersListView_android_choiceMode,
+                            mList.getChoiceMode()));
                 }
-                mList.setDrawSelectorOnTop(a
-                        .getBoolean(
-                                R.styleable.StickyListHeadersListView_android_drawSelectorOnTop,
-                                false));
-                mList.setFastScrollEnabled(a
-                        .getBoolean(
-                                R.styleable.StickyListHeadersListView_android_fastScrollEnabled,
-                                mList.isFastScrollEnabled()));
+                mList.setDrawSelectorOnTop(a.getBoolean(R.styleable.StickyListHeadersListView_android_drawSelectorOnTop, false));
+                mList.setFastScrollEnabled(a.getBoolean(R.styleable.StickyListHeadersListView_android_fastScrollEnabled,
+                        mList.isFastScrollEnabled()));
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    mList.setFastScrollAlwaysVisible(a
-                            .getBoolean(
-                                    R.styleable.StickyListHeadersListView_android_fastScrollAlwaysVisible,
-                                    mList.isFastScrollAlwaysVisible()));
+                    mList.setFastScrollAlwaysVisible(a.getBoolean(
+                            R.styleable.StickyListHeadersListView_android_fastScrollAlwaysVisible,
+                            mList.isFastScrollAlwaysVisible()));
                 }
-                mList.setScrollBarStyle(a
-                        .getInt(R.styleable.StickyListHeadersListView_android_scrollbarStyle,
-                                0));
-                final Drawable selector = a
-                        .getDrawable(R.styleable.StickyListHeadersListView_android_listSelector);
-                if (selector != null) {
-                    mList.setSelector(selector);
+                mList.setScrollBarStyle(a.getInt(R.styleable.StickyListHeadersListView_android_scrollbarStyle, 0));
+                if (a.hasValue(R.styleable.StickyListHeadersListView_android_listSelector)) {
+                    mList.setSelector(a.getDrawable(R.styleable.StickyListHeadersListView_android_listSelector));
                 }
-                mList.setScrollingCacheEnabled(a
-                        .getBoolean(
-                                R.styleable.StickyListHeadersListView_android_scrollingCache,
-                                mList.isScrollingCacheEnabled()));
-                final Drawable divider = a
-                        .getDrawable(R.styleable.StickyListHeadersListView_android_divider);
-                if (divider != null) {
-                    mDivider = divider;
+                mList.setScrollingCacheEnabled(a.getBoolean(R.styleable.StickyListHeadersListView_android_scrollingCache,
+                        mList.isScrollingCacheEnabled()));
+                if (a.hasValue(R.styleable.StickyListHeadersListView_android_divider)) {
+                    mDivider = a.getDrawable(R.styleable.StickyListHeadersListView_android_divider);
                 }
-                mDividerHeight = a
-                        .getDimensionPixelSize(
-                                R.styleable.StickyListHeadersListView_android_dividerHeight,
-                                mDividerHeight);
+
+                mDividerHeight = a.getDimensionPixelSize(R.styleable.StickyListHeadersListView_android_dividerHeight,
+                        mDividerHeight);
 
                 // StickyListHeaders attributes
-                mAreHeadersSticky = a.getBoolean(
-                        R.styleable.StickyListHeadersListView_hasStickyHeaders,
+                mAreHeadersSticky = a.getBoolean(R.styleable.StickyListHeadersListView_hasStickyHeaders, true);
+                mIsDrawingListUnderStickyHeader = a.getBoolean(
+                        R.styleable.StickyListHeadersListView_isDrawingListUnderStickyHeader,
                         true);
-                mIsDrawingListUnderStickyHeader = a
-                        .getBoolean(
-                                R.styleable.StickyListHeadersListView_isDrawingListUnderStickyHeader,
-                                true);
             } finally {
                 a.recycle();
             }
