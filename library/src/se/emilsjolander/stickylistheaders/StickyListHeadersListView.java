@@ -777,10 +777,12 @@ public class StickyListHeadersListView extends FrameLayout {
         return mList.getItemIdAtPosition(position);
     }
 
+    @Override
     public void setOnCreateContextMenuListener(OnCreateContextMenuListener l) {
         mList.setOnCreateContextMenuListener(l);
     }
 
+    @Override
     public boolean showContextMenu() {
         return mList.showContextMenu();
     }
@@ -842,9 +844,7 @@ public class StickyListHeadersListView extends FrameLayout {
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void setFastScrollAlwaysVisible(boolean alwaysVisible) {
         requireSdkVersion(Build.VERSION_CODES.HONEYCOMB);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            mList.setFastScrollAlwaysVisible(alwaysVisible);
-        }
+        mList.setFastScrollAlwaysVisible(alwaysVisible);
     }
 
     /**
