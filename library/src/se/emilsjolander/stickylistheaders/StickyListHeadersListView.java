@@ -70,7 +70,7 @@ public class StickyListHeadersListView extends FrameLayout {
     /* --- Settings --- */
     private boolean mAreHeadersSticky = true;
     private boolean mClippingToPadding = true;
-    private boolean mIsDrawingListUnderStickyHeader = true;
+    private boolean mIsDrawingListUnderStickyHeader = false;
     private int mPaddingLeft = 0;
     private int mPaddingTop = 0;
     private int mPaddingRight = 0;
@@ -139,7 +139,7 @@ public class StickyListHeadersListView extends FrameLayout {
 
                 mAreHeadersSticky = a.getBoolean(R.styleable.StickyListHeadersListView_hasStickyHeaders, true);
                 mIsDrawingListUnderStickyHeader = a.getBoolean(
-                        R.styleable.StickyListHeadersListView_isDrawingListUnderStickyHeader, true);
+                        R.styleable.StickyListHeadersListView_isDrawingListUnderStickyHeader, false);
             } finally {
                 a.recycle();
             }
