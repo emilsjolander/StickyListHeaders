@@ -102,14 +102,8 @@ public class TestBaseAdapter extends BaseAdapter implements
         }
 
         // set header text as first char in name
-        char headerChar = mCountries[position].subSequence(0, 1).charAt(0);
-        String headerText;
-        if (headerChar % 2 == 0) {
-            headerText = headerChar + "\n" + headerChar + "\n" + headerChar;
-        } else {
-            headerText = headerChar + "\n" + headerChar;
-        }
-        holder.text.setText(headerText);
+        CharSequence headerChar = mCountries[position].subSequence(0, 1);
+        holder.text.setText(headerChar);
 
         return convertView;
     }
