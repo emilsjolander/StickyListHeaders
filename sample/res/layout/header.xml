@@ -1,29 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/header_selector" >
 
-    <TextView
+    <se.emilsjolander.stickylistheaders.views.UnderlineTextView
         android:id="@+id/text1"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start|left"
         android:padding="5dp"
-        android:textColor="#ff33b5e5"
-        android:textSize="15sp"
+        android:textColor="@android:color/white"
+        android:textSize="17sp"
         android:textStyle="bold" />
-
-    <ProgressBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|right"
-        android:indeterminate="true" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_gravity="bottom"
-        android:background="@android:color/white" />
-
-</FrameLayout>
+</RelativeLayout>
