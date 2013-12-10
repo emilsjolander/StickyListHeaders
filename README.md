@@ -190,7 +190,7 @@ public View getListChildAt(int index);
 public int getListChildCount();
 ```
 
-This is a setter and getter for an internal attribute that controls if the list should be drawn under the stuck header. The default value is false. If you want to see the list scroll under your header(the header should have a semi-transparent background) you will want to set this attribute to `true`.
+This is a setter and getter for an internal attribute that controls if the list should be drawn under the stuck header. The default value is true. If you do not want to see the list scroll under your header you will want to set this attribute to `false`.
 ```java
 public void setDrawingListUnderStickyHeader(boolean drawingListUnderStickyHeader);
 public boolean isDrawingListUnderStickyHeader();

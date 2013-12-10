@@ -5,6 +5,7 @@ repositories {
 }
 dependencies {
     compile project(':library')
+    compile 'com.android.support:appcompat-v7:19.0.+'
     compile 'com.android.support:support-v4:19.0.0'
 }
 
