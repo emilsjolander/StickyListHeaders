@@ -110,7 +110,7 @@ public class StickyListHeadersListView extends FrameLayout {
 
         mDivider = attrsList.getDivider();
         mDividerHeight = attrsList.getDividerHeight();
-        setPadding(attrsList.getPaddingLeft(), attrsList.getPaddingTop(),
+        setPaddingCorrect(attrsList.getPaddingLeft(), attrsList.getPaddingTop(),
                 attrsList.getPaddingRight(), attrsList.getPaddingBottom());
         mList.setFadingEdgeLength(attrsList.getVerticalFadingEdgeLength());
         mList.setHorizontalFadingEdgeEnabled(attrsList.isHorizontalFadingEdgeEnabled());
@@ -799,8 +799,7 @@ public class StickyListHeadersListView extends FrameLayout {
         mClippingToPadding = clipToPadding;
     }
 
-    @Override
-    public void setPadding(int left, int top, int right, int bottom) {
+    public void setPaddingCorrect(int left, int top, int right, int bottom) {
         mPaddingLeft = left;
         mPaddingTop = top;
         mPaddingRight = right;
@@ -809,6 +808,12 @@ public class StickyListHeadersListView extends FrameLayout {
         if (mList != null) {
             mList.setPadding(left, top, right, bottom);
         }
+        super.setPadding(0, 0, 0, 0);
+        requestLayout();
+    }
+
+    @Override
+    public void setPadding(int left, int top, int right, int bottom) {
         super.setPadding(0, 0, 0, 0);
         requestLayout();
     }
