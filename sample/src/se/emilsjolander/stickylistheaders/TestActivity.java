@@ -81,7 +81,7 @@ public class TestActivity extends ActionBarActivity implements
         drawBehindCheckBox = (CheckBox) findViewById(R.id.draw_behind_checkBox);
         drawBehindCheckBox.setOnCheckedChangeListener(checkBoxListener);
         fastScrollCheckBox = (CheckBox) findViewById(R.id.fast_scroll_checkBox);
-        drawBehindCheckBox.setOnCheckedChangeListener(checkBoxListener);
+        fastScrollCheckBox.setOnCheckedChangeListener(checkBoxListener);
     }
 
     @Override
