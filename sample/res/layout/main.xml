@@ -15,9 +15,9 @@
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
                 android:drawSelectorOnTop="true"
-                android:fastScrollEnabled="true"
                 android:padding="16dp"
-                android:scrollbarStyle="outsideOverlay"/>
+                android:scrollbarStyle="outsideOverlay"
+                android:fastScrollEnabled="true"/>
 
         <TextView
                 android:id="@+id/empty"
@@ -102,6 +102,13 @@
                     android:text="@string/draw_behind_header"
                     android:id="@+id/draw_behind_checkBox"
                     android:checked="true"/>
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/fast_scroll"
+                android:id="@+id/fast_scroll_checkBox"
+                android:checked="true"/>
         </LinearLayout>
     </ScrollView>
 </android.support.v4.widget.DrawerLayout>

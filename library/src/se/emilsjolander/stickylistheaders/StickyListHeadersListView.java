@@ -859,6 +859,14 @@ public class StickyListHeadersListView extends FrameLayout {
         return mList.isFastScrollAlwaysVisible();
     }
 
+    public void setScrollBarStyle(int style) {
+        mList.setScrollBarStyle(style);
+    }
+
+    public int getScrollBarStyle() {
+        return mList.getScrollBarStyle();
+    }
+
     private void requireSdkVersion(int versionCode) {
         if (Build.VERSION.SDK_INT < versionCode) {
             throw new ApiLevelTooLowException(versionCode);

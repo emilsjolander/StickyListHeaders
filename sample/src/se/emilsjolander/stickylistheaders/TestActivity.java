@@ -32,6 +32,7 @@ public class TestActivity extends ActionBarActivity implements
     private CheckBox stickyCheckBox;
     private CheckBox fadeCheckBox;
     private CheckBox drawBehindCheckBox;
+    private CheckBox fastScrollCheckBox;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,6 +80,8 @@ public class TestActivity extends ActionBarActivity implements
         fadeCheckBox.setOnCheckedChangeListener(checkBoxListener);
         drawBehindCheckBox = (CheckBox) findViewById(R.id.draw_behind_checkBox);
         drawBehindCheckBox.setOnCheckedChangeListener(checkBoxListener);
+        fastScrollCheckBox = (CheckBox) findViewById(R.id.fast_scroll_checkBox);
+        drawBehindCheckBox.setOnCheckedChangeListener(checkBoxListener);
     }
 
     @Override
@@ -116,6 +119,10 @@ public class TestActivity extends ActionBarActivity implements
                     break;
                 case R.id.draw_behind_checkBox:
                     stickyList.setDrawingListUnderStickyHeader(isChecked);
+                    break;
+                case R.id.fast_scroll_checkBox:
+                    stickyList.setFastScrollEnabled(isChecked);
+                    stickyList.setFastScrollAlwaysVisible(isChecked);
                     break;
             }
         }

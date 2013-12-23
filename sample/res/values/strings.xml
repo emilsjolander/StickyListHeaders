@@ -15,5 +15,6 @@
     <string name="sticky_header">Sticky header</string>
     <string name="fade_header">Fade header</string>
     <string name="draw_behind_header">Draw behind header</string>
+    <string name="fast_scroll">Fast scroll</string>
 
 </resources>
