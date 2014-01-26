@@ -4,6 +4,7 @@
     <declare-styleable name="StickyListHeadersListView">
         <!-- View attributes -->
         <attr name="android:clipToPadding" />
+        <attr name="android:scrollbars" />
         <attr name="android:padding" />
         <attr name="android:paddingLeft" />
         <attr name="android:paddingTop" />

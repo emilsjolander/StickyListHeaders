@@ -45,8 +45,8 @@ public class TestActivity extends ActionBarActivity implements
         stickyList.setOnItemClickListener(this);
         stickyList.setOnHeaderClickListener(this);
         stickyList.setOnStickyHeaderOffsetChangedListener(this);
-//		mStickyList.addHeaderView(inflater.inflate(R.layout.list_header, null));
-//		mStickyList.addFooterView(inflater.inflate(R.layout.list_footer, null));
+        stickyList.addHeaderView(getLayoutInflater().inflate(R.layout.list_header, null));
+        stickyList.addFooterView(getLayoutInflater().inflate(R.layout.list_footer, null));
         stickyList.setEmptyView(findViewById(R.id.empty));
         stickyList.setDrawingListUnderStickyHeader(true);
         stickyList.setAreHeadersSticky(true);
