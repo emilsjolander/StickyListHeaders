@@ -723,7 +723,9 @@ public class StickyListHeadersListView extends FrameLayout {
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void setOverScrollMode(int mode) {
         requireSdkVersion(Build.VERSION_CODES.GINGERBREAD);
-        mList.setOverScrollMode(mode);
+        if (mList != null) {
+            mList.setOverScrollMode(mode);
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.FROYO)
