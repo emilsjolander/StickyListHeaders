@@ -8,11 +8,13 @@ import android.database.DataSetObserver;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -952,4 +954,24 @@ public class StickyListHeadersListView extends FrameLayout {
         return mList.getPositionForView(view);
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public void setMultiChoiceModeListener(MultiChoiceModeListener listener) {
+        requireSdkVersion(Build.VERSION_CODES.HONEYCOMB);
+        mList.setMultiChoiceModeListener(listener);
+    }
+
+    @Override
+    public Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+        if (superState != BaseSavedState.EMPTY_STATE) {
+          throw new IllegalStateException("Handling non empty state of parent class is not implemented");
+        }
+        return mList.onSaveInstanceState();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        super.onRestoreInstanceState(BaseSavedState.EMPTY_STATE);
+        mList.onRestoreInstanceState(state);
+    }
 }
