@@ -184,6 +184,15 @@ public interface OnStickyHeaderOffsetChangedListener {
 }
 ```
 
+A `OnStickyHeaderChangedListener` listens for changes to the header.  This enables UI elements elsewhere to react to the current header (e.g. if each header is a date, then the rest of the UI can update when you scroll to a new date).
+```java
+public void setOnStickyHeaderChangedListener(OnStickyHeaderChangedListener listener);
+
+public interface OnStickyHeaderChangedListener {
+    void onStickyHeaderChanged(StickyListHeadersListView l, View header, int itemPosition, long headerId);
+}
+```
+
 Here are two methods added to the API for inspecting the children of the underlying `ListView`. I could not override the normal `getChildAt()` and `getChildCount()` methods as that would mess up the underlying measurement system of the `FrameLayout` wrapping the `ListView`.
 ```java
 public View getListChildAt(int index);
