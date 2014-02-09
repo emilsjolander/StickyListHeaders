@@ -16,7 +16,8 @@ import android.widget.*;
  */
 public class TestActivity extends ActionBarActivity implements
         AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener,
-        StickyListHeadersListView.OnStickyHeaderOffsetChangedListener {
+        StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
+        StickyListHeadersListView.OnStickyHeaderChangedListener {
 
     private TestBaseAdapter mAdapter;
     private DrawerLayout mDrawerLayout;
@@ -44,6 +45,7 @@ public class TestActivity extends ActionBarActivity implements
         stickyList = (StickyListHeadersListView) findViewById(R.id.list);
         stickyList.setOnItemClickListener(this);
         stickyList.setOnHeaderClickListener(this);
+        stickyList.setOnStickyHeaderChangedListener(this);
         stickyList.setOnStickyHeaderOffsetChangedListener(this);
         stickyList.addHeaderView(getLayoutInflater().inflate(R.layout.list_header, null));
         stickyList.addFooterView(getLayoutInflater().inflate(R.layout.list_footer, null));
@@ -165,5 +167,12 @@ public class TestActivity extends ActionBarActivity implements
         if (fadeHeader && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             header.setAlpha(1 - (offset / (float) header.getMeasuredHeight()));
         }
+    }
+
+    @Override
+    public void onStickyHeaderChanged(StickyListHeadersListView l, View header,
+                                      int itemPosition, long headerId) {
+        Toast.makeText(this, "Sticky Header Changed to " + headerId,
+                Toast.LENGTH_SHORT).show();
     }
 }

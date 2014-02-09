@@ -55,6 +55,22 @@ public class StickyListHeadersListView extends FrameLayout {
         public void onStickyHeaderOffsetChanged(StickyListHeadersListView l, View header, int offset);
     }
 
+    /**
+     * Notifies the listener when the sticky header has been updated
+     */
+    public interface OnStickyHeaderChangedListener {
+        /**
+         * @param l             The view parent
+         * @param header        The new sticky header view.
+         * @param itemPosition  The position of the item within the adapter's data set of
+         *                      the item whose header is now sticky.
+         * @param headerId      The id of the new sticky header.
+         */
+        public void onStickyHeaderChanged(StickyListHeadersListView l, View header,
+                                          int itemPosition, long headerId);
+
+    }
+
     /* --- Children --- */
     private WrapperViewList mList;
     private View mHeader;
@@ -81,6 +97,7 @@ public class StickyListHeadersListView extends FrameLayout {
     /* --- Other --- */
     private OnHeaderClickListener mOnHeaderClickListener;
     private OnStickyHeaderOffsetChangedListener mOnStickyHeaderOffsetChangedListener;
+    private OnStickyHeaderChangedListener mOnStickyHeaderChangedListener;
     private AdapterWrapperDataSetObserver mDataSetObserver;
     private Drawable mDivider;
     private int mDividerHeight;
@@ -310,10 +327,12 @@ public class StickyListHeadersListView extends FrameLayout {
                     }
                     swapHeader(header);
                 }
-
                 ensureHeaderHasCorrectLayoutParams(mHeader);
                 measureHeader(mHeader);
-
+                if(mOnStickyHeaderChangedListener != null) {
+                    mOnStickyHeaderChangedListener.onStickyHeaderChanged(this,
+                            mHeader, firstVisiblePosition, mHeaderId);
+                }
                 // Reset mHeaderOffset to null ensuring
                 // that it will be set on the header and
                 // not skipped for performance reasons.
@@ -570,6 +589,10 @@ public class StickyListHeadersListView extends FrameLayout {
 
     public void setOnStickyHeaderOffsetChangedListener(OnStickyHeaderOffsetChangedListener listener) {
         mOnStickyHeaderOffsetChangedListener = listener;
+    }
+
+    public void setOnStickyHeaderChangedListener(OnStickyHeaderChangedListener listener) {
+        mOnStickyHeaderChangedListener = listener;
     }
 
     public View getListChildAt(int index) {
