@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MenuSectionHeader">
+        <item name="android:padding">5dp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/menu_section_header</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+</resources>

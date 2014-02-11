@@ -5,5 +5,16 @@
     <string name="update">Update</string>
     <string name="clear">Clear</string>
     <string name="empty">Empty Adapter</string>
+    <string name="drawer_open">Drawer Open</string>
+    <string name="drawer_close">Drawer Close</string>
+    <string name="options">OPTIONS</string>
+    <string name="actions">ACTIONS</string>
+    <string name="restore_list">Restore list</string>
+    <string name="update_list">Update list</string>
+    <string name="clear_list">Clear list</string>
+    <string name="sticky_header">Sticky header</string>
+    <string name="fade_header">Fade header</string>
+    <string name="draw_behind_header">Draw behind header</string>
+    <string name="fast_scroll">Fast scroll</string>
 
 </resources>

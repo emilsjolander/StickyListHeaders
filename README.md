@@ -166,12 +166,30 @@ public void setAreHeadersSticky(boolean areHeadersSticky);
 public boolean areHeadersSticky();
 ```
 
-A OnHeaderClickListener is the header version of OnItemClickListener. This is the setter for it and the interface of the listener. The currentlySticky boolean flag indicated if the header that was clicked was sticking to the top at the time it was clicked.
+A `OnHeaderClickListener` is the header version of OnItemClickListener. This is the setter for it and the interface of the listener. The currentlySticky boolean flag indicated if the header that was clicked was sticking to the top at the time it was clicked.
 ```java
-public void setOnHeaderClickListener(OnHeaderClickListener onHeaderClickListener);
+public void setOnHeaderClickListener(OnHeaderClickListener listener);
 
 public interface OnHeaderClickListener {
     public void onHeaderClick(StickyListHeadersListView l, View header, int itemPosition, long headerId, boolean currentlySticky);
+}
+```
+
+A `OnStickyHeaderOffsetChangedListener` is a Listener used for listening to when the sticky header slides out of the screen. The offset parameter will slowly grow to be the same size as the headers height. Use the listeners callback to transform the header in any way you see fit, the standard android contacts app dims the text for example.
+```java
+public void setOnStickyHeaderOffsetChangedListener(OnStickyHeaderOffsetChangedListener listener);
+
+public interface OnStickyHeaderOffsetChangedListener {
+    public void onStickyHeaderOffsetChanged(StickyListHeadersListView l, View header, int offset);
+}
+```
+
+A `OnStickyHeaderChangedListener` listens for changes to the header.  This enables UI elements elsewhere to react to the current header (e.g. if each header is a date, then the rest of the UI can update when you scroll to a new date).
+```java
+public void setOnStickyHeaderChangedListener(OnStickyHeaderChangedListener listener);
+
+public interface OnStickyHeaderChangedListener {
+    void onStickyHeaderChanged(StickyListHeadersListView l, View header, int itemPosition, long headerId);
 }
 ```
 
@@ -181,7 +199,7 @@ public View getListChildAt(int index);
 public int getListChildCount();
 ```
 
-This is a setter and getter for an internal attribute that controls if the list should be drawn under the stuck header. The default value is false. If you want to see the list scroll under your header(the header should have a semi-transparent background) you will want to set this attribute to `true`.
+This is a setter and getter for an internal attribute that controls if the list should be drawn under the stuck header. The default value is true. If you do not want to see the list scroll under your header you will want to set this attribute to `false`.
 ```java
 public void setDrawingListUnderStickyHeader(boolean drawingListUnderStickyHeader);
 public boolean isDrawingListUnderStickyHeader();
