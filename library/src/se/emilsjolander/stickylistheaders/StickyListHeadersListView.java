@@ -995,7 +995,7 @@ public class StickyListHeadersListView extends FrameLayout {
     }
 
     @Override
-    protected void onRestoreInstanceState(Parcelable state) {
+    public void onRestoreInstanceState(Parcelable state) {
         super.onRestoreInstanceState(BaseSavedState.EMPTY_STATE);
         mList.onRestoreInstanceState(state);
     }
