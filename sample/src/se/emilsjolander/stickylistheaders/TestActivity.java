@@ -8,6 +8,7 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.*;
 
@@ -17,7 +18,7 @@ import android.widget.*;
 public class TestActivity extends ActionBarActivity implements
         AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener,
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
-        StickyListHeadersListView.OnStickyHeaderChangedListener {
+        StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener {
 
     private TestBaseAdapter mAdapter;
     private DrawerLayout mDrawerLayout;
@@ -53,6 +54,7 @@ public class TestActivity extends ActionBarActivity implements
         stickyList.setDrawingListUnderStickyHeader(true);
         stickyList.setAreHeadersSticky(true);
         stickyList.setAdapter(mAdapter);
+        stickyList.setOnTouchListener(this);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(
@@ -174,5 +176,12 @@ public class TestActivity extends ActionBarActivity implements
                                       int itemPosition, long headerId) {
         Toast.makeText(this, "Sticky Header Changed to " + headerId,
                 Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        Toast.makeText(this, "OnTouch works", Toast.LENGTH_SHORT).show();
+        v.setOnTouchListener(null);
+        return false;
     }
 }
