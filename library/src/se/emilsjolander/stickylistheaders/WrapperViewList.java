@@ -7,6 +7,7 @@ import java.util.List;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
 import android.widget.AbsListView;
@@ -19,11 +20,15 @@ class WrapperViewList extends ListView {
 	}
 
 	private LifeCycleListener mLifeCycleListener;
-	private List<View> mFooterViews;
+	private List<WrapperView> mHeaderWrapperViews;
+	private List<WrapperView> mFooterWrapperViews;
 	private int mTopClippingLength;
 	private Rect mSelectorRect = new Rect();// for if reflection fails
 	private Field mSelectorPositionField;
 	private boolean mClippingToPadding = true;
+	private Drawable mDivider;
+	private int mDividerHeight;
+	private Rect mDividerTempRect = new Rect();
 
 	public WrapperViewList(Context context) {
 		super(context);
@@ -103,6 +108,17 @@ class WrapperViewList extends ListView {
 		} else {
 			super.dispatchDraw(canvas);
 		}
+
+		// bottom divider
+		if (mDivider != null && getChildCount() > 0) {
+			int t = getChildAt(getChildCount() - 1).getBottom();
+
+			mDividerTempRect.set(mDivider.getBounds());
+
+			mDivider.setBounds(getPaddingLeft(), t, getRight() - getLeft() - getPaddingRight(), t + mDividerHeight);
+			mDivider.draw(canvas);
+			mDivider.setBounds(mDividerTempRect); // restore bounds
+		}
 		mLifeCycleListener.onDispatchDrawOccurred(canvas);
 	}
 
@@ -110,29 +126,83 @@ class WrapperViewList extends ListView {
 		mLifeCycleListener = lifeCycleListener;
 	}
 
-	@Override
-	public void addFooterView(View v) {
-		super.addFooterView(v);
-		if (mFooterViews == null) {
-			mFooterViews = new ArrayList<View>();
-		}
-		mFooterViews.add(v);
+	void setListDivider(Drawable divider, int dividerHeight) {
+		this.mDivider = divider;
+		this.mDividerHeight = dividerHeight;
 	}
 
 	@Override
-	public boolean removeFooterView(View v) {
-		if (super.removeFooterView(v)) {
-			mFooterViews.remove(v);
+	public void addHeaderView(View v, Object data, boolean isSelectable) {
+		if (mHeaderWrapperViews == null) {
+			mHeaderWrapperViews = new ArrayList<WrapperView>();
+		}
+
+		WrapperView wv = new WrapperView(getContext(), v);
+		super.addHeaderView(wv, data, isSelectable);
+		mHeaderWrapperViews.add(wv);
+
+		updateHeaderViews();
+	}
+
+	@Override
+	public boolean removeHeaderView(View v) {
+		WrapperView wv = getWrapperViewByItem(mHeaderWrapperViews, v);
+		if (super.removeHeaderView(wv)) {
+			mHeaderWrapperViews.remove(wv);
+			updateHeaderViews();
 			return true;
 		}
 		return false;
 	}
 
+	private void updateHeaderViews() {
+		for (int i = 0; i < getHeaderViewsCount(); i++) {
+			WrapperView wv = mHeaderWrapperViews.get(i);
+			if (i == 0) {
+				wv.update(wv.getItem(), null, null, 0);
+			} else {
+				wv.update(wv.getItem(), null, mDivider, mDividerHeight);
+			}
+		}
+	}
+
+	@Override
+	public void addFooterView(View v, Object data, boolean isSelectable) {
+		if (mFooterWrapperViews == null) {
+			mFooterWrapperViews = new ArrayList<WrapperView>();
+		}
+
+		WrapperView wv = new WrapperView(getContext());
+		wv.update(v, null, mDivider, mDividerHeight);
+		super.addFooterView(wv, data, isSelectable);
+		mFooterWrapperViews.add(wv);
+	}
+
+	@Override
+	public boolean removeFooterView(View v) {
+		WrapperView wv = getWrapperViewByItem(mFooterWrapperViews, v);
+		if (super.removeFooterView(wv)) {
+			mFooterWrapperViews.remove(wv);
+			return true;
+		}
+		return false;
+	}
+
+	static WrapperView getWrapperViewByItem(List<WrapperView> wrapperViewList, View item) {
+		for (WrapperView wrapperView : wrapperViewList) {
+			if (wrapperView.getItem() == item) {
+				return wrapperView;
+			}
+		}
+		return null;
+	}
+
 	boolean containsFooterView(View v) {
-		if (mFooterViews == null) {
+		if (mFooterWrapperViews == null) {
 			return false;
 		}
-		return mFooterViews.contains(v);
+
+		return getWrapperViewByItem(mFooterWrapperViews, v) != null;
 	}
 
 	void setTopClippingLength(int topClipping) {
