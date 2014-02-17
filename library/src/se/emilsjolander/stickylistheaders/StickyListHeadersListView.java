@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -613,6 +614,14 @@ public class StickyListHeadersListView extends FrameLayout {
         return mList;
     }
 
+    private boolean requireSdkVersion(int versionCode) {
+        if (Build.VERSION.SDK_INT < versionCode) {
+            Log.e("StickyListHeaders", "Api lvl must be at least "+versionCode+" to call this method");
+            return false;
+        }
+        return true;
+    }
+
 	/* ---------- ListView delegate methods ---------- */
 
     public void setAdapter(StickyListHeadersAdapter adapter) {
@@ -742,64 +751,74 @@ public class StickyListHeadersListView extends FrameLayout {
     @Override
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public int getOverScrollMode() {
-        requireSdkVersion(Build.VERSION_CODES.GINGERBREAD);
-        return mList.getOverScrollMode();
+        if (requireSdkVersion(Build.VERSION_CODES.GINGERBREAD)) {
+            return mList.getOverScrollMode();
+        }
+        return 0;
     }
 
     @Override
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void setOverScrollMode(int mode) {
-        requireSdkVersion(Build.VERSION_CODES.GINGERBREAD);
-        if (mList != null) {
-            mList.setOverScrollMode(mode);
+        if (requireSdkVersion(Build.VERSION_CODES.GINGERBREAD)) {
+            if (mList != null) {
+                mList.setOverScrollMode(mode);
+            }
         }
     }
 
     @TargetApi(Build.VERSION_CODES.FROYO)
     public void smoothScrollBy(int distance, int duration) {
-        requireSdkVersion(Build.VERSION_CODES.FROYO);
-        mList.smoothScrollBy(distance, duration);
+        if (requireSdkVersion(Build.VERSION_CODES.FROYO)) {
+            mList.smoothScrollBy(distance, duration);
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void smoothScrollByOffset(int offset) {
-        requireSdkVersion(Build.VERSION_CODES.HONEYCOMB);
-        mList.smoothScrollByOffset(offset);
+        if (requireSdkVersion(Build.VERSION_CODES.HONEYCOMB)) {
+            mList.smoothScrollByOffset(offset);
+        }
     }
 
     @SuppressLint("NewApi")
     @TargetApi(Build.VERSION_CODES.FROYO)
     public void smoothScrollToPosition(int position) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-            mList.smoothScrollToPosition(position);
-        } else {
-            int offset = mAdapter == null ? 0 : getHeaderOverlap(position);
-            offset -= mClippingToPadding ? 0 : mPaddingTop;
-            mList.smoothScrollToPositionFromTop(position, offset);
+        if (requireSdkVersion(Build.VERSION_CODES.FROYO)) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                mList.smoothScrollToPosition(position);
+            } else {
+                int offset = mAdapter == null ? 0 : getHeaderOverlap(position);
+                offset -= mClippingToPadding ? 0 : mPaddingTop;
+                mList.smoothScrollToPositionFromTop(position, offset);
+            }
         }
     }
 
     @TargetApi(Build.VERSION_CODES.FROYO)
     public void smoothScrollToPosition(int position, int boundPosition) {
-        requireSdkVersion(Build.VERSION_CODES.FROYO);
-        mList.smoothScrollToPosition(position, boundPosition);
+        if (requireSdkVersion(Build.VERSION_CODES.FROYO)) {
+            mList.smoothScrollToPosition(position, boundPosition);
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void smoothScrollToPositionFromTop(int position, int offset) {
-        requireSdkVersion(Build.VERSION_CODES.HONEYCOMB);
-        offset += mAdapter == null ? 0 : getHeaderOverlap(position);
-        offset -= mClippingToPadding ? 0 : mPaddingTop;
-        mList.smoothScrollToPositionFromTop(position, offset);
+        if (requireSdkVersion(Build.VERSION_CODES.HONEYCOMB)) {
+            offset += mAdapter == null ? 0 : getHeaderOverlap(position);
+            offset -= mClippingToPadding ? 0 : mPaddingTop;
+            mList.smoothScrollToPositionFromTop(position, offset);
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void smoothScrollToPositionFromTop(int position, int offset,
                                               int duration) {
-        requireSdkVersion(Build.VERSION_CODES.HONEYCOMB);
-        offset += mAdapter == null ? 0 : getHeaderOverlap(position);
-        offset -= mClippingToPadding ? 0 : mPaddingTop;
-        mList.smoothScrollToPositionFromTop(position, offset, duration);
+        if (requireSdkVersion(Build.VERSION_CODES.HONEYCOMB)) {
+            offset += mAdapter == null ? 0 : getHeaderOverlap(position);
+            offset -= mClippingToPadding ? 0 : mPaddingTop;
+            mList.smoothScrollToPositionFromTop(position, offset, duration);
+        }
     }
 
     public void setSelection(int position) {
@@ -842,14 +861,18 @@ public class StickyListHeadersListView extends FrameLayout {
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public int getCheckedItemCount() {
-        requireSdkVersion(Build.VERSION_CODES.HONEYCOMB);
-        return mList.getCheckedItemCount();
+        if (requireSdkVersion(Build.VERSION_CODES.HONEYCOMB)) {
+            return mList.getCheckedItemCount();
+        }
+        return 0;
     }
 
     @TargetApi(Build.VERSION_CODES.FROYO)
     public long[] getCheckedItemIds() {
-        requireSdkVersion(Build.VERSION_CODES.FROYO);
-        return mList.getCheckedItemIds();
+        if (requireSdkVersion(Build.VERSION_CODES.FROYO)) {
+            return mList.getCheckedItemIds();
+        }
+        return null;
     }
 
     public int getCheckedItemPosition() {
@@ -939,14 +962,11 @@ public class StickyListHeadersListView extends FrameLayout {
         mList.setFastScrollEnabled(fastScrollEnabled);
     }
 
-    /**
-     * @throws ApiLevelTooLowException on pre-Honeycomb device.
-     * @see android.widget.AbsListView#setFastScrollAlwaysVisible(boolean)
-     */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void setFastScrollAlwaysVisible(boolean alwaysVisible) {
-        requireSdkVersion(Build.VERSION_CODES.HONEYCOMB);
-        mList.setFastScrollAlwaysVisible(alwaysVisible);
+        if (requireSdkVersion(Build.VERSION_CODES.HONEYCOMB)) {
+            mList.setFastScrollAlwaysVisible(alwaysVisible);
+        }
     }
 
     /**
@@ -969,20 +989,15 @@ public class StickyListHeadersListView extends FrameLayout {
         return mList.getScrollBarStyle();
     }
 
-    private void requireSdkVersion(int versionCode) {
-        if (Build.VERSION.SDK_INT < versionCode) {
-            throw new ApiLevelTooLowException(versionCode);
-        }
-    }
-
     public int getPositionForView(View view) {
         return mList.getPositionForView(view);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void setMultiChoiceModeListener(MultiChoiceModeListener listener) {
-        requireSdkVersion(Build.VERSION_CODES.HONEYCOMB);
-        mList.setMultiChoiceModeListener(listener);
+        if (requireSdkVersion(Build.VERSION_CODES.HONEYCOMB)) {
+            mList.setMultiChoiceModeListener(listener);
+        }
     }
 
     @Override
