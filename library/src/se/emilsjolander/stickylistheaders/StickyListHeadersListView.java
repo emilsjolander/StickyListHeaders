@@ -12,6 +12,7 @@ import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseBooleanArray;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -684,6 +685,20 @@ public class StickyListHeadersListView extends FrameLayout {
         mOnScrollListenerDelegate = onScrollListener;
     }
 
+    @Override
+    public void setOnTouchListener(final OnTouchListener l) {
+        if (l != null) {
+            mList.setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return l.onTouch(StickyListHeadersListView.this, event);
+                }
+            });
+        } else {
+            mList.setOnTouchListener(null);
+        }
+    }
+
     public void setOnItemClickListener(OnItemClickListener listener) {
         mList.setOnItemClickListener(listener);
     }
@@ -1010,7 +1025,7 @@ public class StickyListHeadersListView extends FrameLayout {
     }
 
     @Override
-    protected void onRestoreInstanceState(Parcelable state) {
+    public void onRestoreInstanceState(Parcelable state) {
         super.onRestoreInstanceState(BaseSavedState.EMPTY_STATE);
         mList.onRestoreInstanceState(state);
     }
