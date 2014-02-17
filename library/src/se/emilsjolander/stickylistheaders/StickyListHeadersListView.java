@@ -202,6 +202,9 @@ public class StickyListHeadersListView extends FrameLayout {
 
                 mList.setListDivider(mDivider, mDividerHeight);
 
+                mList.setHeaderDividersEnabled(a.getBoolean(R.styleable.StickyListHeadersListView_android_headerDividersEnabled, true));
+                mList.setFooterDividersEnabled(a.getBoolean(R.styleable.StickyListHeadersListView_android_footerDividersEnabled, true));
+
                 // -- StickyListHeaders attributes --
                 mAreHeadersSticky = a.getBoolean(R.styleable.StickyListHeadersListView_hasStickyHeaders, true);
                 mIsDrawingListUnderStickyHeader = a.getBoolean(
@@ -675,6 +678,14 @@ public class StickyListHeadersListView extends FrameLayout {
 
     public int getDividerHeight() {
         return mDividerHeight;
+    }
+
+    public void setHeaderDividersEnabled(boolean headerDividersEnabled) {
+        mList.setHeaderDividersEnabled(headerDividersEnabled);
+    }
+
+    public void setFooterDividersEnabled(boolean footerDividersEnabled) {
+        mList.setFooterDividersEnabled(footerDividersEnabled);
     }
 
     public void setOnScrollListener(OnScrollListener onScrollListener) {

@@ -25,6 +25,8 @@
         <attr name="android:scrollbarStyle" />
         <attr name="android:divider" />
         <attr name="android:dividerHeight" />
+        <attr name="android:headerDividersEnabled" />
+        <attr name="android:footerDividersEnabled" />
 
         <!-- StickyListHeaders attributes -->
         <attr name="hasStickyHeaders" format="boolean" />

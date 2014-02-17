@@ -29,6 +29,9 @@ class WrapperViewList extends ListView {
 	private Drawable mDivider;
 	private int mDividerHeight;
 	private Rect mDividerTempRect = new Rect();
+	private boolean mHeaderDividersEnabled = true;
+	private boolean mFooterDividersEnabled = true;
+
 
 	public WrapperViewList(Context context) {
 		super(context);
@@ -110,7 +113,7 @@ class WrapperViewList extends ListView {
 		}
 
 		// bottom divider
-		if (mDivider != null && getChildCount() > 0) {
+		if (mFooterDividersEnabled && mDivider != null && getChildCount() > 0) {
 			int t = getChildAt(getChildCount() - 1).getBottom();
 
 			mDividerTempRect.set(mDivider.getBounds());
@@ -132,6 +135,22 @@ class WrapperViewList extends ListView {
 	}
 
 	@Override
+	public void setHeaderDividersEnabled(boolean headerDividersEnabled) {
+		super.setHeaderDividersEnabled(headerDividersEnabled);
+		this.mHeaderDividersEnabled = headerDividersEnabled;
+
+		updateHeaderViews();
+	}
+
+	@Override
+	public void setFooterDividersEnabled(boolean footerDividersEnabled) {
+		super.setFooterDividersEnabled(footerDividersEnabled);
+		this.mFooterDividersEnabled = footerDividersEnabled;
+
+		updateFooterViews();
+	}
+
+	@Override
 	public void addHeaderView(View v, Object data, boolean isSelectable) {
 		if (mHeaderWrapperViews == null) {
 			mHeaderWrapperViews = new ArrayList<WrapperView>();
@@ -147,7 +166,8 @@ class WrapperViewList extends ListView {
 	@Override
 	public boolean removeHeaderView(View v) {
 		WrapperView wv = getWrapperViewByItem(mHeaderWrapperViews, v);
-		if (super.removeHeaderView(wv)) {
+		if (wv != null) {
+			super.removeHeaderView(wv);
 			mHeaderWrapperViews.remove(wv);
 			updateHeaderViews();
 			return true;
@@ -158,7 +178,7 @@ class WrapperViewList extends ListView {
 	private void updateHeaderViews() {
 		for (int i = 0; i < getHeaderViewsCount(); i++) {
 			WrapperView wv = mHeaderWrapperViews.get(i);
-			if (i == 0) {
+			if (i == 0 || !mHeaderDividersEnabled) {
 				wv.update(wv.getItem(), null, null, 0);
 			} else {
 				wv.update(wv.getItem(), null, mDivider, mDividerHeight);
@@ -172,20 +192,34 @@ class WrapperViewList extends ListView {
 			mFooterWrapperViews = new ArrayList<WrapperView>();
 		}
 
-		WrapperView wv = new WrapperView(getContext());
-		wv.update(v, null, mDivider, mDividerHeight);
+		WrapperView wv = new WrapperView(getContext(), v);
 		super.addFooterView(wv, data, isSelectable);
 		mFooterWrapperViews.add(wv);
+
+        updateFooterViews();
 	}
 
 	@Override
 	public boolean removeFooterView(View v) {
 		WrapperView wv = getWrapperViewByItem(mFooterWrapperViews, v);
-		if (super.removeFooterView(wv)) {
+		if (wv != null) {
+			super.removeFooterView(wv);
 			mFooterWrapperViews.remove(wv);
+			// no need to update dividers
 			return true;
 		}
 		return false;
+	}
+
+	private void updateFooterViews() {
+		for (int i = 0; i < getFooterViewsCount(); i++) {
+			WrapperView wv = mFooterWrapperViews.get(i);
+			if (!mFooterDividersEnabled) {
+				wv.update(wv.getItem(), null, null, 0);
+			} else {
+				wv.update(wv.getItem(), null, mDivider, mDividerHeight);
+			}
+		}
 	}
 
 	static WrapperView getWrapperViewByItem(List<WrapperView> wrapperViewList, View item) {

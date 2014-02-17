@@ -53,10 +53,14 @@ public class TestActivity extends ActionBarActivity implements
         stickyList.addHeaderView(headerView);
         stickyList.removeHeaderView(headerView);
         stickyList.addHeaderView(headerView);
+        headerView = getLayoutInflater().inflate(R.layout.list_header, null);
+        stickyList.addHeaderView(headerView);
 
         View footerView = getLayoutInflater().inflate(R.layout.list_footer, null);
         stickyList.addFooterView(footerView);
         stickyList.removeFooterView(footerView);
+        stickyList.addFooterView(footerView);
+        footerView = getLayoutInflater().inflate(R.layout.list_footer, null);
         stickyList.addFooterView(footerView);
 
         stickyList.setEmptyView(findViewById(R.id.empty));

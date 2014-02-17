@@ -18,7 +18,9 @@
                 android:padding="16dp"
                 android:scrollbarStyle="outsideOverlay"
                 android:fastScrollEnabled="true"
-            android:overScrollMode="never"/>
+                android:headerDividersEnabled="false"
+                android:footerDividersEnabled="true"
+                android:overScrollMode="never"/>
 
         <TextView
                 android:id="@+id/empty"
