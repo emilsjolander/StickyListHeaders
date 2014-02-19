@@ -18,7 +18,7 @@
                 android:padding="16dp"
                 android:scrollbarStyle="outsideOverlay"
                 android:fastScrollEnabled="true"
-                android:headerDividersEnabled="false"
+                android:headerDividersEnabled="true"
                 android:footerDividersEnabled="true"
                 android:overScrollMode="never"/>
 
@@ -45,7 +45,7 @@
 
         <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 
             <se.emilsjolander.stickylistheaders.views.UnderlineTextView
@@ -111,6 +111,20 @@
                 android:layout_height="wrap_content"
                 android:text="@string/fast_scroll"
                 android:id="@+id/fast_scroll_checkBox"
+                android:checked="true"/>
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/header_dividers"
+                android:id="@+id/header_dividers_checkBox"
+                android:checked="true"/>
+
+            <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/footer_dividers"
+                android:id="@+id/footer_dividers_checkBox"
                 android:checked="true"/>
         </LinearLayout>
     </ScrollView>

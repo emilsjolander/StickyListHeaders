@@ -35,6 +35,8 @@ public class TestActivity extends ActionBarActivity implements
     private CheckBox fadeCheckBox;
     private CheckBox drawBehindCheckBox;
     private CheckBox fastScrollCheckBox;
+    private CheckBox headerDividersCheckBox;
+    private CheckBox footerDividersCheckBox;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -99,6 +101,10 @@ public class TestActivity extends ActionBarActivity implements
         drawBehindCheckBox.setOnCheckedChangeListener(checkBoxListener);
         fastScrollCheckBox = (CheckBox) findViewById(R.id.fast_scroll_checkBox);
         fastScrollCheckBox.setOnCheckedChangeListener(checkBoxListener);
+        headerDividersCheckBox = (CheckBox) findViewById(R.id.header_dividers_checkBox);
+        headerDividersCheckBox.setOnCheckedChangeListener(checkBoxListener);
+        footerDividersCheckBox = (CheckBox) findViewById(R.id.footer_dividers_checkBox);
+        footerDividersCheckBox.setOnCheckedChangeListener(checkBoxListener);
     }
 
     @Override
@@ -140,6 +146,12 @@ public class TestActivity extends ActionBarActivity implements
                 case R.id.fast_scroll_checkBox:
                     stickyList.setFastScrollEnabled(isChecked);
                     stickyList.setFastScrollAlwaysVisible(isChecked);
+                    break;
+                case R.id.header_dividers_checkBox:
+                    stickyList.setHeaderDividersEnabled(isChecked);
+                    break;
+                case R.id.footer_dividers_checkBox:
+                    stickyList.setFooterDividersEnabled(isChecked);
                     break;
             }
         }
