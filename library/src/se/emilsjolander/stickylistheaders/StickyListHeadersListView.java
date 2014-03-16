@@ -267,7 +267,9 @@ public class StickyListHeadersListView extends FrameLayout {
         // The header should be drawn right after the lists children are drawn.
         // This is done so that the header is above the list items
         // but below the list decorators (scroll bars etc).
-        drawChild(canvas, mList, 0);
+        if (mList.getVisibility() == VISIBLE || mList.getAnimation() != null) {
+            drawChild(canvas, mList, 0);
+        }
     }
 
     // Reset values tied the header. also remove header form layout
