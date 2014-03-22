@@ -124,6 +124,7 @@ public class StickyListHeadersListView extends FrameLayout {
         mDividerHeight = mList.getDividerHeight();
         mList.setDivider(null);
         mList.setDividerHeight(0);
+        mList.setListDivider(mDivider, mDividerHeight);
 
         if (attrs != null) {
             TypedArray a = context.getTheme().obtainStyledAttributes(attrs,R.styleable.StickyListHeadersListView, 0, 0);
@@ -199,6 +200,11 @@ public class StickyListHeadersListView extends FrameLayout {
 
                 mDividerHeight = a.getDimensionPixelSize(R.styleable.StickyListHeadersListView_android_dividerHeight,
                         mDividerHeight);
+
+                mList.setListDivider(mDivider, mDividerHeight);
+
+                mList.setHeaderDividersEnabled(a.getBoolean(R.styleable.StickyListHeadersListView_android_headerDividersEnabled, true));
+                mList.setFooterDividersEnabled(a.getBoolean(R.styleable.StickyListHeadersListView_android_footerDividersEnabled, true));
 
                 // -- StickyListHeaders attributes --
                 mAreHeadersSticky = a.getBoolean(R.styleable.StickyListHeadersListView_hasStickyHeaders, true);
@@ -663,6 +669,7 @@ public class StickyListHeadersListView extends FrameLayout {
 
     public void setDivider(Drawable divider) {
         mDivider = divider;
+        mList.setListDivider(mDivider, mDividerHeight);
         if (mAdapter != null) {
             mAdapter.setDivider(mDivider, mDividerHeight);
         }
@@ -670,6 +677,7 @@ public class StickyListHeadersListView extends FrameLayout {
 
     public void setDividerHeight(int dividerHeight) {
         mDividerHeight = dividerHeight;
+        mList.setListDivider(mDivider, mDividerHeight);
         if (mAdapter != null) {
             mAdapter.setDivider(mDivider, mDividerHeight);
         }
@@ -681,6 +689,14 @@ public class StickyListHeadersListView extends FrameLayout {
 
     public int getDividerHeight() {
         return mDividerHeight;
+    }
+
+    public void setHeaderDividersEnabled(boolean headerDividersEnabled) {
+        mList.setHeaderDividersEnabled(headerDividersEnabled);
+    }
+
+    public void setFooterDividersEnabled(boolean footerDividersEnabled) {
+        mList.setFooterDividersEnabled(footerDividersEnabled);
     }
 
     public void setOnScrollListener(OnScrollListener onScrollListener) {
@@ -727,6 +743,10 @@ public class StickyListHeadersListView extends FrameLayout {
 
     public void addFooterView(View v) {
         mList.addFooterView(v);
+    }
+
+    public void addFooterView(View v, Object data, boolean isSelectable) {
+        mList.addFooterView(v, data, isSelectable);
     }
 
     public void removeFooterView(View v) {

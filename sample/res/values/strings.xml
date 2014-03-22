@@ -16,5 +16,7 @@
     <string name="fade_header">Fade header</string>
     <string name="draw_behind_header">Draw behind header</string>
     <string name="fast_scroll">Fast scroll</string>
+    <string name="header_dividers">Header dividers</string>
+    <string name="footer_dividers">Footer dividers</string>
 
 </resources>
