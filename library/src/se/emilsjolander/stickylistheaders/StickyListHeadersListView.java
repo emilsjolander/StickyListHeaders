@@ -200,6 +200,9 @@ public class StickyListHeadersListView extends FrameLayout {
                 mDividerHeight = a.getDimensionPixelSize(R.styleable.StickyListHeadersListView_android_dividerHeight,
                         mDividerHeight);
 
+                mList.setTranscriptMode(a.getInt(R.styleable.StickyListHeadersListView_android_transcriptMode,
+                        ListView.TRANSCRIPT_MODE_DISABLED));
+
                 // -- StickyListHeaders attributes --
                 mAreHeadersSticky = a.getBoolean(R.styleable.StickyListHeadersListView_hasStickyHeaders, true);
                 mIsDrawingListUnderStickyHeader = a.getBoolean(
@@ -1036,6 +1039,10 @@ public class StickyListHeadersListView extends FrameLayout {
     @Override
     public boolean canScrollVertically(int direction) {
         return mList.canScrollVertically(direction);
+    }
+
+    public void setTranscriptMode (int mode) {
+        mList.setTranscriptMode(mode);
     }
 
 }
