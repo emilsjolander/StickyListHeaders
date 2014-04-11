@@ -544,7 +544,7 @@ public class StickyListHeadersListView extends FrameLayout {
         return 0;
     }
 
-	/* ---------- StickyListHeaders specific API ---------- */
+    /* ---------- StickyListHeaders specific API ---------- */
 
     public void setAreHeadersSticky(boolean areHeadersSticky) {
         mAreHeadersSticky = areHeadersSticky;
@@ -1031,4 +1031,11 @@ public class StickyListHeadersListView extends FrameLayout {
         super.onRestoreInstanceState(BaseSavedState.EMPTY_STATE);
         mList.onRestoreInstanceState(state);
     }
+
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+    @Override
+    public boolean canScrollVertically(int direction) {
+        return mList.canScrollVertically(direction);
+    }
+
 }

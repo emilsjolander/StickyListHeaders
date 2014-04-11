@@ -9,7 +9,12 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-        <se.emilsjolander.stickylistheaders.StickyListHeadersListView
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <se.emilsjolander.stickylistheaders.StickyListHeadersListView
                 android:id="@+id/list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -18,7 +23,9 @@
                 android:padding="16dp"
                 android:scrollbarStyle="outsideOverlay"
                 android:fastScrollEnabled="true"
-            android:overScrollMode="never"/>
+                android:overScrollMode="never"/>
+
+        </android.support.v4.widget.SwipeRefreshLayout>
 
         <TextView
                 android:id="@+id/empty"

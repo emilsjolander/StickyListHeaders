@@ -4,15 +4,20 @@ import android.annotation.TargetApi;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.*;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.Toast;
 
-import se.emilsjolander.stickylistheaders.R;
 import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 /**
@@ -29,6 +34,7 @@ public class TestActivity extends ActionBarActivity implements
     private boolean fadeHeader = true;
 
     private StickyListHeadersListView stickyList;
+    private SwipeRefreshLayout refreshLayout;
 
     private Button restoreButton;
     private Button updateButton;
@@ -43,6 +49,19 @@ public class TestActivity extends ActionBarActivity implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        refreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshLayout.setRefreshing(false);
+                    }
+                }, 1000);
+            }
+        });
 
         mAdapter = new TestBaseAdapter(this);
 
