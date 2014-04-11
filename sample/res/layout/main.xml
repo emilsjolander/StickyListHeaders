@@ -46,7 +46,7 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-            <se.emilsjolander.stickylistheaders.views.UnderlineTextView
+            <se.emilsjolander.stickylistheaders.sample.views.UnderlineTextView
                     style="@style/MenuSectionHeader"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
                     android:id="@+id/clear_button"
                     android:text="@string/clear_list"/>
 
-            <se.emilsjolander.stickylistheaders.views.UnderlineTextView
+            <se.emilsjolander.stickylistheaders.sample.views.UnderlineTextView
                     style="@style/MenuSectionHeader"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

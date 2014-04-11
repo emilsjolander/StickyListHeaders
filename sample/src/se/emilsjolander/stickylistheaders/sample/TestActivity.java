@@ -1,4 +1,4 @@
-package se.emilsjolander.stickylistheaders;
+package se.emilsjolander.stickylistheaders.sample;
 
 import android.annotation.TargetApi;
 import android.content.res.Configuration;
@@ -11,6 +11,9 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.*;
+
+import se.emilsjolander.stickylistheaders.R;
+import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 
 /**
  * @author Emil Sjölander

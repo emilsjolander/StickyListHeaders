@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="se.emilsjolander.stickylistheaders"
+    package="se.emilsjolander.stickylistheaders.sample"
     android:versionCode="2"
     android:versionName="2.0">
 

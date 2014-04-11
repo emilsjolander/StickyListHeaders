@@ -1,4 +1,4 @@
-package se.emilsjolander.stickylistheaders;
+package se.emilsjolander.stickylistheaders.sample;
 
 import java.util.ArrayList;
 
@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
+
+import se.emilsjolander.stickylistheaders.R;
+import se.emilsjolander.stickylistheaders.StickyListHeadersAdapter;
 
 /**
  * @author Emil Sjölander

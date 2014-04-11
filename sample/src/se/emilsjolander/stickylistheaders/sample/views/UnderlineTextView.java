@@ -1,4 +1,4 @@
-package se.emilsjolander.stickylistheaders.views;
+package se.emilsjolander.stickylistheaders.sample.views;
 
 import android.content.Context;
 import android.content.res.Resources;
