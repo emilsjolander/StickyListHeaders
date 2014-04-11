@@ -528,13 +528,11 @@ public class StickyListHeadersListView extends FrameLayout {
     }
 
     private boolean isStartOfSection(int position) {
-        return position == 0
-                || mAdapter.getHeaderId(position) != mAdapter
-                .getHeaderId(position - 1);
+        return position == 0 || mAdapter.getHeaderId(position) != mAdapter.getHeaderId(position - 1);
     }
 
     private int getHeaderOverlap(int position) {
-        boolean isStartOfSection = isStartOfSection(position);
+        boolean isStartOfSection = isStartOfSection(Math.max(0, position - getHeaderViewsCount()));
         if (!isStartOfSection) {
             View header = mAdapter.getHeaderView(position, null, mList);
             if (header == null) {
@@ -871,10 +869,12 @@ public class StickyListHeadersListView extends FrameLayout {
         return mList.getLastVisiblePosition();
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void setChoiceMode(int choiceMode) {
         mList.setChoiceMode(choiceMode);
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void setItemChecked(int position, boolean value) {
         mList.setItemChecked(position, value);
     }
@@ -895,10 +895,12 @@ public class StickyListHeadersListView extends FrameLayout {
         return null;
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public int getCheckedItemPosition() {
         return mList.getCheckedItemPosition();
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public SparseBooleanArray getCheckedItemPositions() {
         return mList.getCheckedItemPositions();
     }
