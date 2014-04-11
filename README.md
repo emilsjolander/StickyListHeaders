@@ -17,6 +17,16 @@ The goal of this project is to deliver a high performance replacement to `ListVi
 
 Installing
 ---------------
+###Maven
+Add the following maven dependency exchanging `x.x.x` for the latest release.
+```XML
+<dependency>
+    <groupId>se.emilsjolander</groupId>
+    <artifactId>stickylistheaders</artifactId>
+    <version>x.x.x</version>
+</dependency>
+```
+
 ###Gradle
 Add the following gradle dependency exchanging `x.x.x` for the latest release.
 ```groovy
