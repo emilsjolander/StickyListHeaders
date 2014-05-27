@@ -100,7 +100,11 @@ public class WrapperView extends ViewGroup {
 		
 		//measure item
 		ViewGroup.LayoutParams params = mItem.getLayoutParams();
-		if (params != null && params.height > 0) {
+        //enable hiding listview item,ex. toggle off items in group
+		if(mItem.getVisibility()==View.GONE){
+            mItem.measure(childWidthMeasureSpec,
+                    MeasureSpec.makeMeasureSpec(0, MeasureSpec.EXACTLY));
+        }else if (params != null && params.height >= 0) {
 			mItem.measure(childWidthMeasureSpec,
 					MeasureSpec.makeMeasureSpec(params.height, MeasureSpec.EXACTLY));
 		} else {
