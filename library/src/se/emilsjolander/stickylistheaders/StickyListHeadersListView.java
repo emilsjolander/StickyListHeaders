@@ -230,10 +230,11 @@ public class StickyListHeadersListView extends FrameLayout {
         ViewGroup.LayoutParams lp = header.getLayoutParams();
         if (lp == null) {
             lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+            header.setLayoutParams(lp);
         } else if (lp.height == LayoutParams.MATCH_PARENT) {
             lp.height = LayoutParams.WRAP_CONTENT;
+            header.setLayoutParams(lp);
         }
-        header.setLayoutParams(lp);
     }
 
     private void measureHeader(View header) {
