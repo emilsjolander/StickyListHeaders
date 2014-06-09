@@ -737,6 +737,10 @@ public class StickyListHeadersListView extends FrameLayout {
         return mList.getHeaderViewsCount();
     }
 
+    public void addFooterView(View v, Object data, boolean isSelectable) {
+        mList.addFooterView(v, data, isSelectable);
+    }
+
     public void addFooterView(View v) {
         mList.addFooterView(v);
     }
