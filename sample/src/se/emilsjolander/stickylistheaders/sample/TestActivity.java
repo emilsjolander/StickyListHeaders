@@ -9,9 +9,12 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -26,12 +29,16 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 public class TestActivity extends ActionBarActivity implements
         AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener,
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
+        StickyListHeadersListView.OnStickyHeaderScrollOffsetChangedListener,
         StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener {
 
     private TestBaseAdapter mAdapter;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private boolean fadeHeader = true;
+    private boolean resizeHeader = false;
+    private int headerHeight;
+    private int headerHeightResize;
 
     private StickyListHeadersListView stickyList;
     private SwipeRefreshLayout refreshLayout;
@@ -42,6 +49,7 @@ public class TestActivity extends ActionBarActivity implements
 
     private CheckBox stickyCheckBox;
     private CheckBox fadeCheckBox;
+    private CheckBox resizeCheckBox;
     private CheckBox drawBehindCheckBox;
     private CheckBox fastScrollCheckBox;
 
@@ -64,12 +72,15 @@ public class TestActivity extends ActionBarActivity implements
         });
 
         mAdapter = new TestBaseAdapter(this);
+        headerHeight = (int) ((40 * getResources().getDisplayMetrics().density) + 0.5);
+        headerHeightResize = (int) ((90 * getResources().getDisplayMetrics().density) + 0.5);
 
         stickyList = (StickyListHeadersListView) findViewById(R.id.list);
         stickyList.setOnItemClickListener(this);
         stickyList.setOnHeaderClickListener(this);
         stickyList.setOnStickyHeaderChangedListener(this);
         stickyList.setOnStickyHeaderOffsetChangedListener(this);
+        stickyList.setOnStickyHeaderScrollOffsetChangedListener(this);
         stickyList.addHeaderView(getLayoutInflater().inflate(R.layout.list_header, null));
         stickyList.addFooterView(getLayoutInflater().inflate(R.layout.list_footer, null));
         stickyList.setEmptyView(findViewById(R.id.empty));
@@ -104,6 +115,8 @@ public class TestActivity extends ActionBarActivity implements
         stickyCheckBox.setOnCheckedChangeListener(checkBoxListener);
         fadeCheckBox = (CheckBox) findViewById(R.id.fade_checkBox);
         fadeCheckBox.setOnCheckedChangeListener(checkBoxListener);
+        resizeCheckBox = (CheckBox) findViewById(R.id.resize_checkBox);
+        resizeCheckBox.setOnCheckedChangeListener(checkBoxListener);
         drawBehindCheckBox = (CheckBox) findViewById(R.id.draw_behind_checkBox);
         drawBehindCheckBox.setOnCheckedChangeListener(checkBoxListener);
         fastScrollCheckBox = (CheckBox) findViewById(R.id.fast_scroll_checkBox);
@@ -145,6 +158,10 @@ public class TestActivity extends ActionBarActivity implements
                     break;
                 case R.id.fade_checkBox:
                     fadeHeader = isChecked;
+                    break;
+                case R.id.resize_checkBox:
+                    resizeHeader = isChecked;
+                    mAdapter.notifyDataSetInvalidated();
                     break;
                 case R.id.draw_behind_checkBox:
                     stickyList.setDrawingListUnderStickyHeader(isChecked);
@@ -191,8 +208,29 @@ public class TestActivity extends ActionBarActivity implements
     @Override
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void onStickyHeaderOffsetChanged(StickyListHeadersListView l, View header, int offset) {
+        // Ensure resized header starts small as it comes back into view.
+        if (resizeHeader && offset > 0) {
+            ViewGroup.LayoutParams lp = header.getLayoutParams();
+            lp.height = headerHeight;
+            header.setLayoutParams(lp);
+        }
+
         if (fadeHeader && Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             header.setAlpha(1 - (offset / (float) header.getMeasuredHeight()));
+        }
+    }
+
+    @Override
+    public void onStickyHeaderScrollOffsetChanged(StickyListHeadersListView l, View header, int offset) {
+        // Resize header from headerHeightResize to headerHeight as it starts scrolling in the fixed position.
+        if (resizeHeader) {
+            int height = headerHeightResize + offset;
+            height = Math.max(headerHeight, height);
+            height = Math.min(headerHeightResize, height);
+
+            ViewGroup.LayoutParams lp = header.getLayoutParams();
+            lp.height = height;
+            header.setLayoutParams(lp);
         }
     }
 
