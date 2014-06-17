@@ -194,6 +194,15 @@ public interface OnStickyHeaderOffsetChangedListener {
 }
 ```
 
+A `OnStickyHeaderScrollOffsetChangedListener` is a Listener used for listening to when the sticky header's position relative to it's default flow position in the list view changes. The offset parameter will be 0 when the header first becomes the top fixed sticky header, will become negative as the scroll view scrolls down indicating how far the sticky header has remained sticky, and will become positive as the scroll view scrolls up indicating how far a header is from becoming sticky. Use the listener's callback to transform the header in any way you see fit, for example resizing the header as it first becomes sticky down to a collapsed minimum size.
+```java
+public void setOnStickyHeaderScrollOffsetChangedListener(OnStickyHeaderScrollOffsetChangedListener listener);
+
+public interface OnStickyHeaderScrollOffsetChangedListener {
+    public void onStickyHeaderScrollOffsetChanged(StickyListHeadersListView l, View header, int offset);
+}
+```
+
 A `OnStickyHeaderChangedListener` listens for changes to the header.  This enables UI elements elsewhere to react to the current header (e.g. if each header is a date, then the rest of the UI can update when you scroll to a new date).
 ```java
 public void setOnStickyHeaderChangedListener(OnStickyHeaderChangedListener listener);
