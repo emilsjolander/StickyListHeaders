@@ -362,7 +362,7 @@ public class StickyListHeadersListView extends FrameLayout {
             }
         }
 
-        setHeaderOffet(headerOffset);
+        setHeaderOffset(headerOffset);
 
         if (!mIsDrawingListUnderStickyHeader) {
             mList.setTopClippingLength(mHeader.getMeasuredHeight()
@@ -433,7 +433,7 @@ public class StickyListHeadersListView extends FrameLayout {
     // Wrapper around setting the header offset in different ways depending on
     // the API version
     @SuppressLint("NewApi")
-    private void setHeaderOffet(int offset) {
+    private void setHeaderOffset(int offset) {
         if (mHeaderOffset == null || mHeaderOffset != offset) {
             mHeaderOffset = offset;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
