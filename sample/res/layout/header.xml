@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/header_selector" >
 
-    <se.emilsjolander.stickylistheaders.sample.views.UnderlineTextView
+    <TextView
         android:id="@+id/text1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
