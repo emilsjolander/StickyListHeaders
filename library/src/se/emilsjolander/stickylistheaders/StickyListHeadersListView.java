@@ -50,7 +50,7 @@ public class StickyListHeadersListView extends FrameLayout {
          * @param header The currently sticky header being offset.
          *               This header is not guaranteed to have it's measurements set.
          *               It is however guaranteed that this view has been measured,
-         *               therefor you should user getMeasured* methods instead of
+         *               therefore you should user getMeasured* methods instead of
          *               get* methods for determining the view's size.
          * @param offset The amount the sticky header is offset by towards to top of the screen.
          */
@@ -66,7 +66,7 @@ public class StickyListHeadersListView extends FrameLayout {
          * @param header The currently sticky header being offset.
          *               This header is not guaranteed to have it's measurements set.
          *               It is however guaranteed that this view has been measured,
-         *               therefor you should user getMeasured* methods instead of
+         *               therefore you should user getMeasured* methods instead of
          *               get* methods for determining the view's size.
          * @param offset The amount the sticky header is scrolled from it's original top fixed position.
          */
@@ -534,7 +534,7 @@ public class StickyListHeadersListView extends FrameLayout {
         @Override
         public void onDispatchDrawOccurred(Canvas canvas) {
             // onScroll is not called often at all before froyo
-            // therefor we need to update the header here as well.
+            // therefore we need to update the header here as well.
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
                 updateOrClearHeader(mList.getFixedFirstVisibleItem());
             }
