@@ -50,11 +50,27 @@ public class StickyListHeadersListView extends FrameLayout {
          * @param header The currently sticky header being offset.
          *               This header is not guaranteed to have it's measurements set.
          *               It is however guaranteed that this view has been measured,
-         *               therefor you should user getMeasured* methods instead of
+         *               therefore you should user getMeasured* methods instead of
          *               get* methods for determining the view's size.
          * @param offset The amount the sticky header is offset by towards to top of the screen.
          */
         void onStickyHeaderOffsetChanged(StickyListHeadersListView l, View header, int offset);
+    }
+
+    /**
+     * Notifies the listener when the sticky header's scroll offset has changed.
+     */
+    public interface OnStickyHeaderScrollOffsetChangedListener {
+        /**
+         * @param l      The view parent
+         * @param header The currently sticky header being offset.
+         *               This header is not guaranteed to have it's measurements set.
+         *               It is however guaranteed that this view has been measured,
+         *               therefore you should user getMeasured* methods instead of
+         *               get* methods for determining the view's size.
+         * @param offset The amount the sticky header is scrolled from it's original top fixed position.
+         */
+        void onStickyHeaderScrollOffsetChanged(StickyListHeadersListView l, View header, int offset);
     }
 
     /**
@@ -100,6 +116,7 @@ public class StickyListHeadersListView extends FrameLayout {
     /* --- Other --- */
     private OnHeaderClickListener mOnHeaderClickListener;
     private OnStickyHeaderOffsetChangedListener mOnStickyHeaderOffsetChangedListener;
+    private OnStickyHeaderScrollOffsetChangedListener mOnStickyHeaderScrollOffsetChangedListener;
     private OnStickyHeaderChangedListener mOnStickyHeaderChangedListener;
     private AdapterWrapperDataSetObserver mDataSetObserver;
     private Drawable mDivider;
@@ -293,6 +310,8 @@ public class StickyListHeadersListView extends FrameLayout {
             return;
         }
 
+        updateHeaderScrollOffsets();
+
         final int headerViewCount = mList.getHeaderViewsCount();
         int headerPosition = firstVisiblePosition - headerViewCount;
         if (mList.getChildCount() > 0) {
@@ -362,7 +381,7 @@ public class StickyListHeadersListView extends FrameLayout {
             }
         }
 
-        setHeaderOffet(headerOffset);
+        setHeaderOffset(headerOffset);
 
         if (!mIsDrawingListUnderStickyHeader) {
             mList.setTopClippingLength(mHeader.getMeasuredHeight()
@@ -430,10 +449,35 @@ public class StickyListHeadersListView extends FrameLayout {
         }
     }
 
+    // Allow consumers to modify header behavior on scroll.
+    private void updateHeaderScrollOffsets() {
+        // Short-circuit if no listener exists, to avoid doing work on scroll unless necessary.
+        if (mOnStickyHeaderScrollOffsetChangedListener == null) {
+            return;
+        }
+
+        boolean foundMHeader = false;
+        for (int i = 0; i < mList.getChildCount(); i++) {
+            final View child = mList.getChildAt(i);
+            final boolean doesChildHaveHeader = child instanceof WrapperView && ((WrapperView) child).hasHeader();
+            final boolean isChildFooter = mList.containsFooterView(child);
+
+            if (doesChildHaveHeader || isChildFooter) {
+                int headerScrollOffset = child.getTop() - stickyHeaderTop();
+                View header = ((WrapperView) child).getHeader();
+                if (child.getTop() <= stickyHeaderTop() && mHeader != null && !foundMHeader) {
+                    header = mHeader;
+                    foundMHeader = true;
+                }
+                mOnStickyHeaderScrollOffsetChangedListener.onStickyHeaderScrollOffsetChanged(this, header, headerScrollOffset);
+            }
+        }
+    }
+
     // Wrapper around setting the header offset in different ways depending on
     // the API version
     @SuppressLint("NewApi")
-    private void setHeaderOffet(int offset) {
+    private void setHeaderOffset(int offset) {
         if (mHeaderOffset == null || mHeaderOffset != offset) {
             mHeaderOffset = offset;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -490,7 +534,7 @@ public class StickyListHeadersListView extends FrameLayout {
         @Override
         public void onDispatchDrawOccurred(Canvas canvas) {
             // onScroll is not called often at all before froyo
-            // therefor we need to update the header here as well.
+            // therefore we need to update the header here as well.
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
                 updateOrClearHeader(mList.getFixedFirstVisibleItem());
             }
@@ -605,6 +649,10 @@ public class StickyListHeadersListView extends FrameLayout {
 
     public void setOnStickyHeaderOffsetChangedListener(OnStickyHeaderOffsetChangedListener listener) {
         mOnStickyHeaderOffsetChangedListener = listener;
+    }
+
+    public void setOnStickyHeaderScrollOffsetChangedListener(OnStickyHeaderScrollOffsetChangedListener listener) {
+        mOnStickyHeaderScrollOffsetChangedListener = listener;
     }
 
     public void setOnStickyHeaderChangedListener(OnStickyHeaderChangedListener listener) {
