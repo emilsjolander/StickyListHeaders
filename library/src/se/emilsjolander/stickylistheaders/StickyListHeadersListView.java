@@ -308,7 +308,7 @@ public class StickyListHeadersListView extends FrameLayout {
         final boolean doesListHaveChildren = mList.getChildCount() != 0;
         final boolean isFirstViewBelowTop = doesListHaveChildren
                 && mList.getFirstVisiblePosition() == 0
-                && mList.getChildAt(0).getTop() > stickyHeaderTop();
+                && mList.getChildAt(0).getTop() >= stickyHeaderTop();
         final boolean isHeaderPositionOutsideAdapterRange = headerPosition > adapterCount - 1
                 || headerPosition < 0;
         if (!doesListHaveChildren || isHeaderPositionOutsideAdapterRange || isFirstViewBelowTop) {
