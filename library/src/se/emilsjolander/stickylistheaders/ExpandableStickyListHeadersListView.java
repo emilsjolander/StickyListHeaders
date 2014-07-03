@@ -9,25 +9,23 @@ import java.util.WeakHashMap;
 
 /**
  * add expand/collapse functions like ExpandableListView
- * provide customizable expand/collapse animation
  * @author lsjwzh
  */
 public class ExpandableStickyListHeadersListView extends StickyListHeadersListView {
     public interface IAnimationExecutor{
-        public void executeAnim(View target,int animType,int viewHeight);
+        public void executeAnim(View target,int animType);
     }
 
     public final static int ANIMATION_COLLAPSE = 1;
     public final static int ANIMATION_EXPAND = 0;
 
-    WeakHashMap<View,Integer> mOriginalViewHeight = new WeakHashMap<View, Integer>();
     ExpandableStickyListHeadersAdapter mExpandableStickyListHeadersAdapter;
 
 
 
-    IAnimationExecutor mAnimExecutor = new IAnimationExecutor() {
+    IAnimationExecutor mDefaultAnimExecutor = new IAnimationExecutor() {
         @Override
-        public void executeAnim(View target, int animType, int viewHeight) {
+        public void executeAnim(View target, int animType) {
             if(animType==ANIMATION_EXPAND){
                 target.setVisibility(VISIBLE);
             }else if(animType==ANIMATION_COLLAPSE){
@@ -98,7 +96,7 @@ public class ExpandableStickyListHeadersListView extends StickyListHeadersListVi
     }
 
     public void setAnimExecutor(IAnimationExecutor animExecutor) {
-        this.mAnimExecutor = animExecutor;
+        this.mDefaultAnimExecutor = animExecutor;
     }
 
     /**
@@ -115,12 +113,8 @@ public class ExpandableStickyListHeadersListView extends StickyListHeadersListVi
         if(ANIMATION_COLLAPSE==type&&target.getVisibility()!=VISIBLE){
             return;
         }
-        if(mOriginalViewHeight.get(target)==null){
-            mOriginalViewHeight.put(target,target.getLayoutParams().height);
-        }
-        final int viewHeight = mOriginalViewHeight.get(target);
-        if(mAnimExecutor!=null){
-            mAnimExecutor.executeAnim(target,type,viewHeight);
+        if(mDefaultAnimExecutor !=null){
+            mDefaultAnimExecutor.executeAnim(target,type);
         }
 
     }
