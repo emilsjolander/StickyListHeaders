@@ -60,7 +60,12 @@
                     android:layout_gravity="start|left"
                     android:text="@string/actions"
                     android:textStyle="bold"/>
-
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="left|center_vertical"
+                android:text="@string/open_expandable_list"
+                android:id="@+id/open_expandable_list_button"/>
             <Button
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
