@@ -215,6 +215,12 @@ public void setDrawingListUnderStickyHeader(boolean drawingListUnderStickyHeader
 public boolean isDrawingListUnderStickyHeader();
 ```
 
+If you are using a transparent action bar the following getter+setter will be very helpful. Use them to set the position of the sticky header from the top of the view.
+```java
+public void setStickyHeaderTopOffset(int stickyHeaderTopOffset);
+public int getStickyHeaderTopOffset();
+```
+
 Contributing
 ------------
 Contributions are very welcome. Now that this library has grown in popularity i have a hard time keeping upp with all the issues while tending to a multitude of other projects as well as school. So if you find a bug in the library or want a feature and think you can fix it yourself, fork + pull request and i will greatly appreciate it!
