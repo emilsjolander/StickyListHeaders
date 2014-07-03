@@ -10,7 +10,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -26,7 +25,7 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
 public class TestActivity extends ActionBarActivity implements
         AdapterView.OnItemClickListener, StickyListHeadersListView.OnHeaderClickListener,
         StickyListHeadersListView.OnStickyHeaderOffsetChangedListener,
-        StickyListHeadersListView.OnStickyHeaderChangedListener, View.OnTouchListener {
+        StickyListHeadersListView.OnStickyHeaderChangedListener {
 
     private TestBaseAdapter mAdapter;
     private DrawerLayout mDrawerLayout;
@@ -76,7 +75,6 @@ public class TestActivity extends ActionBarActivity implements
         stickyList.setDrawingListUnderStickyHeader(true);
         stickyList.setAreHeadersSticky(true);
         stickyList.setAdapter(mAdapter);
-        stickyList.setOnTouchListener(this);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(
@@ -128,7 +126,6 @@ public class TestActivity extends ActionBarActivity implements
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -172,17 +169,13 @@ public class TestActivity extends ActionBarActivity implements
     };
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position,
-                            long id) {
-        Toast.makeText(this, "Item " + position + " clicked!",
-                Toast.LENGTH_SHORT).show();
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Toast.makeText(this, "Item " + position + " clicked!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onHeaderClick(StickyListHeadersListView l, View header,
-                              int itemPosition, long headerId, boolean currentlySticky) {
-        Toast.makeText(this, "Header " + headerId + " currentlySticky ? " + currentlySticky,
-                Toast.LENGTH_SHORT).show();
+    public void onHeaderClick(StickyListHeadersListView l, View header, int itemPosition, long headerId, boolean currentlySticky) {
+        Toast.makeText(this, "Header " + headerId + " currentlySticky ? " + currentlySticky, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -194,16 +187,9 @@ public class TestActivity extends ActionBarActivity implements
     }
 
     @Override
-    public void onStickyHeaderChanged(StickyListHeadersListView l, View header,
-                                      int itemPosition, long headerId) {
-        Toast.makeText(this, "Sticky Header Changed to " + headerId,
-                Toast.LENGTH_SHORT).show();
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public void onStickyHeaderChanged(StickyListHeadersListView l, View header, int itemPosition, long headerId) {
+        header.setAlpha(1);
     }
 
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-        Toast.makeText(this, "OnTouch works", Toast.LENGTH_SHORT).show();
-        v.setOnTouchListener(null);
-        return false;
-    }
 }
