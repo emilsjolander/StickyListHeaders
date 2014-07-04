@@ -10,6 +10,7 @@
     <string name="options">OPTIONS</string>
     <string name="actions">ACTIONS</string>
     <string name="restore_list">Restore list</string>
+    <string name="open_expandable_list">Open expandable list</string>
     <string name="update_list">Update list</string>
     <string name="clear_list">Clear list</string>
     <string name="sticky_header">Sticky header</string>
