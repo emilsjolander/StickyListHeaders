@@ -94,7 +94,7 @@ public class WrapperView extends ViewGroup {
 						MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
 			}
 			measuredHeight += mHeader.getMeasuredHeight();
-		} else if (mDivider != null) {
+		} else if (mDivider != null&&mItem.getVisibility()!=View.GONE) {
 			measuredHeight += mDividerHeight;
 		}
 		
@@ -107,11 +107,13 @@ public class WrapperView extends ViewGroup {
         }else if (params != null && params.height >= 0) {
 			mItem.measure(childWidthMeasureSpec,
 					MeasureSpec.makeMeasureSpec(params.height, MeasureSpec.EXACTLY));
+            measuredHeight += mItem.getMeasuredHeight();
 		} else {
 			mItem.measure(childWidthMeasureSpec,
 					MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+            measuredHeight += mItem.getMeasuredHeight();
 		}
-		measuredHeight += mItem.getMeasuredHeight();
+
 
 		setMeasuredDimension(measuredWidth, measuredHeight);
 	}
@@ -142,7 +144,7 @@ public class WrapperView extends ViewGroup {
 	@Override
 	protected void dispatchDraw(Canvas canvas) {
 		super.dispatchDraw(canvas);
-		if (mHeader == null && mDivider != null) {
+		if (mHeader == null && mDivider != null&&mItem.getVisibility()!=View.GONE) {
 			// Drawable.setBounds() does not seem to work pre-honeycomb. So have
 			// to do this instead
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
