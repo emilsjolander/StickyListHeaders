@@ -397,9 +397,9 @@ public class StickyListHeadersListView extends FrameLayout {
     private void updateHeaderVisibilities() {
         int top;
         if (mHeader != null) {
-            top = mHeader.getMeasuredHeight() + (mHeaderOffset != null ? mHeaderOffset : 0);
+            top = mHeader.getMeasuredHeight() + (mHeaderOffset != null ? mHeaderOffset : 0) + mStickyHeaderTopOffset;
         } else {
-            top = mClippingToPadding ? mPaddingTop : 0;
+            top = stickyHeaderTop();
         }
         int childCount = mList.getChildCount();
         for (int i = 0; i < childCount; i++) {
