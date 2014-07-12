@@ -120,6 +120,10 @@ public class TestBaseAdapter extends BaseAdapter implements
 
     @Override
     public int getPositionForSection(int section) {
+        if (mSectionIndices.length == 0) {
+            return 0;
+        }
+        
         if (section >= mSectionIndices.length) {
             section = mSectionIndices.length - 1;
         } else if (section < 0) {
