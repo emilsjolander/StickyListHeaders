@@ -231,8 +231,9 @@ public class StickyListHeadersListView extends FrameLayout {
         if (lp == null) {
             lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
             header.setLayoutParams(lp);
-        } else if (lp.height == LayoutParams.MATCH_PARENT) {
+        } else if (lp.height == LayoutParams.MATCH_PARENT || lp.width == LayoutParams.WRAP_CONTENT) {
             lp.height = LayoutParams.WRAP_CONTENT;
+            lp.width = LayoutParams.MATCH_PARENT;
             header.setLayoutParams(lp);
         }
     }
