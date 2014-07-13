@@ -6,7 +6,7 @@ import java.util.HashMap;
  * simple two way hashmap
  * @author lsjwzh
  */
-public class DualHashMap<TKey, TValue> {
+class DualHashMap<TKey, TValue> {
     HashMap<TKey, TValue> mKeyToValue = new HashMap<TKey, TValue>();
     HashMap<TValue, TKey> mValueToKey = new HashMap<TValue, TKey>();
 

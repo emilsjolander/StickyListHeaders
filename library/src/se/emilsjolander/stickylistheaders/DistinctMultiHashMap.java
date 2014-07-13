@@ -12,7 +12,7 @@ import java.util.Set;
  *
  * @author lsjwzh
  */
-public class DistinctMultiHashMap<TKey,TItemValue> {
+class DistinctMultiHashMap<TKey,TItemValue> {
     private IDMapper<TKey, TItemValue> mIDMapper;
 
     public interface IDMapper<TKey,TItemValue>{
