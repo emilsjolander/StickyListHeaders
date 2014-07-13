@@ -5,7 +5,6 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import java.util.List;
-import java.util.WeakHashMap;
 
 /**
  * add expand/collapse functions like ExpandableListView
@@ -48,6 +47,11 @@ public class ExpandableStickyListHeadersListView extends StickyListHeadersListVi
     }
 
     @Override
+    public ExpandableStickyListHeadersAdapter getAdapter() {
+        return mExpandableStickyListHeadersAdapter;
+    }
+
+    @Override
     public void setAdapter(StickyListHeadersAdapter adapter) {
         mExpandableStickyListHeadersAdapter = new ExpandableStickyListHeadersAdapter(adapter);
         super.setAdapter(mExpandableStickyListHeadersAdapter);
@@ -61,13 +65,13 @@ public class ExpandableStickyListHeadersListView extends StickyListHeadersListVi
         return mExpandableStickyListHeadersAdapter.findItemIdByView(view);
     }
 
-    public void expand(long groupId) {
-        if(!mExpandableStickyListHeadersAdapter.isGroupCollapsed(groupId)){
+    public void expand(long headerId) {
+        if(!mExpandableStickyListHeadersAdapter.isHeaderCollapsed(headerId)){
             return;
         }
-        mExpandableStickyListHeadersAdapter.expand(groupId);
+        mExpandableStickyListHeadersAdapter.expand(headerId);
         //find and expand views in group
-        List<View> itemViews = mExpandableStickyListHeadersAdapter.getItemViewsByGroup(groupId);
+        List<View> itemViews = mExpandableStickyListHeadersAdapter.getItemViewsByHeaderId(headerId);
         if(itemViews==null){
             return;
         }
@@ -76,13 +80,13 @@ public class ExpandableStickyListHeadersListView extends StickyListHeadersListVi
         }
     }
 
-    public void collapse(long groupId) {
-        if(mExpandableStickyListHeadersAdapter.isGroupCollapsed(groupId)){
+    public void collapse(long headerId) {
+        if(mExpandableStickyListHeadersAdapter.isHeaderCollapsed(headerId)){
             return;
         }
-        mExpandableStickyListHeadersAdapter.collapse(groupId);
-        //find and hide views in group
-        List<View> itemViews = mExpandableStickyListHeadersAdapter.getItemViewsByGroup(groupId);
+        mExpandableStickyListHeadersAdapter.collapse(headerId);
+        //find and hide views with the same header
+        List<View> itemViews = mExpandableStickyListHeadersAdapter.getItemViewsByHeaderId(headerId);
         if(itemViews==null){
             return;
         }
@@ -91,8 +95,8 @@ public class ExpandableStickyListHeadersListView extends StickyListHeadersListVi
         }
     }
 
-    public boolean isGroupCollapsed(long groupId){
-        return  mExpandableStickyListHeadersAdapter.isGroupCollapsed(groupId);
+    public boolean isHeaderCollapsed(long headerId){
+        return  mExpandableStickyListHeadersAdapter.isHeaderCollapsed(headerId);
     }
 
     public void setAnimExecutor(IAnimationExecutor animExecutor) {

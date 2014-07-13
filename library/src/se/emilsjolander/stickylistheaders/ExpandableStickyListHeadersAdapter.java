@@ -12,14 +12,14 @@ import java.util.List;
 /**
  * @author lsjwzh
  */
-public class ExpandableStickyListHeadersAdapter extends BaseAdapter implements StickyListHeadersAdapter {
+ class ExpandableStickyListHeadersAdapter extends BaseAdapter implements StickyListHeadersAdapter {
 
     private final StickyListHeadersAdapter mInnerAdapter;
-    DualHashMap<View,Long> mViewToItemMap = new DualHashMap<View, Long>();
-    DistinctMultiHashMap<Integer,View> mGroupIdToViewMap = new DistinctMultiHashMap<Integer, View>();
-    List<Long> mCollapseGroupIds = new ArrayList<Long>();
+    DualHashMap<View,Long> mViewToItemIdMap = new DualHashMap<View, Long>();
+    DistinctMultiHashMap<Integer,View> mHeaderIdToViewMap = new DistinctMultiHashMap<Integer, View>();
+    List<Long> mCollapseHeaderIds = new ArrayList<Long>();
 
-    public ExpandableStickyListHeadersAdapter(StickyListHeadersAdapter innerAdapter){
+    ExpandableStickyListHeadersAdapter(StickyListHeadersAdapter innerAdapter){
         this.mInnerAdapter = innerAdapter;
     }
 
@@ -76,9 +76,9 @@ public class ExpandableStickyListHeadersAdapter extends BaseAdapter implements S
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         View convertView = mInnerAdapter.getView(i,view,viewGroup);
-        mViewToItemMap.put(convertView,getItemId(i));
-        mGroupIdToViewMap.add((int) getHeaderId(i),convertView);
-        if(mCollapseGroupIds.contains(getHeaderId(i))){
+        mViewToItemIdMap.put(convertView, getItemId(i));
+        mHeaderIdToViewMap.add((int) getHeaderId(i), convertView);
+        if(mCollapseHeaderIds.contains(getHeaderId(i))){
             convertView.setVisibility(View.GONE);
         }else {
             convertView.setVisibility(View.VISIBLE);
@@ -101,31 +101,31 @@ public class ExpandableStickyListHeadersAdapter extends BaseAdapter implements S
         return mInnerAdapter.isEmpty();
     }
 
-    public List<View> getItemViewsByGroup(long groupId){
-        return mGroupIdToViewMap.get((int) groupId);
+    public List<View> getItemViewsByHeaderId(long headerId){
+        return mHeaderIdToViewMap.get((int) headerId);
     }
 
-    public boolean isGroupCollapsed(long groupId){
-        return mCollapseGroupIds.contains(groupId);
+    public boolean isHeaderCollapsed(long headerId){
+        return mCollapseHeaderIds.contains(headerId);
     }
 
-    public void expand(long groupId) {
-        if(isGroupCollapsed(groupId)){
-            mCollapseGroupIds.remove((Object)groupId);
+    public void expand(long headerId) {
+        if(isHeaderCollapsed(headerId)){
+            mCollapseHeaderIds.remove((Object) headerId);
         }
     }
 
-    public void collapse(long groupId) {
-        if(!isGroupCollapsed(groupId)){
-            mCollapseGroupIds.add(groupId);
+    public void collapse(long headerId) {
+        if(!isHeaderCollapsed(headerId)){
+            mCollapseHeaderIds.add(headerId);
         }
     }
 
     public View findViewByItemId(long itemId){
-         return mViewToItemMap.getKey(itemId);
+         return mViewToItemIdMap.getKey(itemId);
     }
 
     public long findItemIdByView(View view){
-        return mViewToItemMap.get(view);
+        return mViewToItemIdMap.get(view);
     }
 }

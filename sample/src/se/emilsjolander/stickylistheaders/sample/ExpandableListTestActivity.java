@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.Transformation;
-import android.view.animation.TranslateAnimation;
 
 import com.nineoldandroids.animation.Animator;
 
@@ -37,7 +34,7 @@ public class ExpandableListTestActivity extends Activity {
         mListView.setOnHeaderClickListener(new StickyListHeadersListView.OnHeaderClickListener() {
             @Override
             public void onHeaderClick(StickyListHeadersListView l, View header, int itemPosition, long headerId, boolean currentlySticky) {
-                if(mListView.isGroupCollapsed(headerId)){
+                if(mListView.isHeaderCollapsed(headerId)){
                     mListView.expand(headerId);
                 }else {
                     mListView.collapse(headerId);
