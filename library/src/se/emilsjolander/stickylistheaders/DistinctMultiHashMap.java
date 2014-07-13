@@ -15,7 +15,7 @@ import java.util.Set;
 class DistinctMultiHashMap<TKey,TItemValue> {
     private IDMapper<TKey, TItemValue> mIDMapper;
 
-    public interface IDMapper<TKey,TItemValue>{
+    interface IDMapper<TKey,TItemValue>{
         public Object keyToKeyId(TKey key);
         public TKey keyIdToKey(Object keyId);
         public Object valueToValueId(TItemValue value);
@@ -25,7 +25,7 @@ class DistinctMultiHashMap<TKey,TItemValue> {
     LinkedHashMap<Object,List<TItemValue>> mKeyToValuesMap = new LinkedHashMap<Object, List<TItemValue>>();
     LinkedHashMap<Object,TKey> mValueToKeyIndexer = new LinkedHashMap<Object, TKey>();
 
-    public DistinctMultiHashMap(){
+    DistinctMultiHashMap(){
          this(new IDMapper<TKey, TItemValue>() {
              @Override
              public Object keyToKeyId(TKey key) {
@@ -48,7 +48,7 @@ class DistinctMultiHashMap<TKey,TItemValue> {
              }
          });
     }
-    public DistinctMultiHashMap(IDMapper<TKey, TItemValue> idMapper){
+    DistinctMultiHashMap(IDMapper<TKey, TItemValue> idMapper){
         mIDMapper = idMapper;
     }
 
