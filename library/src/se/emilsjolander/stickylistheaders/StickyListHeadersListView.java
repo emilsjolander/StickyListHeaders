@@ -388,6 +388,7 @@ public class StickyListHeadersListView extends FrameLayout {
                 }
             });
         }
+        mHeader.setClickable(true);
     }
 
     // hides the headers in the list under the sticky header.
@@ -598,6 +599,16 @@ public class StickyListHeadersListView extends FrameLayout {
             } else {
                 mAdapter.setOnHeaderClickListener(null);
             }
+        }
+        if (mHeader != null && mOnHeaderClickListener != null) {
+            mHeader.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mOnHeaderClickListener.onHeaderClick(
+                            StickyListHeadersListView.this, mHeader,
+                            mHeaderPosition, mHeaderId, true);
+                }
+            });
         }
     }
 
