@@ -173,16 +173,16 @@ expandableStickyList.setOnHeaderClickListener(new StickyListHeadersListView.OnHe
             }
         });
 ```
-As you see,MyAdapter is just a StickyListHeadersAdapter which be mentioned in the previous section.
+As you see,MyAdapter is just a StickyListHeadersAdapter which is mentioned in the previous section.
 You needn't do any more extra operations.
 
 There are three important functions:
 `isHeaderCollapsed(long headerId)`,`expand(long headerId)` and `collapse(long headerId)`.
 
-Function `isHeaderCollapsed` is used to check whether the subitems belongs to the header had collapsed.
+The function `isHeaderCollapsed` is used to check whether the subitems belonging to the header have collapsed.
 You can call `expand` or `collapse` method to hide or show subitems.
-You can also define a AnimationExecutor which implement `ExpandableStickyListHeadersListView.IAnimationExecutor`,
-then put it into the ExpandableStickyListHeadersListView by `setAnimExecutor` method,if you want more fancy animation when hiding or showing subitems.
+You can also define a AnimationExecutor which implements `ExpandableStickyListHeadersListView.IAnimationExecutor`,
+and put it into the ExpandableStickyListHeadersListView by `setAnimExecutor` method,if you want more fancy animation when hiding or showing subitems.
 
 
 Upgrading from 1.x versions
