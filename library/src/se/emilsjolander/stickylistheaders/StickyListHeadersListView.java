@@ -596,19 +596,20 @@ public class StickyListHeadersListView extends FrameLayout {
         if (mAdapter != null) {
             if (mOnHeaderClickListener != null) {
                 mAdapter.setOnHeaderClickListener(new AdapterWrapperHeaderClickHandler());
+
+                if (mHeader != null) {
+                    mHeader.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mOnHeaderClickListener.onHeaderClick(
+                                    StickyListHeadersListView.this, mHeader,
+                                    mHeaderPosition, mHeaderId, true);
+                        }
+                    });
+                }
             } else {
                 mAdapter.setOnHeaderClickListener(null);
             }
-        }
-        if (mHeader != null && mOnHeaderClickListener != null) {
-            mHeader.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mOnHeaderClickListener.onHeaderClick(
-                            StickyListHeadersListView.this, mHeader,
-                            mHeaderPosition, mHeaderId, true);
-                }
-            });
         }
     }
 
