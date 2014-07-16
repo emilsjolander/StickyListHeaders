@@ -379,18 +379,17 @@ public class StickyListHeadersListView extends FrameLayout {
         }
         mHeader = newHeader;
         addView(mHeader);
-        mHeader.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (mOnHeaderClickListener != null) {
+        if (mOnHeaderClickListener != null) {
+            mHeader.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
                     mOnHeaderClickListener.onHeaderClick(
                             StickyListHeadersListView.this, mHeader,
                             mHeaderPosition, mHeaderId, true);
                 }
-            }
-
-        });
+            });
+        }
+        mHeader.setClickable(true);
     }
 
     // hides the headers in the list under the sticky header.
@@ -598,6 +597,17 @@ public class StickyListHeadersListView extends FrameLayout {
         if (mAdapter != null) {
             if (mOnHeaderClickListener != null) {
                 mAdapter.setOnHeaderClickListener(new AdapterWrapperHeaderClickHandler());
+
+                if (mHeader != null) {
+                    mHeader.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mOnHeaderClickListener.onHeaderClick(
+                                    StickyListHeadersListView.this, mHeader,
+                                    mHeaderPosition, mHeaderId, true);
+                        }
+                    });
+                }
             } else {
                 mAdapter.setOnHeaderClickListener(null);
             }
