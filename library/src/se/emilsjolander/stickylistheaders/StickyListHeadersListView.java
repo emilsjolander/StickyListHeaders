@@ -231,8 +231,9 @@ public class StickyListHeadersListView extends FrameLayout {
         if (lp == null) {
             lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
             header.setLayoutParams(lp);
-        } else if (lp.height == LayoutParams.MATCH_PARENT) {
+        } else if (lp.height == LayoutParams.MATCH_PARENT || lp.width == LayoutParams.WRAP_CONTENT) {
             lp.height = LayoutParams.WRAP_CONTENT;
+            lp.width = LayoutParams.MATCH_PARENT;
             header.setLayoutParams(lp);
         }
     }
@@ -378,18 +379,17 @@ public class StickyListHeadersListView extends FrameLayout {
         }
         mHeader = newHeader;
         addView(mHeader);
-        mHeader.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if (mOnHeaderClickListener != null) {
+        if (mOnHeaderClickListener != null) {
+            mHeader.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
                     mOnHeaderClickListener.onHeaderClick(
                             StickyListHeadersListView.this, mHeader,
                             mHeaderPosition, mHeaderId, true);
                 }
-            }
-
-        });
+            });
+        }
+        mHeader.setClickable(true);
     }
 
     // hides the headers in the list under the sticky header.
@@ -397,9 +397,9 @@ public class StickyListHeadersListView extends FrameLayout {
     private void updateHeaderVisibilities() {
         int top;
         if (mHeader != null) {
-            top = mHeader.getMeasuredHeight() + (mHeaderOffset != null ? mHeaderOffset : 0);
+            top = mHeader.getMeasuredHeight() + (mHeaderOffset != null ? mHeaderOffset : 0) + mStickyHeaderTopOffset;
         } else {
-            top = mClippingToPadding ? mPaddingTop : 0;
+            top = stickyHeaderTop();
         }
         int childCount = mList.getChildCount();
         for (int i = 0; i < childCount; i++) {
@@ -597,6 +597,17 @@ public class StickyListHeadersListView extends FrameLayout {
         if (mAdapter != null) {
             if (mOnHeaderClickListener != null) {
                 mAdapter.setOnHeaderClickListener(new AdapterWrapperHeaderClickHandler());
+
+                if (mHeader != null) {
+                    mHeader.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            mOnHeaderClickListener.onHeaderClick(
+                                    StickyListHeadersListView.this, mHeader,
+                                    mHeaderPosition, mHeaderId, true);
+                        }
+                    });
+                }
             } else {
                 mAdapter.setOnHeaderClickListener(null);
             }
@@ -735,6 +746,10 @@ public class StickyListHeadersListView extends FrameLayout {
 
     public int getHeaderViewsCount() {
         return mList.getHeaderViewsCount();
+    }
+    
+    public void addFooterView(View v, Object data, boolean isSelectable) {
+        mList.addFooterView(v, data, isSelectable);
     }
 
     public void addFooterView(View v) {

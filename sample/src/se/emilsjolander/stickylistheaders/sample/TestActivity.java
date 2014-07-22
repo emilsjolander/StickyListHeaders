@@ -1,6 +1,7 @@
 package se.emilsjolander.stickylistheaders.sample;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,6 +44,7 @@ public class TestActivity extends ActionBarActivity implements
     private CheckBox fadeCheckBox;
     private CheckBox drawBehindCheckBox;
     private CheckBox fastScrollCheckBox;
+    private Button openExpandableListButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -93,6 +95,8 @@ public class TestActivity extends ActionBarActivity implements
 
         restoreButton = (Button) findViewById(R.id.restore_button);
         restoreButton.setOnClickListener(buttonListener);
+        openExpandableListButton = (Button) findViewById(R.id.open_expandable_list_button);
+        openExpandableListButton.setOnClickListener(buttonListener);
         updateButton = (Button) findViewById(R.id.update_button);
         updateButton.setOnClickListener(buttonListener);
         clearButton = (Button) findViewById(R.id.clear_button);
@@ -106,6 +110,8 @@ public class TestActivity extends ActionBarActivity implements
         drawBehindCheckBox.setOnCheckedChangeListener(checkBoxListener);
         fastScrollCheckBox = (CheckBox) findViewById(R.id.fast_scroll_checkBox);
         fastScrollCheckBox.setOnCheckedChangeListener(checkBoxListener);
+
+        stickyList.setStickyHeaderTopOffset(-20);
     }
 
     @Override
@@ -163,6 +169,10 @@ public class TestActivity extends ActionBarActivity implements
                     break;
                 case R.id.clear_button:
                     mAdapter.clear();
+                    break;
+                case R.id.open_expandable_list_button:
+                    Intent intent = new Intent(TestActivity.this,ExpandableListTestActivity.class);
+                    startActivity(intent);
                     break;
             }
         }
