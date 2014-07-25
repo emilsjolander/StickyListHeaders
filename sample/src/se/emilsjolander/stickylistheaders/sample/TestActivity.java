@@ -110,6 +110,8 @@ public class TestActivity extends ActionBarActivity implements
         drawBehindCheckBox.setOnCheckedChangeListener(checkBoxListener);
         fastScrollCheckBox = (CheckBox) findViewById(R.id.fast_scroll_checkBox);
         fastScrollCheckBox.setOnCheckedChangeListener(checkBoxListener);
+
+        stickyList.setStickyHeaderTopOffset(-20);
     }
 
     @Override
