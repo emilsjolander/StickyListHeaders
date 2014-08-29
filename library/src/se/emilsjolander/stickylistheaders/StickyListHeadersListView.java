@@ -27,7 +27,7 @@ import android.widget.SectionIndexer;
 import se.emilsjolander.stickylistheaders.WrapperViewList.LifeCycleListener;
 
 /**
- * Even though this is a FrameLayout subclass we it is called a ListView. This
+ * Even though this is a FrameLayout subclass we still consider it a ListView. This
  * is because of 2 reasons. 1. It acts like as ListView 2. It used to be a
  * ListView subclass and i did not was to change to name causing compatibility
  * errors.
