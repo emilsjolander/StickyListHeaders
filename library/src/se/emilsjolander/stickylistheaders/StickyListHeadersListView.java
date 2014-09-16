@@ -524,7 +524,7 @@ public class StickyListHeadersListView extends FrameLayout {
         return position == 0 || mAdapter.getHeaderId(position) != mAdapter.getHeaderId(position - 1);
     }
 
-    private int getHeaderOverlap(int position) {
+    public int getHeaderOverlap(int position) {
         boolean isStartOfSection = isStartOfSection(Math.max(0, position - getHeaderViewsCount()));
         if (!isStartOfSection) {
             View header = mAdapter.getHeaderView(position, null, mList);
