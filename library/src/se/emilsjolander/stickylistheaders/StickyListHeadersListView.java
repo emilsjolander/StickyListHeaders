@@ -1073,4 +1073,8 @@ public class StickyListHeadersListView extends FrameLayout {
         mList.setTranscriptMode(mode);
     }
 
+    public void setBlockLayoutChildren(boolean blockLayoutChildren) {
+        mList.setBlockLayoutChildren(blockLayoutChildren);
+    }
+
 }
