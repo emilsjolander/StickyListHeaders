@@ -15,6 +15,7 @@ import android.util.SparseBooleanArray;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.widget.AbsListView;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.AbsListView.OnScrollListener;
@@ -334,6 +335,16 @@ public class StickyListHeadersListView extends FrameLayout {
                         throw new NullPointerException("header may not be null");
                     }
                     swapHeader(header);
+
+                }
+                else if(mHeader != null) {
+                    final ViewParent parent = this.mHeader.getParent();
+                    if(parent != this) {
+                        if(parent instanceof ViewGroup) {
+                            ((ViewGroup) parent).removeView(this.mHeader);
+                        }
+                        addView(this.mHeader);
+                    }
                 }
                 ensureHeaderHasCorrectLayoutParams(mHeader);
                 measureHeader(mHeader);
@@ -377,8 +388,15 @@ public class StickyListHeadersListView extends FrameLayout {
         if (mHeader != null) {
             removeView(mHeader);
         }
+        final ViewParent parent = newHeader.getParent();
+        if(parent != this) {
+            if(parent instanceof ViewGroup) {
+                ((ViewGroup) parent).removeView(newHeader);
+            }
+            addView(mHeader);
+        }
         mHeader = newHeader;
-        addView(mHeader);
+
         if (mOnHeaderClickListener != null) {
             mHeader.setOnClickListener(new OnClickListener() {
                 @Override
@@ -423,6 +441,13 @@ public class StickyListHeadersListView extends FrameLayout {
                     childHeader.setVisibility(View.INVISIBLE);
                 }
             } else {
+                final ViewParent parent = childHeader.getParent();
+                if(parent != wrapperViewChild) {
+                    if(parent instanceof ViewGroup) {
+                        ((ViewGroup) parent).removeView(childHeader);
+                    }
+                    wrapperViewChild.addView(childHeader);
+                }
                 if (childHeader.getVisibility() != View.VISIBLE) {
                     childHeader.setVisibility(View.VISIBLE);
                 }

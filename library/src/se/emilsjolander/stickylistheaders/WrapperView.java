@@ -65,9 +65,23 @@ public class WrapperView extends ViewGroup {
 			}
 			this.mHeader = header;
 			if (header != null) {
+                final ViewParent parent = header.getParent();
+                if(parent != null && parent != this) {
+                    if(parent instanceof ViewGroup) {
+                        ((ViewGroup) parent).removeView(header);
+                    }
+                }
 				addView(header);
 			}
-		}
+		} else if (this.mHeader != null) {
+            final ViewParent parent = this.mHeader.getParent();
+            if(parent != this) {
+                if(parent instanceof ViewGroup) {
+                    ((ViewGroup) parent).removeView(this.mHeader);
+                }
+                addView(this.mHeader);
+            }
+        }
 
 		if (this.mDivider != divider) {
 			this.mDivider = divider;
