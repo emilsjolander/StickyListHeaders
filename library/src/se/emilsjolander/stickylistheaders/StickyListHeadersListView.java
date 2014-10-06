@@ -368,7 +368,7 @@ public class StickyListHeadersListView extends FrameLayout {
             final View child = mList.getChildAt(i);
             final boolean doesChildHaveHeader = child instanceof WrapperView && ((WrapperView) child).hasHeader();
             final boolean isChildFooter = mList.containsFooterView(child);
-            if (child.getTop() >= stickyHeaderTop() && (doesChildHaveHeader || isChildFooter)) {
+            if (child.getTop() > stickyHeaderTop() && (doesChildHaveHeader || isChildFooter)) {
                 headerOffset = Math.min(child.getTop() - headerBottom, 0);
                 break;
             }
