@@ -393,7 +393,7 @@ public class StickyListHeadersListView extends FrameLayout {
             if(parent instanceof ViewGroup) {
                 ((ViewGroup) parent).removeView(newHeader);
             }
-            addView(mHeader);
+            addView(newHeader);
         }
         mHeader = newHeader;
 
