@@ -387,6 +387,8 @@ public class StickyListHeadersListView extends FrameLayout {
     private void swapHeader(View newHeader) {
         if (mHeader != null) {
             removeView(mHeader);
+            //reset transformation on removed header
+            transformYView(mHeader, 0);
         }
         final ViewParent parent = newHeader.getParent();
         if(parent != this) {
@@ -437,12 +439,13 @@ public class StickyListHeadersListView extends FrameLayout {
             // update header views visibility
             View childHeader = wrapperViewChild.mHeader;
             if (wrapperViewChild.getTop() < top) {
-                if (childHeader.getVisibility() != View.INVISIBLE) {
+                if (childHeader != this.mHeader && childHeader.getVisibility() != View.INVISIBLE) {
                     childHeader.setVisibility(View.INVISIBLE);
                 }
             } else {
                 final ViewParent parent = childHeader.getParent();
-                if(parent != wrapperViewChild) {
+                //make sure we dont remove the parent if we are the parent = sticky header
+                if(parent != wrapperViewChild && parent != this) {
                     if(parent instanceof ViewGroup) {
                         ((ViewGroup) parent).removeView(childHeader);
                     }
@@ -454,6 +457,16 @@ public class StickyListHeadersListView extends FrameLayout {
             }
         }
     }
+    
+    private void transformYView(View view, int offsetY) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            view.setTranslationY(offsetY);
+        } else {
+            MarginLayoutParams params = (MarginLayoutParams) view.getLayoutParams();
+            params.topMargin = offsetY;
+            view.setLayoutParams(params);
+        }
+    }
 
     // Wrapper around setting the header offset in different ways depending on
     // the API version
@@ -461,13 +474,7 @@ public class StickyListHeadersListView extends FrameLayout {
     private void setHeaderOffet(int offset) {
         if (mHeaderOffset == null || mHeaderOffset != offset) {
             mHeaderOffset = offset;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                mHeader.setTranslationY(mHeaderOffset);
-            } else {
-                MarginLayoutParams params = (MarginLayoutParams) mHeader.getLayoutParams();
-                params.topMargin = mHeaderOffset;
-                mHeader.setLayoutParams(params);
-            }
+            transformYView(mHeader, mHeaderOffset);
             if (mOnStickyHeaderOffsetChangedListener != null) {
                 mOnStickyHeaderOffsetChangedListener.onStickyHeaderOffsetChanged(this, mHeader, -mHeaderOffset);
             }
