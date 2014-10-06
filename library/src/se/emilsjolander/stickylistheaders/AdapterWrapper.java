@@ -131,16 +131,16 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 		}
 		//if the header isn't clickable, the listselector will be drawn on top of the header
 		header.setClickable(true);
-		header.setOnClickListener(new OnClickListener() {
+        if(mOnHeaderClickListener != null) {
+            header.setOnClickListener(new OnClickListener() {
 
-			@Override
-			public void onClick(View v) {
-				if(mOnHeaderClickListener != null){
-					long headerId = mDelegate.getHeaderId(position);
-					mOnHeaderClickListener.onHeaderClick(v, position, headerId);
-				}
-			}
-		});
+                @Override
+                public void onClick(View v) {
+                    long headerId = mDelegate.getHeaderId(position);
+                    mOnHeaderClickListener.onHeaderClick(v, position, headerId);
+                }
+            });
+        }
 		return header;
 	}
 
