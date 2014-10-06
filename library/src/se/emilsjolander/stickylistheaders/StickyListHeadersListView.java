@@ -296,7 +296,7 @@ public class StickyListHeadersListView extends FrameLayout {
         }
 
         final int headerViewCount = mList.getHeaderViewsCount();
-        int headerPosition = firstVisiblePosition - headerViewCount;
+        int headerPosition = Math.max(0, firstVisiblePosition - headerViewCount);
         if (mList.getChildCount() > 0) {
             View firstItem = mList.getChildAt(0);
             if (firstItem.getBottom() < stickyHeaderTop()) {
@@ -309,7 +309,7 @@ public class StickyListHeadersListView extends FrameLayout {
         // but that does not work great together with getChildAt()
         final boolean doesListHaveChildren = mList.getChildCount() != 0;
         final boolean isFirstViewBelowTop = doesListHaveChildren
-                && mList.getFirstVisiblePosition() <= mList.getHeaderViewsCount()
+                && mList.getFirstVisiblePosition() <= headerViewCount
                 && mList.getChildAt(0).getTop() >= stickyHeaderTop();
         final boolean isHeaderPositionOutsideAdapterRange = headerPosition > adapterCount - 1
                 || headerPosition < 0;
@@ -393,7 +393,7 @@ public class StickyListHeadersListView extends FrameLayout {
             if(parent instanceof ViewGroup) {
                 ((ViewGroup) parent).removeView(newHeader);
             }
-            addView(mHeader);
+            addView(newHeader);
         }
         mHeader = newHeader;
 
