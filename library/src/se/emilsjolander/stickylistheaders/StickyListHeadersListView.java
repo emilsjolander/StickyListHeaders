@@ -294,10 +294,10 @@ public class StickyListHeadersListView extends FrameLayout {
         if (adapterCount == 0 || !mAreHeadersSticky) {
             return;
         }
-
+        final int childCount = mList.getChildCount();
         final int headerViewCount = mList.getHeaderViewsCount();
         int headerPosition = firstVisiblePosition - headerViewCount;
-        if (mList.getChildCount() > 0) {
+        if (childCount > 0) {
             View firstItem = mList.getChildAt(0);
             if (firstItem.getBottom() < stickyHeaderTop()) {
                 headerPosition++;
