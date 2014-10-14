@@ -29,10 +29,14 @@ public class WrapperView extends ViewGroup {
 	public boolean hasHeader() {
 		return mHeader != null;
 	}
-	
-	public View getItem() {
-		return mItem;
-	}
+    
+    public View getItem() {
+        return mItem;
+    }   
+    
+    public int getItemTop() {
+        return mItemTop;
+    }
 	
 	public View getHeader() {
 		return mHeader;
