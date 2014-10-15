@@ -12,13 +12,8 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
-class WrapperViewList extends ListView {
-
-	interface LifeCycleListener {
-		void onDispatchDrawOccurred(Canvas canvas);
-	}
-
-	private LifeCycleListener mLifeCycleListener;
+class WrapperViewList extends ListView implements WrapperViewListInterface {
+	private WrapperListViewLifeCycleListener mLifeCycleListener;
 	private List<View> mFooterViews;
 	private int mTopClippingLength;
 	private Rect mSelectorRect = new Rect();// for if reflection fails
@@ -107,7 +102,7 @@ class WrapperViewList extends ListView {
 		mLifeCycleListener.onDispatchDrawOccurred(canvas);
 	}
 
-	void setLifeCycleListener(LifeCycleListener lifeCycleListener) {
+	public void setLifeCycleListener(WrapperListViewLifeCycleListener lifeCycleListener) {
 		mLifeCycleListener = lifeCycleListener;
 	}
 
@@ -139,18 +134,18 @@ class WrapperViewList extends ListView {
 		return false;
 	}
 
-	boolean containsFooterView(View v) {
+	public boolean containsFooterView(View v) {
 		if (mFooterViews == null) {
 			return false;
 		}
 		return mFooterViews.contains(v);
 	}
 
-	void setTopClippingLength(int topClipping) {
+	public void setTopClippingLength(int topClipping) {
 		mTopClippingLength = topClipping;
 	}
 
-	int getFixedFirstVisibleItem() {
+	public int getFixedFirstVisibleItem() {
 		int firstVisibleItem = getFirstVisiblePosition();
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			return firstVisibleItem;

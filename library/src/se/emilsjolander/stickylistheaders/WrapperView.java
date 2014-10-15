@@ -7,6 +7,7 @@ import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.View.MeasureSpec;
 
 /**
  * 
@@ -29,10 +30,14 @@ public class WrapperView extends ViewGroup {
 	public boolean hasHeader() {
 		return mHeader != null;
 	}
-	
-	public View getItem() {
-		return mItem;
-	}
+    
+    public View getItem() {
+        return mItem;
+    }   
+    
+    public int getItemTop() {
+        return mItemTop;
+    }
 	
 	public View getHeader() {
 		return mHeader;
@@ -125,7 +130,10 @@ public class WrapperView extends ViewGroup {
     		}
 
 		}
-		setMeasuredDimension(measuredWidth, measuredHeight);
+		
+		//if height was specifically set in heightMeasureSpec, then use it.
+		//very usefull for insertion or removal animation.
+		setMeasuredDimension(measuredWidth,(heightMeasureSpec <= 0)?measuredHeight:MeasureSpec.getSize(heightMeasureSpec));
 	}
 
 	@Override
