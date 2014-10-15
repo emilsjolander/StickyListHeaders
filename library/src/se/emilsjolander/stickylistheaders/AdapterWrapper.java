@@ -23,7 +23,7 @@ import android.widget.ListAdapter;
  *
  * @author Jake Wharton (jakewharton@gmail.com)
  */
-class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
+public class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 
 	interface OnHeaderClickListener {
 		void onHeaderClick(View header, int itemPosition, long headerId);
@@ -61,6 +61,10 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 		this.mDividerHeight = dividerHeight;
 		notifyDataSetChanged();
 	}
+	
+	public StickyListHeadersAdapter getDelegate() {
+        return mDelegate;
+    }
 
 	@Override
 	public boolean areAllItemsEnabled() {

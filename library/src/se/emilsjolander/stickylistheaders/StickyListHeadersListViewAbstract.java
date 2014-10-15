@@ -37,7 +37,7 @@ import android.widget.SectionIndexer;
 public abstract class StickyListHeadersListViewAbstract<C extends ListView & WrapperViewListInterface> extends FrameLayout {
 
     /* --- Children --- */
-    private C mList;
+    protected C mList;
     private View mHeader;
 
     /* --- Header state --- */
