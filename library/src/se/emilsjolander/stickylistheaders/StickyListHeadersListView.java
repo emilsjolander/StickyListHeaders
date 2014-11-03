@@ -303,16 +303,25 @@ public class StickyListHeadersListView extends FrameLayout {
             }
         }
 
-        // It is not a mistake to call getFirstVisiblePosition() here.
+       // It is not a mistake to call getFirstVisiblePosition() here.
         // Most of the time getFixedFirstVisibleItem() should be called
         // but that does not work great together with getChildAt()
         final boolean doesListHaveChildren = mList.getChildCount() != 0;
-        final boolean isFirstViewBelowTop = doesListHaveChildren
-                && mList.getFirstVisiblePosition() == 0
-                && mList.getChildAt(0).getTop() >= stickyHeaderTop();
+//        final boolean isFirstViewBelowTop = doesListHaveChildren
+//                && mList.getFirstVisiblePosition() == 0
+//                && mList.getChildAt(0).getTop() >= stickyHeaderTop();
         final boolean isHeaderPositionOutsideAdapterRange = headerPosition > adapterCount - 1
                 || headerPosition < 0;
-        if (!doesListHaveChildren || isHeaderPositionOutsideAdapterRange || isFirstViewBelowTop) {
+        
+        
+//        if (!doesListHaveChildren || isHeaderPositionOutsideAdapterRange || isFirstViewBelowTop) {
+//            clearHeader();
+//            return;
+//        }
+        
+      //解决一屏的最后一个item删除的时候，header变为空白的bug
+      //Solve the last item deletion of one screen at a time when the header into the blank bug
+        if (!doesListHaveChildren || isHeaderPositionOutsideAdapterRange) {
             clearHeader();
             return;
         }
