@@ -32,4 +32,10 @@
         <attr name="isDrawingListUnderStickyHeader" format="boolean" />
     </declare-styleable>
 
+
+    <declare-styleable name="ExpandableStickyListHeadersListView">
+
+        <!--Expandable attributes-->
+        <attr name="startCollapsed" format="boolean" />
+    </declare-styleable>
 </resources>

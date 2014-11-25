@@ -1,13 +1,12 @@
-<android.support.v4.widget.DrawerLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/drawer_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/refresh_layout"
@@ -20,108 +19,117 @@
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
                 android:drawSelectorOnTop="true"
-                android:padding="16dp"
-                android:scrollbarStyle="outsideOverlay"
                 android:fastScrollEnabled="true"
-                android:overScrollMode="never"/>
+                android:overScrollMode="never"
+                android:padding="16dp"
+                android:scrollbarStyle="outsideOverlay" />
 
         </android.support.v4.widget.SwipeRefreshLayout>
 
         <TextView
-                android:id="@+id/empty"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="@string/empty"
-                android:textSize="30sp"
-                android:visibility="gone"/>
+            android:id="@+id/empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/empty"
+            android:textSize="30sp"
+            android:visibility="gone" />
 
     </FrameLayout>
 
     <ScrollView
-            android:id="@+id/left_drawer"
-            android:layout_width="240dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:padding="5dp"
-            android:scrollbars="none"
-            android:clickable="true"
-            android:background="@android:color/white">
+        android:id="@+id/left_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@android:color/white"
+        android:clickable="true"
+        android:padding="5dp"
+        android:scrollbars="none">
 
         <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <se.emilsjolander.stickylistheaders.sample.views.UnderlineTextView
-                    style="@style/MenuSectionHeader"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start|left"
-                    android:text="@string/actions"
-                    android:textStyle="bold"/>
+                style="@style/MenuSectionHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|left"
+                android:text="@string/actions"
+                android:textStyle="bold" />
+
             <Button
+                android:id="@+id/open_expandable_list_button"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:gravity="left|center_vertical"
-                android:text="@string/open_expandable_list"
-                android:id="@+id/open_expandable_list_button"/>
-            <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:gravity="left|center_vertical"
-                    android:text="@string/restore_list"
-                    android:id="@+id/restore_button"/>
+                android:text="@string/open_expandable_list" />
 
             <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:gravity="left|center_vertical"
-                    android:text="@string/update_list"
-                    android:id="@+id/update_button"/>
+                android:id="@+id/open_collapsable_list_button"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="left|center_vertical"
+                android:text="@string/open_collapsed_list" />
 
             <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:gravity="left|center_vertical"
-                    android:id="@+id/clear_button"
-                    android:text="@string/clear_list"/>
+                android:id="@+id/restore_button"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="left|center_vertical"
+                android:text="@string/restore_list" />
+
+            <Button
+                android:id="@+id/update_button"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="left|center_vertical"
+                android:text="@string/update_list" />
+
+            <Button
+                android:id="@+id/clear_button"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="left|center_vertical"
+                android:text="@string/clear_list" />
 
             <se.emilsjolander.stickylistheaders.sample.views.UnderlineTextView
-                    style="@style/MenuSectionHeader"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="start|left"
-                    android:text="@string/options"
-                    android:textStyle="bold"/>
+                style="@style/MenuSectionHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|left"
+                android:text="@string/options"
+                android:textStyle="bold" />
 
             <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/sticky_header"
-                    android:id="@+id/sticky_checkBox"
-                    android:checked="true"/>
-
-            <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/fade_header"
-                    android:id="@+id/fade_checkBox"
-                    android:checked="true"/>
-
-            <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/draw_behind_header"
-                    android:id="@+id/draw_behind_checkBox"
-                    android:checked="true"/>
-
-            <CheckBox
+                android:id="@+id/sticky_checkBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/fast_scroll"
+                android:checked="true"
+                android:text="@string/sticky_header" />
+
+            <CheckBox
+                android:id="@+id/fade_checkBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/fade_header" />
+
+            <CheckBox
+                android:id="@+id/draw_behind_checkBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/draw_behind_header" />
+
+            <CheckBox
                 android:id="@+id/fast_scroll_checkBox"
-                android:checked="true"/>
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/fast_scroll" />
         </LinearLayout>
     </ScrollView>
 </android.support.v4.widget.DrawerLayout>

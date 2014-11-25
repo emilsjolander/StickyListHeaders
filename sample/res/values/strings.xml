@@ -17,5 +17,6 @@
     <string name="fade_header">Fade header</string>
     <string name="draw_behind_header">Draw behind header</string>
     <string name="fast_scroll">Fast scroll</string>
+    <string name="open_collapsed_list">Open Collapsed List</string>
 
 </resources>
