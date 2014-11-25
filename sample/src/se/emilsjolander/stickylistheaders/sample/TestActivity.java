@@ -45,6 +45,7 @@ public class TestActivity extends ActionBarActivity implements
     private CheckBox drawBehindCheckBox;
     private CheckBox fastScrollCheckBox;
     private Button openExpandableListButton;
+    private Button openCollapsedListButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -97,6 +98,8 @@ public class TestActivity extends ActionBarActivity implements
         restoreButton.setOnClickListener(buttonListener);
         openExpandableListButton = (Button) findViewById(R.id.open_expandable_list_button);
         openExpandableListButton.setOnClickListener(buttonListener);
+        openCollapsedListButton = (Button) findViewById(R.id.open_collapsable_list_button);
+        openCollapsedListButton.setOnClickListener(buttonListener);
         updateButton = (Button) findViewById(R.id.update_button);
         updateButton.setOnClickListener(buttonListener);
         clearButton = (Button) findViewById(R.id.clear_button);
@@ -172,6 +175,11 @@ public class TestActivity extends ActionBarActivity implements
                     break;
                 case R.id.open_expandable_list_button:
                     Intent intent = new Intent(TestActivity.this,ExpandableListTestActivity.class);
+                    startActivity(intent);
+                    break;
+                case R.id.open_collapsable_list_button:
+                     intent = new Intent(TestActivity.this,ExpandableListTestActivity.class);
+                    intent.putExtra(ExpandableListTestActivity.START_COLLAPSED, true);
                     startActivity(intent);
                     break;
             }

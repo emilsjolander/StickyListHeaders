@@ -5,27 +5,30 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
  * @author lsjwzh
  */
- class ExpandableStickyListHeadersAdapter extends BaseAdapter implements StickyListHeadersAdapter {
+class ExpandableStickyListHeadersAdapter extends BaseAdapter implements StickyListHeadersAdapter {
 
     private final StickyListHeadersAdapter mInnerAdapter;
-    DualHashMap<View,Long> mViewToItemIdMap = new DualHashMap<View, Long>();
-    DistinctMultiHashMap<Integer,View> mHeaderIdToViewMap = new DistinctMultiHashMap<Integer, View>();
-    List<Long> mCollapseHeaderIds = new ArrayList<Long>();
+    DualHashMap<View, Long> mViewToItemIdMap = new DualHashMap<View, Long>();
+    DistinctMultiHashMap<Long, View> mHeaderIdToViewMap = new DistinctMultiHashMap<Long, View>();
+    Map<Long, Boolean> mCollapseHeaderIds = new HashMap<Long, Boolean>();
+    private boolean mStartCollapsed;
 
-    ExpandableStickyListHeadersAdapter(StickyListHeadersAdapter innerAdapter){
+    ExpandableStickyListHeadersAdapter(StickyListHeadersAdapter innerAdapter, boolean startCollapsed) {
         this.mInnerAdapter = innerAdapter;
+        this.mStartCollapsed = startCollapsed;
     }
 
     @Override
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
-        return mInnerAdapter.getHeaderView(position,convertView,parent);
+        return mInnerAdapter.getHeaderView(position, convertView, parent);
     }
 
     @Override
@@ -75,12 +78,16 @@ import java.util.List;
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        View convertView = mInnerAdapter.getView(i,view,viewGroup);
+        View convertView = mInnerAdapter.getView(i, view, viewGroup);
         mViewToItemIdMap.put(convertView, getItemId(i));
-        mHeaderIdToViewMap.add((int) getHeaderId(i), convertView);
-        if(mCollapseHeaderIds.contains(getHeaderId(i))){
+        final long headerId = getHeaderId(i);
+        mHeaderIdToViewMap.add(headerId, convertView);
+        if (!mCollapseHeaderIds.containsKey(headerId)) {
+            mCollapseHeaderIds.put(headerId, mStartCollapsed);
+        }
+        if (mCollapseHeaderIds.get(headerId)) {
             convertView.setVisibility(View.GONE);
-        }else {
+        } else {
             convertView.setVisibility(View.VISIBLE);
         }
         return convertView;
@@ -101,31 +108,31 @@ import java.util.List;
         return mInnerAdapter.isEmpty();
     }
 
-    public List<View> getItemViewsByHeaderId(long headerId){
-        return mHeaderIdToViewMap.get((int) headerId);
+    public List<View> getItemViewsByHeaderId(long headerId) {
+        return mHeaderIdToViewMap.get(headerId);
     }
 
-    public boolean isHeaderCollapsed(long headerId){
-        return mCollapseHeaderIds.contains(headerId);
+    public boolean isHeaderCollapsed(long headerId) {
+        return mCollapseHeaderIds.containsKey(headerId) && mCollapseHeaderIds.get(headerId);
     }
 
     public void expand(long headerId) {
-        if(isHeaderCollapsed(headerId)){
-            mCollapseHeaderIds.remove((Object) headerId);
+        if (isHeaderCollapsed(headerId)) {
+            mCollapseHeaderIds.put(headerId, false);
         }
     }
 
     public void collapse(long headerId) {
-        if(!isHeaderCollapsed(headerId)){
-            mCollapseHeaderIds.add(headerId);
+        if (!isHeaderCollapsed(headerId)) {
+            mCollapseHeaderIds.put(headerId, true);
         }
     }
 
-    public View findViewByItemId(long itemId){
-         return mViewToItemIdMap.getKey(itemId);
+    public View findViewByItemId(long itemId) {
+        return mViewToItemIdMap.getKey(itemId);
     }
 
-    public long findItemIdByView(View view){
+    public long findItemIdByView(View view) {
         return mViewToItemIdMap.get(view);
     }
 }

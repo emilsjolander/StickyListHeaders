@@ -1,5 +1,7 @@
 package se.emilsjolander.stickylistheaders.sample;
+
 import com.nineoldandroids.animation.ValueAnimator;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
@@ -17,15 +19,17 @@ import se.emilsjolander.stickylistheaders.StickyListHeadersListView;
  */
 public class ExpandableListTestActivity extends Activity {
 
+    public static final String START_COLLAPSED = "start_collapsed";
     private ExpandableStickyListHeadersListView mListView;
     TestBaseAdapter mTestBaseAdapter;
-    WeakHashMap<View,Integer> mOriginalViewHeightPool = new WeakHashMap<View, Integer>();
+    WeakHashMap<View, Integer> mOriginalViewHeightPool = new WeakHashMap<View, Integer>();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.expandable_sample);
+        boolean startCollapsed = getIntent().getBooleanExtra(START_COLLAPSED, false);
+        setContentView(startCollapsed ? R.layout.expandable_collapsed_sample : R.layout.expandable_expanded_sample);
         mListView = (ExpandableStickyListHeadersListView) findViewById(R.id.list);
         //custom expand/collapse animation
         mListView.setAnimExecutor(new AnimationExecutor());
@@ -34,27 +38,28 @@ public class ExpandableListTestActivity extends Activity {
         mListView.setOnHeaderClickListener(new StickyListHeadersListView.OnHeaderClickListener() {
             @Override
             public void onHeaderClick(StickyListHeadersListView l, View header, int itemPosition, long headerId, boolean currentlySticky) {
-                if(mListView.isHeaderCollapsed(headerId)){
+                if (mListView.isHeaderCollapsed(headerId)) {
                     mListView.expand(headerId);
-                }else {
+                } else {
                     mListView.collapse(headerId);
                 }
             }
         });
     }
+
     //animation executor
     class AnimationExecutor implements ExpandableStickyListHeadersListView.IAnimationExecutor {
 
         @Override
         public void executeAnim(final View target, final int animType) {
-            if(ExpandableStickyListHeadersListView.ANIMATION_EXPAND==animType&&target.getVisibility()==View.VISIBLE){
+            if (ExpandableStickyListHeadersListView.ANIMATION_EXPAND == animType && target.getVisibility() == View.VISIBLE) {
                 return;
             }
-            if(ExpandableStickyListHeadersListView.ANIMATION_COLLAPSE==animType&&target.getVisibility()!=View.VISIBLE){
+            if (ExpandableStickyListHeadersListView.ANIMATION_COLLAPSE == animType && target.getVisibility() != View.VISIBLE) {
                 return;
             }
-            if(mOriginalViewHeightPool.get(target)==null){
-                mOriginalViewHeightPool.put(target,target.getHeight());
+            if (mOriginalViewHeightPool.get(target) == null) {
+                mOriginalViewHeightPool.put(target, target.getHeight());
             }
             final int viewHeight = mOriginalViewHeightPool.get(target);
             float animStartY = animType == ExpandableStickyListHeadersListView.ANIMATION_EXPAND ? 0f : viewHeight;
