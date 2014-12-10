@@ -1077,4 +1077,23 @@ public class StickyListHeadersListView extends FrameLayout {
         mList.setBlockLayoutChildren(blockLayoutChildren);
     }
 
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (mAdapter != null) {
+            if (mDataSetObserver != null) {
+                mDataSetObserver = new AdapterWrapperDataSetObserver();
+            }
+            mAdapter.registerDataSetObserver(mDataSetObserver);
+        }
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        if (mAdapter != null && mDataSetObserver != null) {
+            mAdapter.unregisterDataSetObserver(mDataSetObserver);
+        }
+        super.onDetachedFromWindow();
+    }
+
 }
