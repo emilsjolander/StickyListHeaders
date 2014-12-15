@@ -24,6 +24,7 @@ class WrapperViewList extends ListView {
 	private Rect mSelectorRect = new Rect();// for if reflection fails
 	private Field mSelectorPositionField;
 	private boolean mClippingToPadding = true;
+    private boolean mBlockLayoutChildren = false;
 
 	public WrapperViewList(Context context) {
 		super(context);
@@ -182,4 +183,14 @@ class WrapperViewList extends ListView {
 		super.setClipToPadding(clipToPadding);
 	}
 
+    public void setBlockLayoutChildren(boolean block) {
+        mBlockLayoutChildren = block;
+    }
+
+    @Override
+    protected void layoutChildren() {
+        if (!mBlockLayoutChildren) {
+            super.layoutChildren();
+        }
+    }
 }
