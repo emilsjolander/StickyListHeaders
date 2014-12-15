@@ -260,6 +260,11 @@ public void setStickyHeaderTopOffset(int stickyHeaderTopOffset);
 public int getStickyHeaderTopOffset();
 ```
 
+Get the amount of overlap the sticky header has when position in on the top of the list.
+```java
+public int getHeaderOverlap(int position);
+```
+
 Contributing
 ------------
 Contributions are very welcome. Now that this library has grown in popularity i have a hard time keeping upp with all the issues while tending to a multitude of other projects as well as school. So if you find a bug in the library or want a feature and think you can fix it yourself, fork + pull request and i will greatly appreciate it!
