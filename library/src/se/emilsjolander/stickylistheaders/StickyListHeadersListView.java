@@ -252,7 +252,11 @@ public class StickyListHeadersListView extends FrameLayout {
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        mList.layout(0, 0, mList.getMeasuredWidth(), getHeight());
+        try {
+            mList.layout(0, 0, mList.getMeasuredWidth(), getHeight());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         if (mHeader != null) {
             MarginLayoutParams lp = (MarginLayoutParams) mHeader.getLayoutParams();
             int headerTop = lp.topMargin + stickyHeaderTop();
