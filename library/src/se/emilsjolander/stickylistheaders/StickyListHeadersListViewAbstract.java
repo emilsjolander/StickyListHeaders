@@ -34,7 +34,7 @@ import android.widget.SectionIndexer;
  *
  * @author Emil Sjölander
  */
-public abstract class StickyListHeadersListViewAbstract<C extends ListView & WrapperViewListInterface> extends FrameLayout {
+public abstract class StickyListHeadersListViewAbstract<C extends AbsListView & WrapperViewListInterface & AbsListViewHeadersSupport> extends FrameLayout {
 
     /* --- Children --- */
     protected C mList;
@@ -79,7 +79,6 @@ public abstract class StickyListHeadersListViewAbstract<C extends ListView & Wra
     
     protected abstract C createListView(Context context);
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public StickyListHeadersListViewAbstract(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
 
@@ -87,10 +86,13 @@ public abstract class StickyListHeadersListViewAbstract<C extends ListView & Wra
         mList = createListView(context);
 
         // null out divider, dividers are handled by adapter so they look good with headers
-        mDivider = mList.getDivider();
-        mDividerHeight = mList.getDividerHeight();
-        mList.setDivider(null);
-        mList.setDividerHeight(0);
+        if (mList instanceof ListView) {
+            mDivider = ((ListView)mList).getDivider();
+            mDividerHeight = ((ListView)mList).getDividerHeight();
+            ((ListView)mList).setDivider(null);
+            ((ListView)mList).setDividerHeight(0);
+        }
+        
 
         if (attrs != null) {
             TypedArray a = context.getTheme().obtainStyledAttributes(attrs,R.styleable.StickyListHeadersListView, 0, 0);
@@ -633,7 +635,7 @@ public abstract class StickyListHeadersListViewAbstract<C extends ListView & Wra
      *
      * @return the ListView backing this view.
      */
-    public ListView getWrappedList() {
+    public C getWrappedList() {
         return mList;
     }
 

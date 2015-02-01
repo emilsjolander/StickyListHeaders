@@ -12,7 +12,7 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
-class WrapperViewList extends ListView implements WrapperViewListInterface {
+class WrapperViewList extends ListView implements WrapperViewListInterface, AbsListViewHeadersSupport {
 	private WrapperListViewLifeCycleListener mLifeCycleListener;
 	private List<View> mFooterViews;
 	private int mTopClippingLength;
