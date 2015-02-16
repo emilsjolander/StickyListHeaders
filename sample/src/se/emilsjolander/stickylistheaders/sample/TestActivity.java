@@ -76,6 +76,7 @@ public class TestActivity extends ActionBarActivity implements
         stickyList.setEmptyView(findViewById(R.id.empty));
         stickyList.setDrawingListUnderStickyHeader(true);
         stickyList.setAreHeadersSticky(true);
+        stickyList.setShowHeaderOnLeft(true);
         stickyList.setAdapter(mAdapter);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);

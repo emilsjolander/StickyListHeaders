@@ -29,22 +29,24 @@ import se.emilsjolander.stickylistheaders.WrapperViewList.LifeCycleListener;
 /**
  * Even though this is a FrameLayout subclass we still consider it a ListView.
  * This is because of 2 reasons:
- *   1. It acts like as ListView.
- *   2. It used to be a ListView subclass and refactoring the name would cause compatibility errors.
+ * 1. It acts like as ListView.
+ * 2. It used to be a ListView subclass and refactoring the name would cause compatibility errors.
  *
  * @author Emil Sjölander
  */
 public class StickyListHeadersListView extends FrameLayout {
 
     public interface OnHeaderClickListener {
+
         void onHeaderClick(StickyListHeadersListView l, View header,
-                                  int itemPosition, long headerId, boolean currentlySticky);
+                int itemPosition, long headerId, boolean currentlySticky);
     }
 
     /**
      * Notifies the listener when the sticky headers top offset has changed.
      */
     public interface OnStickyHeaderOffsetChangedListener {
+
         /**
          * @param l      The view parent
          * @param header The currently sticky header being offset.
@@ -61,51 +63,71 @@ public class StickyListHeadersListView extends FrameLayout {
      * Notifies the listener when the sticky header has been updated
      */
     public interface OnStickyHeaderChangedListener {
+
         /**
-         * @param l             The view parent
-         * @param header        The new sticky header view.
-         * @param itemPosition  The position of the item within the adapter's data set of
-         *                      the item whose header is now sticky.
-         * @param headerId      The id of the new sticky header.
+         * @param l            The view parent
+         * @param header       The new sticky header view.
+         * @param itemPosition The position of the item within the adapter's data set of
+         *                     the item whose header is now sticky.
+         * @param headerId     The id of the new sticky header.
          */
         void onStickyHeaderChanged(StickyListHeadersListView l, View header,
-                                          int itemPosition, long headerId);
+                int itemPosition, long headerId);
 
     }
 
     /* --- Children --- */
     private WrapperViewList mList;
+
     private View mHeader;
 
     /* --- Header state --- */
     private Long mHeaderId;
+
     // used to not have to call getHeaderId() all the time
     private Integer mHeaderPosition;
+
     private Integer mHeaderOffset;
 
     /* --- Delegates --- */
     private OnScrollListener mOnScrollListenerDelegate;
+
     private AdapterWrapper mAdapter;
 
     /* --- Settings --- */
     private boolean mAreHeadersSticky = true;
+
     private boolean mShowHeaderOnLeft = false;
+
     private boolean mClippingToPadding = true;
+
     private boolean mIsDrawingListUnderStickyHeader = true;
+
     private int mStickyHeaderTopOffset = 0;
+
     private int mPaddingLeft = 0;
+
     private int mPaddingTop = 0;
+
     private int mPaddingRight = 0;
+
     private int mPaddingBottom = 0;
 
     /* --- Other --- */
     private OnHeaderClickListener mOnHeaderClickListener;
+
     private OnStickyHeaderOffsetChangedListener mOnStickyHeaderOffsetChangedListener;
+
     private OnStickyHeaderChangedListener mOnStickyHeaderChangedListener;
+
     private AdapterWrapperDataSetObserver mDataSetObserver;
+
     private Drawable mDivider;
+
     private int mDividerHeight;
+
     private int mStickyHeaderWidth;
+
     private int mStickyHeaderHeight;
 
     public StickyListHeadersListView(Context context) {
@@ -122,6 +144,7 @@ public class StickyListHeadersListView extends FrameLayout {
 
         // Initialize the wrapped list
         mList = new WrapperViewList(context);
+        mList.setTag(this.getTag());
 
         // null out divider, dividers are handled by adapter so they look good with headers
         Log.d("constructor mShowHeaderOnLeft is --> ", "" + mShowHeaderOnLeft);
@@ -348,7 +371,7 @@ public class StickyListHeadersListView extends FrameLayout {
                 }
                 ensureHeaderHasCorrectLayoutParams(mHeader);
                 measureHeader(mHeader);
-                if(mOnStickyHeaderChangedListener != null) {
+                if (mOnStickyHeaderChangedListener != null) {
                     mOnStickyHeaderChangedListener.onStickyHeaderChanged(this, mHeader, headerPosition, mHeaderId);
                 }
                 // Reset mHeaderOffset to null ensuring
@@ -555,13 +578,15 @@ public class StickyListHeadersListView extends FrameLayout {
 
     /* ---------- StickyListHeaders specific API ---------- */
 
-
     public void setShowHeaderOnLeft(boolean showHeaderOnLeft) {
+        setShowHeaderOnLeft(showHeaderOnLeft, getResources().getDimensionPixelSize(R.dimen.sticky_title_width));
+    }
+
+    public void setShowHeaderOnLeft(boolean showHeaderOnLeft, int titleWidth) {
         mShowHeaderOnLeft = showHeaderOnLeft;
         if (showHeaderOnLeft) {
-            mStickyHeaderWidth = getResources().getDimensionPixelSize(R.dimen.sticky_title_width);
+            mStickyHeaderWidth = titleWidth;
         }
-
     }
 
     public void setAreHeadersSticky(boolean areHeadersSticky) {
@@ -588,9 +613,7 @@ public class StickyListHeadersListView extends FrameLayout {
     }
 
     /**
-     *
-     * @param stickyHeaderTopOffset
-     *          The offset of the sticky header fom the top of the view
+     * @param stickyHeaderTopOffset The offset of the sticky header fom the top of the view
      */
     public void setStickyHeaderTopOffset(int stickyHeaderTopOffset) {
         mStickyHeaderTopOffset = stickyHeaderTopOffset;
@@ -768,7 +791,7 @@ public class StickyListHeadersListView extends FrameLayout {
     public int getHeaderViewsCount() {
         return mList.getHeaderViewsCount();
     }
-    
+
     public void addFooterView(View v, Object data, boolean isSelectable) {
         mList.addFooterView(v, data, isSelectable);
     }
@@ -884,6 +907,10 @@ public class StickyListHeadersListView extends FrameLayout {
             offset -= mClippingToPadding ? 0 : mPaddingTop;
             mList.smoothScrollToPositionFromTop(position, offset, duration);
         }
+    }
+
+    public void performItemClick(View view, int position, long id) {
+        mList.performItemClick(view, position, id);
     }
 
     public void setSelection(int position) {
@@ -1090,7 +1117,7 @@ public class StickyListHeadersListView extends FrameLayout {
         return mList.canScrollVertically(direction);
     }
 
-    public void setTranscriptMode (int mode) {
+    public void setTranscriptMode(int mode) {
         mList.setTranscriptMode(mode);
     }
 
