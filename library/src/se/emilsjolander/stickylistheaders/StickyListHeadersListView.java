@@ -89,6 +89,7 @@ public class StickyListHeadersListView extends FrameLayout {
 
     /* --- Settings --- */
     private boolean mAreHeadersSticky = true;
+    private boolean mShowHeaderOnLeft = false;
     private boolean mClippingToPadding = true;
     private boolean mIsDrawingListUnderStickyHeader = true;
     private int mStickyHeaderTopOffset = 0;
@@ -104,6 +105,8 @@ public class StickyListHeadersListView extends FrameLayout {
     private AdapterWrapperDataSetObserver mDataSetObserver;
     private Drawable mDivider;
     private int mDividerHeight;
+    private int mStickyHeaderWidth;
+    private int mStickyHeaderHeight;
 
     public StickyListHeadersListView(Context context) {
         this(context, null);
@@ -121,13 +124,16 @@ public class StickyListHeadersListView extends FrameLayout {
         mList = new WrapperViewList(context);
 
         // null out divider, dividers are handled by adapter so they look good with headers
+        Log.d("constructor mShowHeaderOnLeft is --> ", "" + mShowHeaderOnLeft);
+
         mDivider = mList.getDivider();
         mDividerHeight = mList.getDividerHeight();
+
         mList.setDivider(null);
         mList.setDividerHeight(0);
 
         if (attrs != null) {
-            TypedArray a = context.getTheme().obtainStyledAttributes(attrs,R.styleable.StickyListHeadersListView, 0, 0);
+            TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.StickyListHeadersListView, 0, 0);
 
             try {
                 // -- View attributes --
@@ -256,8 +262,13 @@ public class StickyListHeadersListView extends FrameLayout {
         if (mHeader != null) {
             MarginLayoutParams lp = (MarginLayoutParams) mHeader.getLayoutParams();
             int headerTop = lp.topMargin + stickyHeaderTop();
-            mHeader.layout(mPaddingLeft, headerTop, mHeader.getMeasuredWidth()
-                    + mPaddingLeft, headerTop + mHeader.getMeasuredHeight());
+            if (mShowHeaderOnLeft) {
+                mHeader.layout(mPaddingLeft, headerTop, mPaddingLeft + mStickyHeaderWidth,
+                        headerTop + mHeader.getMeasuredHeight());
+            } else {
+                mHeader.layout(mPaddingLeft, headerTop, mHeader.getMeasuredWidth()
+                        + mPaddingLeft, headerTop + mHeader.getMeasuredHeight());
+            }
         }
     }
 
@@ -467,7 +478,7 @@ public class StickyListHeadersListView extends FrameLayout {
 
         @Override
         public void onScroll(AbsListView view, int firstVisibleItem,
-                             int visibleItemCount, int totalItemCount) {
+                int visibleItemCount, int totalItemCount) {
             if (mOnScrollListenerDelegate != null) {
                 mOnScrollListenerDelegate.onScroll(view, firstVisibleItem,
                         visibleItemCount, totalItemCount);
@@ -488,7 +499,7 @@ public class StickyListHeadersListView extends FrameLayout {
     private class WrapperViewListLifeCycleListener implements LifeCycleListener {
 
         @Override
-        public void onDispatchDrawOccurred(Canvas canvas) {
+        public void onDispatchDrawOccurred(final Canvas canvas) {
             // onScroll is not called often at all before froyo
             // therefor we need to update the header here as well.
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
@@ -543,6 +554,15 @@ public class StickyListHeadersListView extends FrameLayout {
     }
 
     /* ---------- StickyListHeaders specific API ---------- */
+
+
+    public void setShowHeaderOnLeft(boolean showHeaderOnLeft) {
+        mShowHeaderOnLeft = showHeaderOnLeft;
+        if (showHeaderOnLeft) {
+            mStickyHeaderWidth = getResources().getDimensionPixelSize(R.dimen.sticky_title_width);
+        }
+
+    }
 
     public void setAreHeadersSticky(boolean areHeadersSticky) {
         mAreHeadersSticky = areHeadersSticky;
@@ -642,7 +662,7 @@ public class StickyListHeadersListView extends FrameLayout {
 
     private boolean requireSdkVersion(int versionCode) {
         if (Build.VERSION.SDK_INT < versionCode) {
-            Log.e("StickyListHeaders", "Api lvl must be at least "+versionCode+" to call this method");
+            Log.e("StickyListHeaders", "Api lvl must be at least " + versionCode + " to call this method");
             return false;
         }
         return true;
@@ -676,6 +696,7 @@ public class StickyListHeadersListView extends FrameLayout {
 
         mAdapter.setDivider(mDivider, mDividerHeight);
 
+        mAdapter.setShowHeaderOnLeft(mShowHeaderOnLeft);
         mList.setAdapter(mAdapter);
         clearHeader();
     }
@@ -857,7 +878,7 @@ public class StickyListHeadersListView extends FrameLayout {
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void smoothScrollToPositionFromTop(int position, int offset,
-                                              int duration) {
+            int duration) {
         if (requireSdkVersion(Build.VERSION_CODES.HONEYCOMB)) {
             offset += mAdapter == null ? 0 : getHeaderOverlap(position);
             offset -= mClippingToPadding ? 0 : mPaddingTop;
@@ -1052,7 +1073,7 @@ public class StickyListHeadersListView extends FrameLayout {
     public Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
         if (superState != BaseSavedState.EMPTY_STATE) {
-          throw new IllegalStateException("Handling non empty state of parent class is not implemented");
+            throw new IllegalStateException("Handling non empty state of parent class is not implemented");
         }
         return mList.onSaveInstanceState();
     }
