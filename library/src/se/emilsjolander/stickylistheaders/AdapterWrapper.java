@@ -1,8 +1,5 @@
 package se.emilsjolander.stickylistheaders;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.drawable.Drawable;
@@ -12,6 +9,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Checkable;
 import android.widget.ListAdapter;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A {@link ListAdapter} which wraps a {@link StickyListHeadersAdapter} and
@@ -35,6 +35,7 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 	private Drawable mDivider;
 	private int mDividerHeight;
 	private OnHeaderClickListener mOnHeaderClickListener;
+        private boolean mShowHeaderOnLeft;
 	private DataSetObserver mDataSetObserver = new DataSetObserver() {
 
 		@Override
@@ -61,6 +62,10 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 		this.mDividerHeight = dividerHeight;
 		notifyDataSetChanged();
 	}
+
+        void setShowHeaderOnLeft(boolean showHeaderOnLeft) {
+            mShowHeaderOnLeft = showHeaderOnLeft;
+        }
 
 	@Override
 	public boolean areAllItemsEnabled() {
@@ -174,6 +179,7 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 		} else if(!(item instanceof Checkable) && (wv instanceof CheckableWrapperView)) {
 			wv = new WrapperView(mContext);
 		}
+                wv.setShowHeaderOnLeft(mShowHeaderOnLeft);
 		wv.update(item, header, mDivider, mDividerHeight);
 		return wv;
 	}
