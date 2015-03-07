@@ -26,6 +26,7 @@
         <attr name="android:divider" />
         <attr name="android:dividerHeight" />
         <attr name="android:transcriptMode" />
+        <attr name="android:stackFromBottom" />
 
         <!-- StickyListHeaders attributes -->
         <attr name="hasStickyHeaders" format="boolean" />
