@@ -90,7 +90,7 @@ public class StickyListHeadersListView extends FrameLayout {
     /* --- Settings --- */
     private boolean mAreHeadersSticky = true;
     private boolean mClippingToPadding = true;
-	private boolean mShowHeaders = true;
+    private boolean mShowHeaders = true;
     private boolean mIsDrawingListUnderStickyHeader = true;
     private int mStickyHeaderTopOffset = 0;
     private int mPaddingLeft = 0;
@@ -103,7 +103,7 @@ public class StickyListHeadersListView extends FrameLayout {
     private OnStickyHeaderOffsetChangedListener mOnStickyHeaderOffsetChangedListener;
     private OnStickyHeaderChangedListener mOnStickyHeaderChangedListener;
     private AdapterWrapperDataSetObserver mDataSetObserver;
-	private StickyListHeadersAdapter mOriginalAdapter;
+    private StickyListHeadersAdapter mOriginalAdapter;
     private Drawable mDivider;
     private int mDividerHeight;
 
@@ -662,13 +662,13 @@ public class StickyListHeadersListView extends FrameLayout {
         if (mAdapter != null) {
             mAdapter.unregisterDataSetObserver(mDataSetObserver);
         }
-		mOriginalAdapter = adapter;
-		if(!mShowHeaders) {
-			mAdapter = null;
-			mList.setAdapter(adapter);
-			clearHeader();
-			return;
-		}
+        mOriginalAdapter = adapter;
+        if(!mShowHeaders) {
+            mAdapter = null;
+            mList.setAdapter(adapter);
+            clearHeader();
+            return;
+        }
 
         if (adapter instanceof SectionIndexer) {
             mAdapter = new SectionIndexerAdapterWrapper(getContext(), adapter);
@@ -1087,21 +1087,21 @@ public class StickyListHeadersListView extends FrameLayout {
         mList.setBlockLayoutChildren(blockLayoutChildren);
     }
 
-	/**
-	 * Shows or hides all headers, when changed the scroll would be reset.
-	 */
-	public void setShowHeaders(boolean value) {
-		mShowHeaders = value;
-		if (!mShowHeaders && !mAreHeadersSticky) {
-			clearHeader();
-		} else {
-			updateOrClearHeader(mList.getFixedFirstVisibleItem());
-		}
-		setAdapter(mOriginalAdapter);
-	}
+    /**
+     * Shows or hides all headers, when changed the scroll would be reset.
+     */
+    public void setShowHeaders(boolean value) {
+        mShowHeaders = value;
+        if (!mShowHeaders && !mAreHeadersSticky) {
+            clearHeader();
+        } else {
+            updateOrClearHeader(mList.getFixedFirstVisibleItem());
+        }
+        setAdapter(mOriginalAdapter);
+    }
 
-	public boolean showHeaders() {
-		return mShowHeaders;
-	}
+    public boolean showHeaders() {
+        return mShowHeaders;
+    }
 
 }
