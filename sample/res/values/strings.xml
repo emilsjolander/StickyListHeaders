@@ -14,6 +14,7 @@
     <string name="update_list">Update list</string>
     <string name="clear_list">Clear list</string>
     <string name="sticky_header">Sticky header</string>
+    <string name="show_header">Show header</string>
     <string name="fade_header">Fade header</string>
     <string name="draw_behind_header">Draw behind header</string>
     <string name="fast_scroll">Fast scroll</string>

@@ -41,6 +41,7 @@ public class TestActivity extends ActionBarActivity implements
     private Button clearButton;
 
     private CheckBox stickyCheckBox;
+    private CheckBox showCheckBox;
     private CheckBox fadeCheckBox;
     private CheckBox drawBehindCheckBox;
     private CheckBox fastScrollCheckBox;
@@ -104,6 +105,8 @@ public class TestActivity extends ActionBarActivity implements
 
         stickyCheckBox = (CheckBox) findViewById(R.id.sticky_checkBox);
         stickyCheckBox.setOnCheckedChangeListener(checkBoxListener);
+        showCheckBox = (CheckBox) findViewById(R.id.show_checkBox);
+        showCheckBox.setOnCheckedChangeListener(checkBoxListener);
         fadeCheckBox = (CheckBox) findViewById(R.id.fade_checkBox);
         fadeCheckBox.setOnCheckedChangeListener(checkBoxListener);
         drawBehindCheckBox = (CheckBox) findViewById(R.id.draw_behind_checkBox);
@@ -152,6 +155,9 @@ public class TestActivity extends ActionBarActivity implements
                 case R.id.fast_scroll_checkBox:
                     stickyList.setFastScrollEnabled(isChecked);
                     stickyList.setFastScrollAlwaysVisible(isChecked);
+                    break;
+                case R.id.show_checkBox:
+                    stickyList.setShowHeaders(isChecked);
                     break;
             }
         }

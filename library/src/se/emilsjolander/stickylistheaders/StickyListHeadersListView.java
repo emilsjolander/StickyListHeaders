@@ -90,6 +90,7 @@ public class StickyListHeadersListView extends FrameLayout {
     /* --- Settings --- */
     private boolean mAreHeadersSticky = true;
     private boolean mClippingToPadding = true;
+	private boolean mShowHeaders = true;
     private boolean mIsDrawingListUnderStickyHeader = true;
     private int mStickyHeaderTopOffset = 0;
     private int mPaddingLeft = 0;
@@ -102,6 +103,7 @@ public class StickyListHeadersListView extends FrameLayout {
     private OnStickyHeaderOffsetChangedListener mOnStickyHeaderOffsetChangedListener;
     private OnStickyHeaderChangedListener mOnStickyHeaderChangedListener;
     private AdapterWrapperDataSetObserver mDataSetObserver;
+	private StickyListHeadersAdapter mOriginalAdapter;
     private Drawable mDivider;
     private int mDividerHeight;
 
@@ -205,6 +207,7 @@ public class StickyListHeadersListView extends FrameLayout {
 
                 // -- StickyListHeaders attributes --
                 mAreHeadersSticky = a.getBoolean(R.styleable.StickyListHeadersListView_hasStickyHeaders, true);
+                mShowHeaders = a.getBoolean(R.styleable.StickyListHeadersListView_showHeaders, mShowHeaders);
                 mIsDrawingListUnderStickyHeader = a.getBoolean(
                         R.styleable.StickyListHeadersListView_isDrawingListUnderStickyHeader,
                         true);
@@ -290,7 +293,7 @@ public class StickyListHeadersListView extends FrameLayout {
 
     private void updateOrClearHeader(int firstVisiblePosition) {
         final int adapterCount = mAdapter == null ? 0 : mAdapter.getCount();
-        if (adapterCount == 0 || !mAreHeadersSticky) {
+        if (adapterCount == 0 || !mAreHeadersSticky || !mShowHeaders) {
             return;
         }
 
@@ -659,6 +662,13 @@ public class StickyListHeadersListView extends FrameLayout {
         if (mAdapter != null) {
             mAdapter.unregisterDataSetObserver(mDataSetObserver);
         }
+		mOriginalAdapter = adapter;
+		if(!mShowHeaders) {
+			mAdapter = null;
+			mList.setAdapter(adapter);
+			clearHeader();
+			return;
+		}
 
         if (adapter instanceof SectionIndexer) {
             mAdapter = new SectionIndexerAdapterWrapper(getContext(), adapter);
@@ -1076,5 +1086,22 @@ public class StickyListHeadersListView extends FrameLayout {
     public void setBlockLayoutChildren(boolean blockLayoutChildren) {
         mList.setBlockLayoutChildren(blockLayoutChildren);
     }
+
+	/**
+	 * Shows or hides all headers, when changed the scroll would be reset.
+	 */
+	public void setShowHeaders(boolean value) {
+		mShowHeaders = value;
+		if (!mShowHeaders && !mAreHeadersSticky) {
+			clearHeader();
+		} else {
+			updateOrClearHeader(mList.getFixedFirstVisibleItem());
+		}
+		setAdapter(mOriginalAdapter);
+	}
+
+	public boolean showHeaders() {
+		return mShowHeaders;
+	}
 
 }

@@ -29,6 +29,7 @@
 
         <!-- StickyListHeaders attributes -->
         <attr name="hasStickyHeaders" format="boolean" />
+        <attr name="showHeaders" format="boolean" />
         <attr name="isDrawingListUnderStickyHeader" format="boolean" />
     </declare-styleable>
 

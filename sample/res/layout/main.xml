@@ -105,6 +105,13 @@
             <CheckBox
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="@string/show_header"
+                    android:id="@+id/show_checkBox"
+                    android:checked="true"/>
+
+            <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="@string/fade_header"
                     android:id="@+id/fade_checkBox"
                     android:checked="true"/>
