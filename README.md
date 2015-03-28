@@ -148,8 +148,29 @@ public class MyAdapter extends BaseAdapter implements StickyListHeadersAdapter {
 
 That's it! Look through the API docs below to get know about things to customize and if you have any problems getting started please open an issue as it probably means the getting started guide need some improvement!
 
+###Styling
+
+You can apply your own theme to `StickyListHeadersListView`s. Say you define a style called `Widget.MyApp.ListView` in values/styles.xml:
+```xml
+<resources>
+    <style name="Widget.MyApp.ListView" parent="@android:style/Widget.ListView">
+        <item name="android:paddingLeft">@dimen/vertical_padding</item>
+        <item name="android:paddingRight">@dimen/vertical_padding</item>
+    </style>
+</resources>
+```
+
+You can then apply this style to all `StickyListHeadersListView`s by adding something like this to your theme (e.g. values/themes.xml):
+```xml
+<resources>
+    <style name="Theme.MyApp" parent="android:Theme.NoTitleBar">
+        <item name="stickyListHeadersListViewStyle">@style/Widget.MyApp.ListView</item>
+    </style>
+</resources>
+```
+
 ###Expandable support
-Now,you can use `ExpandableStickyListHeadersListView` to expand/collapse subitems.
+Now, you can use `ExpandableStickyListHeadersListView` to expand/collapse subitems.
 xml first
 ```xml
 <se.emilsjolander.stickylistheaders.ExpandableStickyListHeadersListView
@@ -173,7 +194,7 @@ expandableStickyList.setOnHeaderClickListener(new StickyListHeadersListView.OnHe
             }
         });
 ```
-As you see,MyAdapter is just a StickyListHeadersAdapter which is mentioned in the previous section.
+As you see, MyAdapter is just a StickyListHeadersAdapter which is mentioned in the previous section.
 You needn't do any more extra operations.
 
 There are three important functions:
