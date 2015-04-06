@@ -3,18 +3,23 @@ apply plugin: 'com.android.application'
 repositories {
     mavenCentral()
 }
+
 dependencies {
     compile project(':library')
     compile 'com.android.support:appcompat-v7:22.0.+'
     compile 'com.android.support:support-v4:22.0.+'
     compile 'com.nineoldandroids:library:2.4.0+'
-
 }
 
 android {
-    minSdkVersion 7
     compileSdkVersion 22
     buildToolsVersion '22.0.1'
+
+    defaultConfig {
+        applicationId 'se.emilsjolander.stickylistheaders'
+        minSdkVersion 7
+        targetSdkVersion 22
+    }
 
     sourceSets {
         main {
