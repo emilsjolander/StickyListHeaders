@@ -196,6 +196,8 @@ public class StickyListHeadersListView extends FrameLayout {
                 if (a.hasValue(R.styleable.StickyListHeadersListView_android_divider)) {
                     mDivider = a.getDrawable(R.styleable.StickyListHeadersListView_android_divider);
                 }
+                
+                mList.setStackFromBottom(a.getBoolean(R.styleable.StickyListHeadersListView_android_stackFromBottom, false));
 
                 mDividerHeight = a.getDimensionPixelSize(R.styleable.StickyListHeadersListView_android_dividerHeight,
                         mDividerHeight);
@@ -1076,5 +1078,12 @@ public class StickyListHeadersListView extends FrameLayout {
     public void setBlockLayoutChildren(boolean blockLayoutChildren) {
         mList.setBlockLayoutChildren(blockLayoutChildren);
     }
+    
+    public void setStackFromBottom(boolean stackFromBottom) {
+    	mList.setStackFromBottom(stackFromBottom);
+    }
 
+    public boolean isStackFromBottom() {
+    	return mList.isStackFromBottom();
+    }
 }
