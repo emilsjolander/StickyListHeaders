@@ -5,15 +5,16 @@ repositories {
 }
 dependencies {
     compile project(':library')
-    compile 'com.android.support:appcompat-v7:19.0.+'
-    compile 'com.android.support:support-v4:19.1.+'
+    compile 'com.android.support:appcompat-v7:22.0.+'
+    compile 'com.android.support:support-v4:22.0.+'
     compile 'com.nineoldandroids:library:2.4.0+'
 
 }
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion '19.1.0'
+    minSdkVersion 7
+    compileSdkVersion 22
+    buildToolsVersion '22.0.1'
 
     sourceSets {
         main {
