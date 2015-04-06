@@ -74,7 +74,7 @@ public class MyAdapter extends BaseAdapter implements StickyListHeadersAdapter {
     private String[] countries;
     private LayoutInflater inflater;
 
-    public TestBaseAdapter(Context context) {
+    public MyAdapter(Context context) {
         inflater = LayoutInflater.from(context);
         countries = context.getResources().getStringArray(R.array.countries);
     }
