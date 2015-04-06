@@ -654,6 +654,12 @@ public class StickyListHeadersListView extends FrameLayout {
 
     public void setAdapter(StickyListHeadersAdapter adapter) {
         if (adapter == null) {
+            if (mAdapter instanceof SectionIndexerAdapterWrapper) {
+                ((SectionIndexerAdapterWrapper) mAdapter).mSectionIndexerDelegate = null;
+            }
+            if (mAdapter != null) {
+                mAdapter.mDelegate = null;
+            }
             mList.setAdapter(null);
             clearHeader();
             return;

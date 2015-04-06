@@ -6,7 +6,7 @@ import android.widget.SectionIndexer;
 class SectionIndexerAdapterWrapper extends
 		AdapterWrapper implements SectionIndexer {
 	
-	final SectionIndexer mSectionIndexerDelegate;
+	SectionIndexer mSectionIndexerDelegate;
 
 	SectionIndexerAdapterWrapper(Context context,
 			StickyListHeadersAdapter delegate) {
