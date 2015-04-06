@@ -257,7 +257,7 @@ public class StickyListHeadersListView extends FrameLayout {
         mList.layout(0, 0, mList.getMeasuredWidth(), getHeight());
         if (mHeader != null) {
             MarginLayoutParams lp = (MarginLayoutParams) mHeader.getLayoutParams();
-            int headerTop = lp.topMargin + stickyHeaderTop();
+            int headerTop = lp.topMargin;
             mHeader.layout(mPaddingLeft, headerTop, mHeader.getMeasuredWidth()
                     + mPaddingLeft, headerTop + mHeader.getMeasuredHeight());
         }
@@ -349,18 +349,17 @@ public class StickyListHeadersListView extends FrameLayout {
             }
         }
 
-        int headerOffset = 0;
+        int headerOffset = stickyHeaderTop();
 
         // Calculate new header offset
         // Skip looking at the first view. it never matters because it always
         // results in a headerOffset = 0
-        int headerBottom = mHeader.getMeasuredHeight() + stickyHeaderTop();
         for (int i = 0; i < mList.getChildCount(); i++) {
             final View child = mList.getChildAt(i);
             final boolean doesChildHaveHeader = child instanceof WrapperView && ((WrapperView) child).hasHeader();
             final boolean isChildFooter = mList.containsFooterView(child);
             if (child.getTop() >= stickyHeaderTop() && (doesChildHaveHeader || isChildFooter)) {
-                headerOffset = Math.min(child.getTop() - headerBottom, 0);
+                headerOffset = Math.min(child.getTop() - mHeader.getMeasuredHeight(), headerOffset);
                 break;
             }
         }
@@ -397,12 +396,7 @@ public class StickyListHeadersListView extends FrameLayout {
     // hides the headers in the list under the sticky header.
     // Makes sure the other ones are showing
     private void updateHeaderVisibilities() {
-        int top;
-        if (mHeader != null) {
-            top = mHeader.getMeasuredHeight() + (mHeaderOffset != null ? mHeaderOffset : 0) + mStickyHeaderTopOffset;
-        } else {
-            top = stickyHeaderTop();
-        }
+        int top = stickyHeaderTop();
         int childCount = mList.getChildCount();
         for (int i = 0; i < childCount; i++) {
 
