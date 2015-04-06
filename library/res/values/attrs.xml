@@ -2,6 +2,8 @@
 <resources>
 
     <declare-styleable name="StickyListHeadersListView">
+        <attr name="stickyListHeadersListViewStyle" format="reference"/>
+
         <!-- View attributes -->
         <attr name="android:clipToPadding" />
         <attr name="android:scrollbars" />

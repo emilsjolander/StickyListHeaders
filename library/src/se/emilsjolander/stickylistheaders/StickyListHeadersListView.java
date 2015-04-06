@@ -110,7 +110,7 @@ public class StickyListHeadersListView extends FrameLayout {
     }
 
     public StickyListHeadersListView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+        this(context, attrs, R.attr.stickyListHeadersListViewStyle);
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -127,7 +127,7 @@ public class StickyListHeadersListView extends FrameLayout {
         mList.setDividerHeight(0);
 
         if (attrs != null) {
-            TypedArray a = context.getTheme().obtainStyledAttributes(attrs,R.styleable.StickyListHeadersListView, 0, 0);
+            TypedArray a = context.getTheme().obtainStyledAttributes(attrs,R.styleable.StickyListHeadersListView, defStyle, 0);
 
             try {
                 // -- View attributes --
