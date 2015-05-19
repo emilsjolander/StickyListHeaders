@@ -101,6 +101,7 @@ public class StickyListHeadersListView extends FrameLayout {
     /* --- Touch handling --- */
     private float mDownY;
     private boolean mHeaderOwnsTouch;
+    private float mTouchSlop;
 
     /* --- Other --- */
     private OnHeaderClickListener mOnHeaderClickListener;
@@ -121,6 +122,8 @@ public class StickyListHeadersListView extends FrameLayout {
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public StickyListHeadersListView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+
+        mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
 
         // Initialize the wrapped list
         mList = new WrapperViewList(context);
@@ -458,11 +461,9 @@ public class StickyListHeadersListView extends FrameLayout {
             mHeaderOwnsTouch = mHeader != null && mDownY <= mHeader.getHeight() + mHeaderOffset;
         }
 
-        float touchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
-
         boolean handled;
         if (mHeaderOwnsTouch) {
-            if (mHeader != null && Math.abs(mDownY - ev.getY()) <= touchSlop) {
+            if (mHeader != null && Math.abs(mDownY - ev.getY()) <= mTouchSlop) {
                 handled = mHeader.dispatchTouchEvent(ev);
             } else {
                 if (mHeader != null) {
