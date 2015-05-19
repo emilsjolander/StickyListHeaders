@@ -14,6 +14,7 @@ import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.MultiChoiceModeListener;
@@ -96,6 +97,10 @@ public class StickyListHeadersListView extends FrameLayout {
     private int mPaddingTop = 0;
     private int mPaddingRight = 0;
     private int mPaddingBottom = 0;
+
+    /* --- Touch handling --- */
+    private float mDownY;
+    private boolean mHeaderOwnsTouch;
 
     /* --- Other --- */
     private OnHeaderClickListener mOnHeaderClickListener;
@@ -443,6 +448,41 @@ public class StickyListHeadersListView extends FrameLayout {
                 mOnStickyHeaderOffsetChangedListener.onStickyHeaderOffsetChanged(this, mHeader, -mHeaderOffset);
             }
         }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        int action = ev.getAction() & MotionEvent.ACTION_MASK;
+        if (action == MotionEvent.ACTION_DOWN) {
+            mDownY = ev.getY();
+            mHeaderOwnsTouch = mHeader != null && mDownY <= mHeader.getHeight() + mHeaderOffset;
+        }
+
+        float touchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+
+        boolean handled;
+        if (mHeaderOwnsTouch) {
+            if (mHeader != null && Math.abs(mDownY - ev.getY()) <= touchSlop) {
+                handled = mHeader.dispatchTouchEvent(ev);
+            } else {
+                if (mHeader != null) {
+                    MotionEvent cancelEvent = MotionEvent.obtain(ev);
+                    cancelEvent.setAction(MotionEvent.ACTION_CANCEL);
+                    mHeader.dispatchTouchEvent(cancelEvent);
+                    cancelEvent.recycle();
+                }
+
+                MotionEvent downEvent = MotionEvent.obtain(ev);
+                downEvent.setAction(MotionEvent.ACTION_DOWN);
+                handled = mList.dispatchTouchEvent(downEvent);
+                downEvent.recycle();
+                mHeaderOwnsTouch = false;
+            }
+        } else {
+            handled = mList.dispatchTouchEvent(ev);
+        }
+
+        return handled;
     }
 
     private class AdapterWrapperDataSetObserver extends DataSetObserver {
