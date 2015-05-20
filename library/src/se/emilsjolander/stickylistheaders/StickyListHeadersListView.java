@@ -473,7 +473,7 @@ public class StickyListHeadersListView extends FrameLayout {
                     cancelEvent.recycle();
                 }
 
-                MotionEvent downEvent = MotionEvent.obtain(ev);
+                MotionEvent downEvent = MotionEvent.obtain(ev.getDownTime(), ev.getEventTime(), ev.getAction(), ev.getX(), mDownY, ev.getMetaState());
                 downEvent.setAction(MotionEvent.ACTION_DOWN);
                 handled = mList.dispatchTouchEvent(downEvent);
                 downEvent.recycle();
