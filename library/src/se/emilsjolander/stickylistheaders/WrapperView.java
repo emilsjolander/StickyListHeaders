@@ -21,9 +21,19 @@ public class WrapperView extends ViewGroup {
 	int mDividerHeight;
 	View mHeader;
 	int mItemTop;
+	boolean mShowHeaderOnLeft;
+    	private int mHeaderWidth;
 
 	WrapperView(Context c) {
 		super(c);
+	}
+
+	public void setShowHeaderOnLeft(boolean showHeaderOnLeft) {
+		mShowHeaderOnLeft = showHeaderOnLeft;
+	}
+
+	public void setHeaderWidth(int headerWidth) {
+		mHeaderWidth = headerWidth;
 	}
 
 	public boolean hasHeader() {
@@ -65,7 +75,13 @@ public class WrapperView extends ViewGroup {
 			}
 			this.mHeader = header;
 			if (header != null) {
-				addView(header);
+				if (mShowHeaderOnLeft) {
+					ViewGroup.LayoutParams params = header.getLayoutParams();
+					params.width = mHeaderWidth;
+					addView(header, params);
+				} else {
+			 		addView(header);
+				}
 			}
 		}
 
@@ -90,14 +106,20 @@ public class WrapperView extends ViewGroup {
 				mHeader.measure(childWidthMeasureSpec,
 						MeasureSpec.makeMeasureSpec(params.height, MeasureSpec.EXACTLY));
 			} else {
-				mHeader.measure(childWidthMeasureSpec,
-						MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+				if (mShowHeaderOnLeft) {
+					mHeader.measure(MeasureSpec.makeMeasureSpec(mHeaderWidth, MeasureSpec.EXACTLY),
+					MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+				} else {
+					mHeader.measure(childWidthMeasureSpec, MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+				}
 			}
-			measuredHeight += mHeader.getMeasuredHeight();
+			if (!mShowHeaderOnLeft) {
+				measuredHeight += mHeader.getMeasuredHeight();
+			}
 		} else if (mDivider != null&&mItem.getVisibility()!=View.GONE) {
 			measuredHeight += mDividerHeight;
 		}
-		
+
 		//measure item
 		ViewGroup.LayoutParams params = mItem.getLayoutParams();
         //enable hiding listview item,ex. toggle off items in group
@@ -109,6 +131,9 @@ public class WrapperView extends ViewGroup {
 					MeasureSpec.makeMeasureSpec(params.height, MeasureSpec.EXACTLY));
             measuredHeight += mItem.getMeasuredHeight();
 		} else {
+		 	if (mShowHeaderOnLeft) {
+				childWidthMeasureSpec = childWidthMeasureSpec - mHeaderWidth;
+			}
 			mItem.measure(childWidthMeasureSpec,
 					MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
             measuredHeight += mItem.getMeasuredHeight();
@@ -126,18 +151,31 @@ public class WrapperView extends ViewGroup {
 		r = getWidth();
 		b = getHeight();
 
-		if (mHeader != null) {
-			int headerHeight = mHeader.getMeasuredHeight();
-			mHeader.layout(l, t, r, headerHeight);
-			mItemTop = headerHeight;
-			mItem.layout(l, headerHeight, r, b);
-		} else if (mDivider != null) {
-			mDivider.setBounds(l, t, r, mDividerHeight);
-			mItemTop = mDividerHeight;
-			mItem.layout(l, mDividerHeight, r, b);
+		if (mShowHeaderOnLeft) {
+		    if (mDivider != null) {
+			    mDivider.setBounds(mHeaderWidth, t, r, mDividerHeight);
+			    t += mDividerHeight;
+		    }
+		    if (mHeader != null) {
+			    int headerHeight = mHeader.getMeasuredHeight();
+			    mHeader.layout(l, t, mHeaderWidth, headerHeight);
+		    }
+		    mItem.layout(mHeaderWidth, t, r, b);
+		    mItemTop = t;
 		} else {
-			mItemTop = t;
-			mItem.layout(l, t, r, b);
+			if (mHeader != null) {
+				int headerHeight = mHeader.getMeasuredHeight();
+				mHeader.layout(l, t, r, headerHeight);
+				mItemTop = headerHeight;
+				mItem.layout(l, headerHeight, r, b);
+		    } else if (mDivider != null) {
+				mDivider.setBounds(l, t, r, mDividerHeight);
+				mItemTop = mDividerHeight;
+				mItem.layout(l, mDividerHeight, r, b);
+		    } else {
+				mItemTop = t;
+				mItem.layout(l, t, r, b);
+		    }
 		}
 	}
 

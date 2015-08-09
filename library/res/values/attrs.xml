@@ -30,6 +30,9 @@
         <attr name="android:transcriptMode" />
         <attr name="android:stackFromBottom" />
 
+        <!-- Header attributes -->
+        <attr name="headerWidth" format="dimension" />
+
         <!-- StickyListHeaders attributes -->
         <attr name="hasStickyHeaders" format="boolean" />
         <attr name="isDrawingListUnderStickyHeader" format="boolean" />

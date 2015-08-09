@@ -90,6 +90,7 @@ public class StickyListHeadersListView extends FrameLayout {
 
     /* --- Settings --- */
     private boolean mAreHeadersSticky = true;
+    private boolean mShowHeaderOnLeft = false;
     private boolean mClippingToPadding = true;
     private boolean mIsDrawingListUnderStickyHeader = true;
     private int mStickyHeaderTopOffset = 0;
@@ -110,6 +111,8 @@ public class StickyListHeadersListView extends FrameLayout {
     private AdapterWrapperDataSetObserver mDataSetObserver;
     private Drawable mDivider;
     private int mDividerHeight;
+    private int mStickyHeaderWidth;
+    private int mStickyHeaderHeight;
 
     public StickyListHeadersListView(Context context) {
         this(context, null);
@@ -127,6 +130,7 @@ public class StickyListHeadersListView extends FrameLayout {
 
         // Initialize the wrapped list
         mList = new WrapperViewList(context);
+        mList.setTag(this.getTag());
 
         // null out divider, dividers are handled by adapter so they look good with headers
         mDivider = mList.getDivider();
@@ -213,6 +217,9 @@ public class StickyListHeadersListView extends FrameLayout {
                 mList.setTranscriptMode(a.getInt(R.styleable.StickyListHeadersListView_android_transcriptMode,
                         ListView.TRANSCRIPT_MODE_DISABLED));
 
+                // -- Header attributes --
+                mStickyHeaderWidth = a.getDimensionPixelSize(R.styleable.StickyListHeadersListView_headerWidth, 100);
+
                 // -- StickyListHeaders attributes --
                 mAreHeadersSticky = a.getBoolean(R.styleable.StickyListHeadersListView_hasStickyHeaders, true);
                 mIsDrawingListUnderStickyHeader = a.getBoolean(
@@ -266,8 +273,13 @@ public class StickyListHeadersListView extends FrameLayout {
         if (mHeader != null) {
             MarginLayoutParams lp = (MarginLayoutParams) mHeader.getLayoutParams();
             int headerTop = lp.topMargin;
-            mHeader.layout(mPaddingLeft, headerTop, mHeader.getMeasuredWidth()
-                    + mPaddingLeft, headerTop + mHeader.getMeasuredHeight());
+            if (mShowHeaderOnLeft) {
+                mHeader.layout(mPaddingLeft, headerTop, mPaddingLeft + mStickyHeaderWidth,
+                        headerTop + mHeader.getMeasuredHeight());
+            } else {
+                mHeader.layout(mPaddingLeft, headerTop, mHeader.getMeasuredWidth()
+                        + mPaddingLeft, headerTop + mHeader.getMeasuredHeight());
+            }
         }
     }
 
@@ -581,6 +593,10 @@ public class StickyListHeadersListView extends FrameLayout {
 
     /* ---------- StickyListHeaders specific API ---------- */
 
+    public void setShowHeaderOnLeft(boolean showHeaderOnLeft) {
+        mShowHeaderOnLeft = showHeaderOnLeft;
+    }
+
     public void setAreHeadersSticky(boolean areHeadersSticky) {
         mAreHeadersSticky = areHeadersSticky;
         if (!areHeadersSticky) {
@@ -719,6 +735,8 @@ public class StickyListHeadersListView extends FrameLayout {
 
         mAdapter.setDivider(mDivider, mDividerHeight);
 
+        mAdapter.setShowHeaderOnLeft(mShowHeaderOnLeft);
+        mAdapter.setStickyHeaderWidth(mStickyHeaderWidth);
         mList.setAdapter(mAdapter);
         clearHeader();
     }
@@ -906,6 +924,10 @@ public class StickyListHeadersListView extends FrameLayout {
             offset -= mClippingToPadding ? 0 : mPaddingTop;
             mList.smoothScrollToPositionFromTop(position, offset, duration);
         }
+    }
+
+    public void performItemClick(View view, int position, long id) {
+        mList.performItemClick(view, position, id);
     }
 
     public void setSelection(int position) {
