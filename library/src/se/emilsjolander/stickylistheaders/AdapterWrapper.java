@@ -25,7 +25,17 @@ import android.widget.ListAdapter;
  */
 class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 
-	interface OnHeaderClickListener {
+    private int mStickyHeaderWidth;
+
+    public void setStickyHeaderWidth(int stickyHeaderWidth) {
+	mStickyHeaderWidth = stickyHeaderWidth;
+    }
+
+    void setShowHeaderOnLeft(boolean showHeaderOnLeft) {
+	mShowHeaderOnLeft = showHeaderOnLeft;
+    }
+
+    interface OnHeaderClickListener {
 		void onHeaderClick(View header, int itemPosition, long headerId);
 	}
 
@@ -35,6 +45,7 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 	private Drawable mDivider;
 	private int mDividerHeight;
 	private OnHeaderClickListener mOnHeaderClickListener;
+	private boolean mShowHeaderOnLeft;
 	private DataSetObserver mDataSetObserver = new DataSetObserver() {
 
 		@Override
@@ -175,6 +186,8 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 			wv = new WrapperView(mContext);
 		}
 		wv.update(item, header, mDivider, mDividerHeight);
+		wv.setShowHeaderOnLeft(mShowHeaderOnLeft);
+		wv.setHeaderWidth(mStickyHeaderWidth);
 		return wv;
 	}
 

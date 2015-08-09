@@ -205,6 +205,24 @@ You can call `expand` or `collapse` method to hide or show subitems.
 You can also define a AnimationExecutor which implements `ExpandableStickyListHeadersListView.IAnimationExecutor`,
 and put it into the ExpandableStickyListHeadersListView by `setAnimExecutor` method,if you want more fancy animation when hiding or showing subitems.
 
+###Floating left headers support
+Just like Cyberplus tablet, StickyListHeadersListView supports now floating left header.
+
+<img src="https://github.com/LivioGama/StickyListHeaders/raw/master/cyberplus.png" width="640" />
+
+To use it, in Java code :
+```java
+stickyList.setShowHeaderOnLeft(true);
+```
+
+You can also define a width for the header using styleable `headerWidth` or in the style this way :
+```xml
+<resources>
+    <style name="Theme.MyApp" parent="android:Theme.NoTitleBar">
+        <item name="headerWidth">100</item>
+    </style>
+</resources>
+```
 
 Upgrading from 1.x versions
 ---------------------------

@@ -76,6 +76,7 @@ public class TestActivity extends ActionBarActivity implements
         stickyList.setEmptyView(findViewById(R.id.empty));
         stickyList.setDrawingListUnderStickyHeader(true);
         stickyList.setAreHeadersSticky(true);
+        stickyList.setShowHeaderOnLeft(true);
         stickyList.setAdapter(mAdapter);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -111,7 +112,6 @@ public class TestActivity extends ActionBarActivity implements
         fastScrollCheckBox = (CheckBox) findViewById(R.id.fast_scroll_checkBox);
         fastScrollCheckBox.setOnCheckedChangeListener(checkBoxListener);
 
-        stickyList.setStickyHeaderTopOffset(-20);
     }
 
     @Override
