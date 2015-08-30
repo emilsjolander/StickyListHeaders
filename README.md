@@ -12,7 +12,7 @@ Here is a short gif showing the functionality you get with this library:
 
 Goal
 ----
-The goal of this project is to deliver a high performance replacement to `ListView`. You should with minimal effort and time be able to add section headers to a list. This should be done via a simple to use API without any special features. This library will always priorities general use cases over special ones. This means that the library will add very few public methods to the standard `ListView` and will not try to work for every use case. While I will want to support even narrow use cases I will not do so if it compromises the API or any other feature.
+The goal of this project is to deliver a high performance replacement to `ListView`. You should, with minimal effort and time, be able to add section headers to a list. This should be done via a simple to use API without any special features. This library will always prioritise general use cases over special ones. This means that the library will add very few public methods to the standard `ListView` and will not try to work for every use case. While I will want to support even narrow use cases I will not do so if it compromises the API or any other feature.
 
 
 Installing
@@ -52,7 +52,7 @@ Getting Started
 ---------------
 ###Base usage
 
-Ok lets start with your activities or fragments xml file. It might look something like this.
+Ok, let's start with your activity's or fragment's xml layout file. It might look something like this.
 ```xml
 <se.emilsjolander.stickylistheaders.StickyListHeadersListView
     android:id="@+id/list"
@@ -60,7 +60,7 @@ Ok lets start with your activities or fragments xml file. It might look somethin
     android:layout_height="match_parent"/>
 ```
 
-Now in your activities `onCreate()` or your fragments `onCreateView()` you would want to do something like this
+Now in your activity's `onCreate()` or your fragment's `onCreateView()` you would want to do something like this.
 ```java
 StickyListHeadersListView stickyList = (StickyListHeadersListView) findViewById(R.id.list);
 MyAdapter adapter = new MyAdapter(this);
@@ -202,8 +202,8 @@ There are three important functions:
 
 The function `isHeaderCollapsed` is used to check whether the subitems belonging to the header have collapsed.
 You can call `expand` or `collapse` method to hide or show subitems.
-You can also define a AnimationExecutor which implements `ExpandableStickyListHeadersListView.IAnimationExecutor`,
-and put it into the ExpandableStickyListHeadersListView by `setAnimExecutor` method,if you want more fancy animation when hiding or showing subitems.
+If you want more fancy animation when hiding or showing subitems you can also define an AnimationExecutor which implements `ExpandableStickyListHeadersListView.IAnimationExecutor`,
+and put it into the ExpandableStickyListHeadersListView via the `setAnimExecutor` method.
 
 
 Upgrading from 1.x versions
@@ -211,7 +211,8 @@ Upgrading from 1.x versions
 First of all the package name has changed from `com.emilsjolander.components.stickylistheaders` -> `se.emilsjolander.stickylistheaders` so update all your imports and xml files using StickyListHeaders!
 
 If you are Upgrading from a version prior to 2.x you might run into the following problems.
-1. `StickyListHeadersListView` is no longer a `ListView` subclass. This means that it cannot be passed into a method expecting a ListView. You can retrieve an instance of the `ListView` via `getWrappedList()` but use this with caution as things will probably break if you start setting things directly on that list.
+
+1.  `StickyListHeadersListView` is no longer a `ListView` subclass. This means that it cannot be passed into a method expecting a ListView. You can retrieve an instance of the `ListView` via `getWrappedList()` but use this with caution as things will probably break if you start setting things directly on that list.
 2. Because `StickyListHeadersListView` is no longer a `ListView` it does not support all the methods. I have implemented delegate methods for all the usual methods and gladly accept pull requests for more.
 
 API
@@ -224,7 +225,7 @@ public interface StickyListHeadersAdapter extends ListAdapter {
 }
 ```
 Your adapter must implement this interface to function with `StickyListHeadersListView`.
-`getHeaderId()` must return a unique integer for every section. A valid implementation for a list with alphabetical sections is the return the char value of the section that `position` is a part of.
+`getHeaderId()` must return a unique integer for every section. A valid implementation for a list with alphabetical sections is to return the char value of the section that `position` is a part of.
 
 `getHeaderView()` works exactly like `getView()` in a regular `ListAdapter`.
 
@@ -236,7 +237,7 @@ public void setAreHeadersSticky(boolean areHeadersSticky);
 public boolean areHeadersSticky();
 ```
 
-A `OnHeaderClickListener` is the header version of OnItemClickListener. This is the setter for it and the interface of the listener. The currentlySticky boolean flag indicated if the header that was clicked was sticking to the top at the time it was clicked.
+An `OnHeaderClickListener` is the header version of OnItemClickListener. This is the setter for it and the interface of the listener. The currentlySticky boolean flag indicated if the header that was clicked was sticking to the top at the time it was clicked.
 ```java
 public void setOnHeaderClickListener(OnHeaderClickListener listener);
 
@@ -288,6 +289,6 @@ public int getHeaderOverlap(int position);
 
 Contributing
 ------------
-Contributions are very welcome. Now that this library has grown in popularity i have a hard time keeping upp with all the issues while tending to a multitude of other projects as well as school. So if you find a bug in the library or want a feature and think you can fix it yourself, fork + pull request and i will greatly appreciate it!
+Contributions are very welcome. Now that this library has grown in popularity I have a hard time keeping up with all the issues while tending to a multitude of other projects as well as school. So if you find a bug in the library or want a feature and think you can fix it yourself, fork + pull request and I will greatly appreciate it!
 
 I love getting pull requests for new features as well as bugs. However, when it comes to new features please also explain the use case and way you think the library should include it. If you don't want to start coding a feature without knowing if the feature will have chance of being included, open an issue and we can discuss the feature!
