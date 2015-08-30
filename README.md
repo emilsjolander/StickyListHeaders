@@ -52,7 +52,7 @@ Getting Started
 ---------------
 ###Base usage
 
-Ok lets start with your activity's or fragment's xml layout file. It might look something like this.
+Ok, let's start with your activity's or fragment's xml layout file. It might look something like this.
 ```xml
 <se.emilsjolander.stickylistheaders.StickyListHeadersListView
     android:id="@+id/list"
@@ -60,7 +60,7 @@ Ok lets start with your activity's or fragment's xml layout file. It might look 
     android:layout_height="match_parent"/>
 ```
 
-Now in your activity's `onCreate()` or your fragment's `onCreateView()` you would want to do something like this
+Now in your activity's `onCreate()` or your fragment's `onCreateView()` you would want to do something like this.
 ```java
 StickyListHeadersListView stickyList = (StickyListHeadersListView) findViewById(R.id.list);
 MyAdapter adapter = new MyAdapter(this);
