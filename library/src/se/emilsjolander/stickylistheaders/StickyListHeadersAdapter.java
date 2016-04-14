@@ -39,8 +39,8 @@ public interface StickyListHeadersAdapter extends ListAdapter {
 	/**
 	 * Check whether or not the adapter should display header views.
 	 * 
-         * @return
+	 * @return
 	 * If false, no headers will be displayed.
-         */
+	 */
 	boolean shouldShowHeaders();
 }
