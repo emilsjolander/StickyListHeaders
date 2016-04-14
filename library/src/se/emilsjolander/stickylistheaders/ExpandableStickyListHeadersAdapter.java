@@ -34,6 +34,11 @@ import java.util.List;
     }
 
     @Override
+    public boolean shouldShowHeaders() {
+        return mInnerAdapter.shouldShowHeaders();
+    }
+
+    @Override
     public boolean areAllItemsEnabled() {
         return mInnerAdapter.areAllItemsEnabled();
     }
