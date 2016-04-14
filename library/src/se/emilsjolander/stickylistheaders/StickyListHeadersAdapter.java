@@ -35,4 +35,12 @@ public interface StickyListHeadersAdapter extends ListAdapter {
 	 * The id of the header at the specified position.
 	 */
 	long getHeaderId(int position);
+
+	/**
+	 * Check whether or not the adapter should display header views.
+	 * 
+	 * @return
+	 * If false, no headers will be displayed.
+	 */
+	boolean shouldShowHeaders();
 }

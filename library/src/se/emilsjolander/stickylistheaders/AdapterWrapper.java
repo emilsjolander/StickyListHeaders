@@ -163,18 +163,21 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 		WrapperView wv = (convertView == null) ? new WrapperView(mContext) : (WrapperView) convertView;
 		View item = mDelegate.getView(position, wv.mItem, parent);
 		View header = null;
-		if (previousPositionHasSameHeader(position)) {
-			recycleHeaderIfExists(wv);
-		} else {
-			header = configureHeader(wv, position);
-		}
-		if((item instanceof Checkable) && !(wv instanceof CheckableWrapperView)) {
-			// Need to create Checkable subclass of WrapperView for ListView to work correctly
-			wv = new CheckableWrapperView(mContext);
-		} else if(!(item instanceof Checkable) && (wv instanceof CheckableWrapperView)) {
-			wv = new WrapperView(mContext);
+		if (mDelegate.shouldShowHeaders()) {
+			if (previousPositionHasSameHeader(position)) {
+				recycleHeaderIfExists(wv);
+			} else {
+				header = configureHeader(wv, position);
+			}
+			if((item instanceof Checkable) && !(wv instanceof CheckableWrapperView)) {
+				// Need to create Checkable subclass of WrapperView for ListView to work correctly
+				wv = new CheckableWrapperView(mContext);
+			} else if(!(item instanceof Checkable) && (wv instanceof CheckableWrapperView)) {
+				wv = new WrapperView(mContext);
+			}
 		}
 		wv.update(item, header, mDivider, mDividerHeight);
+
 		return wv;
 	}
 
@@ -220,6 +223,11 @@ class AdapterWrapper extends BaseAdapter implements StickyListHeadersAdapter {
 	@Override
 	public long getHeaderId(int position) {
 		return mDelegate.getHeaderId(position);
+	}
+
+	@Override
+	public boolean shouldShowHeaders() {
+		return mDelegate.shouldShowHeaders();
 	}
 
 }

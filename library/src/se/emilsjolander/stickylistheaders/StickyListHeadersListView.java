@@ -509,7 +509,10 @@ public class StickyListHeadersListView extends FrameLayout {
                 mOnScrollListenerDelegate.onScroll(view, firstVisibleItem,
                         visibleItemCount, totalItemCount);
             }
-            updateOrClearHeader(mList.getFixedFirstVisibleItem());
+
+            if (mAdapter != null && mAdapter.shouldShowHeaders()) {
+                updateOrClearHeader(mList.getFixedFirstVisibleItem());
+            }
         }
 
         @Override
