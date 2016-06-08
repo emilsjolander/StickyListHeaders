@@ -145,6 +145,214 @@ public class MyAdapter extends BaseAdapter implements StickyListHeadersAdapter {
     
 }
 ```
+###Another Sample Adapter to Display Custom Headers.
+
+In Your OnCreate Method Initialize header array and array of arraylist like this.
+```java
+ String[] headers = {"Country", "Colors", "Sample"};
+        ArrayList<ArrayList<String>> data = new ArrayList<ArrayList<String>>();
+        ArrayList<String> array1 = new ArrayList<String>();
+        array1.add("test1");
+        array1.add("test2");
+        array1.add("test3");
+        array1.add("test4");
+        array1.add("test5");
+        array1.add("test6");
+        array1.add("test7");
+        array1.add("test8");
+        array1.add("test9");
+        array1.add("test10");
+        array1.add("test11");
+        array1.add("test12");
+
+        ArrayList<String> array2 = new ArrayList<String>();
+        array2.add("test11");
+        array2.add("test22");
+        array2.add("test33");
+        array2.add("test44");
+        array2.add("test55");
+        array2.add("test66");
+        array2.add("test77");
+        array2.add("test88");
+        array2.add("test99");
+        array2.add("test100");
+        array2.add("test111");
+        array2.add("test122");
+
+        ArrayList<String> array3 = new ArrayList<String>();
+        array3.add("test111");
+        array3.add("test222");
+        array3.add("test333");
+        array3.add("test444");
+        array3.add("test555");
+        array3.add("test666");
+        array3.add("test777");
+        array3.add("test888");
+        array3.add("test999");
+        array3.add("test1000");
+        array3.add("test1111");
+        array3.add("test1222");
+
+
+        data.add(array1);
+        data.add(array2);
+        data.add(array3);
+```
+
+Now call Adapter like this
+```java
+    StickyListHeadersListView stickyList = (StickyListHeadersListView) findViewById(R.id.list);
+    MainAdapter adapter = new MainAdapter(this,headers,data);
+    stickyList.setAdapter(adapter);
+```
+
+
+Now your Adapter would be like this, you have to provide Context, String array of headers and Array of Arraylist
+
+```java
+    public class MainAdapter extends BaseAdapter implements StickyListHeadersAdapter {
+
+    private String[] countries;
+    private String[] color_array;
+    private String[] headers;
+    private LayoutInflater inflater;
+
+    ArrayList<ArrayList<String>> data = new ArrayList<ArrayList<String>>();
+    ArrayList<Integer> ChildFabonaci_Count = new ArrayList<>();
+
+    public MainAdapter(Context context,String[] headers, ArrayList<ArrayList<String>> data) {
+        inflater = LayoutInflater.from(context);
+        countries = context.getResources().getStringArray(R.array.countries);
+        color_array = context.getResources().getStringArray(R.array.header_bg);
+        this.headers = headers;
+        this.data = data;
+
+        for (int i=0; i<data.size(); i++){
+            if(i==0)
+                ChildFabonaci_Count.add(data.get(i).size());
+            else
+                ChildFabonaci_Count.add(ChildFabonaci_Count.get(i-1) + data.get(i).size());
+        }
+
+
+    }
+
+    @Override
+    public int getCount() {
+
+        return ChildFabonaci_Count.get(ChildFabonaci_Count.size()-1);
+    }
+
+    @Override
+    public Object getItem(int position) {
+
+        int dataChildIndex = -1;
+
+        for (int i=0 ; i<ChildFabonaci_Count.size() ; i++){
+            if (position < ChildFabonaci_Count.get(i)) {
+                dataChildIndex = i;
+                break;
+            }
+        }
+        if(dataChildIndex == 0)
+            return data.get(dataChildIndex).get(position);
+        else
+            return data.get(dataChildIndex).get(position-ChildFabonaci_Count.get(dataChildIndex-1));
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
+
+        if (convertView == null) {
+            holder = new ViewHolder();
+            convertView = inflater.inflate(R.layout.main_list_item, parent, false);
+            holder.text = (TextView) convertView.findViewById(R.id.tv_cat_name);
+            convertView.setTag(holder);
+        } else {
+            holder = (ViewHolder) convertView.getTag();
+        }
+
+        holder.text.setText((CharSequence) getItem(position));
+
+        return convertView;
+    }
+
+    @Override
+    public View getHeaderView(int position, View convertView, ViewGroup parent) {
+        HeaderViewHolder holder;
+        if (convertView == null) {
+            holder = new HeaderViewHolder();
+            convertView = inflater.inflate(R.layout.main_header, parent, false);
+            holder.text = (TextView) convertView.findViewById(R.id.tv_header);
+            holder.bg_linear = (LinearLayout) convertView.findViewById(R.id.header_bg);
+            convertView.setTag(holder);
+        } else {
+            holder = (HeaderViewHolder) convertView.getTag();
+        }
+        //set header text as first char in name
+
+        String headerText = headers[(int) getHeaderId(position)];
+        holder.text.setText(headerText);
+        System.out.println("position "  + position);
+        holder.bg_linear.setBackgroundColor(Color.parseColor(color_array[(int) getHeaderId(position) % color_array.length]));
+        return convertView;
+    }
+
+    @Override
+    public long getHeaderId(int position) {
+
+        for (int i=0 ; i < ChildFabonaci_Count.size() ; i++){
+            if (position < ChildFabonaci_Count.get(i)) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    class HeaderViewHolder {
+        TextView text;
+        LinearLayout bg_linear;
+    }
+
+    class ViewHolder {
+        TextView text;
+    }
+
+}
+``` 
+
+There is a sligthly change in header's layout file it should be like this
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:id="@+id/header_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:gravity="center">
+
+
+    <TextView
+        android:id="@+id/tv_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="News"
+        android:textSize="20sp"/>
+    </LinearLayout>
+</LinearLayout>
+```
+
 
 That's it! Look through the API docs below to get know about things to customize and if you have any problems getting started please open an issue as it probably means the getting started guide need some improvement!
 
