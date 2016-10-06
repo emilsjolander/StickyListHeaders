@@ -94,7 +94,7 @@ public class MyAdapter extends BaseAdapter implements StickyListHeadersAdapter {
         return position;
     }
 
-    @Override 
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
 
@@ -112,7 +112,7 @@ public class MyAdapter extends BaseAdapter implements StickyListHeadersAdapter {
         return convertView;
     }
 
-    @Override 
+    @Override
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
         HeaderViewHolder holder;
         if (convertView == null) {
@@ -142,7 +142,7 @@ public class MyAdapter extends BaseAdapter implements StickyListHeadersAdapter {
     class ViewHolder {
         TextView text;
     }
-    
+
 }
 ```
 
@@ -291,3 +291,21 @@ Contributing
 Contributions are very welcome. Now that this library has grown in popularity i have a hard time keeping upp with all the issues while tending to a multitude of other projects as well as school. So if you find a bug in the library or want a feature and think you can fix it yourself, fork + pull request and i will greatly appreciate it!
 
 I love getting pull requests for new features as well as bugs. However, when it comes to new features please also explain the use case and way you think the library should include it. If you don't want to start coding a feature without knowing if the feature will have chance of being included, open an issue and we can discuss the feature!
+
+
+License
+--------
+
+    Copyright 2013 Emil Sjölander
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied
+    See the License for the specific language governing permissions
+    limitations under the License.
