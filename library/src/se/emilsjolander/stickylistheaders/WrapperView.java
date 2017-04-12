@@ -65,6 +65,10 @@ public class WrapperView extends ViewGroup {
 			}
 			this.mHeader = header;
 			if (header != null) {
+				//ADA issue fix
+				item.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+				setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+				
 				addView(header);
 			}
 		}
