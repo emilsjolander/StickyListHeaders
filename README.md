@@ -17,7 +17,9 @@ The goal of this project is to deliver a high performance replacement to `ListVi
 
 Installing
 ---------------
-###Maven
+
+### Maven
+
 Add the following maven dependency exchanging `x.x.x` for the latest release.
 ```XML
 <dependency>
@@ -27,7 +29,9 @@ Add the following maven dependency exchanging `x.x.x` for the latest release.
 </dependency>
 ```
 
-###Gradle
+
+### Gradle
+
 Add the following gradle dependency exchanging `x.x.x` for the latest release.
 ```groovy
 dependencies {
@@ -35,7 +39,8 @@ dependencies {
 }
 ```
 
-###Cloning
+### Cloning
+
 First of all you will have to clone the library.
 ```shell
 git clone https://github.com/emilsjolander/StickyListHeaders.git
@@ -50,7 +55,8 @@ In the following dialog navigate to StickyListHeaders which you cloned to your c
 
 Getting Started
 ---------------
-###Base usage
+
+### Base usage
 
 Ok lets start with your activities or fragments xml file. It might look something like this.
 ```xml
@@ -148,7 +154,7 @@ public class MyAdapter extends BaseAdapter implements StickyListHeadersAdapter {
 
 That's it! Look through the API docs below to get know about things to customize and if you have any problems getting started please open an issue as it probably means the getting started guide need some improvement!
 
-###Styling
+### Styling
 
 You can apply your own theme to `StickyListHeadersListView`s. Say you define a style called `Widget.MyApp.ListView` in values/styles.xml:
 ```xml
@@ -169,7 +175,8 @@ You can then apply this style to all `StickyListHeadersListView`s by adding some
 </resources>
 ```
 
-###Expandable support
+### Expandable support
+
 Now, you can use `ExpandableStickyListHeadersListView` to expand/collapse subitems.
 xml first
 ```xml
@@ -216,7 +223,9 @@ If you are Upgrading from a version prior to 2.x you might run into the followin
 
 API
 ---
-###StickyListHeadersAdapter
+
+### StickyListHeadersAdapter
+
 ```java
 public interface StickyListHeadersAdapter extends ListAdapter {
     View getHeaderView(int position, View convertView, ViewGroup parent);
@@ -229,7 +238,8 @@ Your adapter must implement this interface to function with `StickyListHeadersLi
 `getHeaderView()` works exactly like `getView()` in a regular `ListAdapter`.
 
 
-###StickyListHeadersListView
+### StickyListHeadersListView
+
 Headers are sticky by default but that can easily be changed with this setter. There is of course also a matching getter for the sticky property.
 ```java
 public void setAreHeadersSticky(boolean areHeadersSticky);
@@ -291,3 +301,4 @@ Contributing
 Contributions are very welcome. Now that this library has grown in popularity i have a hard time keeping upp with all the issues while tending to a multitude of other projects as well as school. So if you find a bug in the library or want a feature and think you can fix it yourself, fork + pull request and i will greatly appreciate it!
 
 I love getting pull requests for new features as well as bugs. However, when it comes to new features please also explain the use case and way you think the library should include it. If you don't want to start coding a feature without knowing if the feature will have chance of being included, open an issue and we can discuss the feature!
+
